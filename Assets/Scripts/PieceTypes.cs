@@ -8,7 +8,8 @@ namespace Piece
         I,
         L,
         InvertL,
-        T, Plus
+        T,
+        Plus
     }
 
     public static class PieceTypes
