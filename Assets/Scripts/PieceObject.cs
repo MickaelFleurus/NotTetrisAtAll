@@ -12,7 +12,7 @@ public class PieceObject : MonoBehaviour
     public GridHandler grid { get; private set; }
     public void Initialize(GridHandler g) => grid = g;
 
-    private Vector2Int positionIndex = new Vector2Int(5, 21);
+    private Vector2Int positionIndex = new Vector2Int(GridHandler.Width / 2, GridHandler.Height + 1);
     private List<Vector2Int> pieceIndices = new List<Vector2Int>();
 
 

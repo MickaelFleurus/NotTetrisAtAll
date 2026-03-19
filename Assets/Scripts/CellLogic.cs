@@ -42,6 +42,9 @@ public class CellLogic : MonoBehaviour
         if (currentState != CellState.Empty) return;
         currentState = CellState.MaybeNext;
         spriteRenderer.sprite = MaybeNextSprite;
+        var color = spriteRenderer.color;
+        color.a = 0.50f;
+        spriteRenderer.color = color;
     }
 
     // Optionally make SetFilled treat null as Clear:
@@ -50,6 +53,9 @@ public class CellLogic : MonoBehaviour
         if (sprite == null) { Clear(); return; }
         spriteRenderer.sprite = sprite;
         currentState = CellState.Filled;
+        var color = spriteRenderer.color;
+        color.a = 1.0f;
+        spriteRenderer.color = color;
     }
 
     public void PrepareToBlink()

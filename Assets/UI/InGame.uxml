@@ -1,0 +1,7 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 157, 0); background-image: none;"/>
+    <ui:Image name="Game" style="position: absolute; top: 5%; background-image: url(&quot;project://database/Assets/UI/Game.renderTexture?fileID=8400000&amp;guid=646ff94ed0389415e8c9b7af78cd232f&amp;type=2#Game&quot;); width: 79%; aspect-ratio: 0.5387701; justify-content: flex-start; align-items: center; align-self: center;"/>
+    <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 0; width: 157px;"/>
+    <ui:VisualElement name="RightColumn" style="flex-grow: 1; left: auto; position: absolute; top: 0; bottom: 0; right: 0; width: 157px;"/>
+    <ui:VisualElement name="Grid" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 0; width: 157px;"/>
+</ui:UXML>
