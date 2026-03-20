@@ -9,7 +9,7 @@ public class CameraControl : MonoBehaviour
     void Start()
     {
         float aspectRatio = (float)GridHandler.Width / GridHandler.Height;
-        float verticalSize = GridHandler.Height / 2.0f + 1.0f; // add some padding
+        float verticalSize = GridHandler.Height / 2.0f; // add some padding
         mainCamera.orthographicSize = verticalSize;
         mainCamera.aspect = aspectRatio;
     }

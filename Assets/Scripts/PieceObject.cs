@@ -36,6 +36,7 @@ public class PieceObject : MonoBehaviour
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = sprite;
             sr.sortingOrder = 1;
+            sr.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             spriteRenderers.Add(sr);
             go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
         }

@@ -14,6 +14,7 @@ public class GridHandler : MonoBehaviour
     [SerializeField] float DropInitialDelayMs = 0.15f;
     [SerializeField] GameObject prefabCell;
     [SerializeField] GameObject GridVisual;
+    [SerializeField] InGameUI inGameUI;
 
     private int score = 0;
     private int lineCompleted = 0;
@@ -25,6 +26,7 @@ public class GridHandler : MonoBehaviour
 
     public bool pauseGameLoop = false;
     private List<Vector2Int> currentPieceDestinationIndexes = new List<Vector2Int>();
+
 
     void Awake()
     {
@@ -256,14 +258,16 @@ public class GridHandler : MonoBehaviour
         {
             lineCompleted += completedLines.Count;
             score += completedLines.Count * 100;
+            inGameUI.UpdateLines(lineCompleted);
+            inGameUI.UpdateScore(score);
         }
         pauseGameLoop = false;
     }
 
     public bool IsFree(Vector2Int indices)
     {
-        if (indices.y >= Height) return true;
         if (indices.x < 0 || indices.y < 0 || indices.x >= Width) return false;
+        if (indices.y >= Height) return true;
         return cell[indices.y][indices.x].IsEmpty();
     }
 
