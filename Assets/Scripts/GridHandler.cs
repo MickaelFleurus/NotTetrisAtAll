@@ -13,6 +13,7 @@ public class GridHandler : MonoBehaviour
 
     [SerializeField] float DropInitialDelayMs = 0.15f;
     [SerializeField] GameObject prefabCell;
+    [SerializeField] GameObject GridVisual;
 
     private int score = 0;
     private int lineCompleted = 0;
@@ -44,6 +45,7 @@ public class GridHandler : MonoBehaviour
             cell.Add(line);
         }
         delayNextDropMs = DropInitialDelayMs;
+        GridVisual.GetComponent<SpriteRenderer>().size = new Vector2(Width, Height);
 
         // setup input actions
         inputActions = new InputSystem_Actions();
@@ -149,7 +151,7 @@ public class GridHandler : MonoBehaviour
         if (currentPiece == null) return;
         currentPiece.DropToLowest();
         stuckCount = 1000;
-
+        delayNextDropMs = 0.0f;
     }
 
     private void OnRotateClockwise()
@@ -265,8 +267,8 @@ public class GridHandler : MonoBehaviour
         return cell[indices.y][indices.x].IsEmpty();
     }
 
-    public static int Width => 15;
-    public static int Height => 30;
+    public static int Width => 10;
+    public static int Height => 20;
 
     public static int PieceSize => 4;
 }

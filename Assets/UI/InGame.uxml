@@ -1,7 +1,33 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 157, 0); background-image: none;"/>
-    <ui:Image name="Game" style="position: absolute; top: 5%; background-image: url(&quot;project://database/Assets/UI/Game.renderTexture?fileID=8400000&amp;guid=646ff94ed0389415e8c9b7af78cd232f&amp;type=2#Game&quot;); width: 79%; aspect-ratio: 0.5387701; justify-content: flex-start; align-items: center; align-self: center;"/>
-    <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 0; width: 157px;"/>
-    <ui:VisualElement name="RightColumn" style="flex-grow: 1; left: auto; position: absolute; top: 0; bottom: 0; right: 0; width: 157px;"/>
-    <ui:VisualElement name="Grid" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 0; width: 157px;"/>
+    <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3"/>
+    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 157, 0); background-image: none; position: absolute; width: 100%; height: 100%;"/>
+    <ui:VisualElement name="GameContainer" style="flex-grow: 1; align-content: center; justify-content: center;">
+        <ui:Image name="Game" style="position: relative; top: auto; background-image: url(&quot;project://database/Assets/UI/Game.renderTexture?fileID=8400000&amp;guid=646ff94ed0389415e8c9b7af78cd232f&amp;type=2#Game&quot;); width: 75%; aspect-ratio: 0.5387701; justify-content: flex-start; align-items: center; align-self: center; left: auto; right: auto; bottom: auto; height: auto;"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 918px; width: 15%; align-self: center; align-content: center; background-color: rgba(0, 0, 0, 0);">
+        <ui:VisualElement name="HeldPiece" class="CaseContainer" style="flex-grow: initial; align-self: center; align-content: auto; height: 200px; top: 25%; background-color: rgba(0, 0, 0, 0); width: 100%;">
+            <ui:Label text="HOLD" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" parse-escape-sequences="false" name="HoldLabel" class="UIText" style="align-self: auto; width: 100%;"/>
+            <ui:VisualElement name="HeldPieceContainer" class="Case"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="RightColumn" style="flex-grow: 1; width: 15%; flex-direction: column; align-self: center; align-items: center; align-content: center; height: 100%; justify-content: flex-start; position: absolute; right: 0;">
+        <ui:VisualElement name="NextPieces" class="CaseContainer" style="width: 100%; height: 459px;">
+            <ui:Label text="NEXT" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" parse-escape-sequences="false" name="NextLabel" class="UIText"/>
+            <ui:VisualElement name="NextPiece1" class="Case"/>
+            <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 8px;"/>
+            <ui:VisualElement name="NextPiece2" class="Case"/>
+            <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 8px;"/>
+            <ui:VisualElement name="NextPiece3" class="Case"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="RunInfo" class="CaseContainer" style="height: 289px; top: auto;">
+            <ui:Label text="Score:" name="Score" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="UIText"/>
+            <ui:Label text="0" name="ScoreValue" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="UIText" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
+            <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 15px;"/>
+            <ui:Label text="Level:" name="Level" class="UIText"/>
+            <ui:Label text="0" name="LevelValue" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="UIText" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
+            <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 15px;"/>
+            <ui:Label text="Lines:" name="Lines" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="UIText"/>
+            <ui:Label text="0" name="LinesValue" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" parse-escape-sequences="true" class="UIText" style="top: auto; align-self: center; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

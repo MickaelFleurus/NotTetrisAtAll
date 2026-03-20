@@ -10,9 +10,9 @@ public class InGameUI : MonoBehaviour
     {
         colorKeys = new GradientColorKey[]
         {
-            new GradientColorKey(new Color(0.02f, 0.05f, 0.20f), 0.0f), // bottom (dark)
-            new GradientColorKey(new Color(0.07f, 0.16f, 0.40f), 0.5f), // middle (lighter)
-            new GradientColorKey(new Color(0.02f, 0.05f, 0.20f), 1.0f)  // top (dark)
+            new GradientColorKey(new Color(0.007f, 0.047f, 0.40f), 0.0f),
+            new GradientColorKey(new Color(0.0f, 0.2f, 1.0f), 0.5f),
+            new GradientColorKey(new Color(0.56f, 0.325f, 0.929f), 1.0f)
         },
         alphaKeys = new GradientAlphaKey[]
         {
@@ -30,14 +30,6 @@ public class InGameUI : MonoBehaviour
         element.style.backgroundImage = new StyleBackground(texture);
 
         gameRender.style.aspectRatio = GridHandler.Width / (float)GridHandler.Height;
-
-        var gridElement = new GridElement();// fill the root: absolute + zero on all sides ensures it stretches to rootVisualElement size
-        uiDocument.rootVisualElement.Add(gridElement);
-        var cam = Camera.main;
-        uiDocument.rootVisualElement.Add(gridElement);
-        AlignGridElementToCamera(cam, gridElement);
-        gridElement.MarkDirtyRepaint();
-
     }
 
 
@@ -64,32 +56,5 @@ public class InGameUI : MonoBehaviour
         return tex;
     }
 
-    void AlignGridElementToCamera(Camera cam, VisualElement gridElement)
-    {
-        // world bounds (adjust if your grid origin or cell size differ)
-        Vector3 blWorld = new Vector3(0f, 0f, 0f); // bottom-left world
-        Vector3 trWorld = new Vector3(GridHandler.Width, GridHandler.Height, 0f); // top-right world (use Width,Height for inclusive margin)
 
-        Vector3 blScreen = cam.WorldToScreenPoint(blWorld);
-        Vector3 trScreen = cam.WorldToScreenPoint(trWorld);
-
-        float left = Mathf.Min(blScreen.x, trScreen.x);
-        float right = Mathf.Max(blScreen.x, trScreen.x);
-        float bottom = Mathf.Min(blScreen.y, trScreen.y);
-        float top = Mathf.Max(blScreen.y, trScreen.y);
-
-        float width = right - left;
-        float height = top - bottom;
-
-        // UI root origin is top-left; screen origin is bottom-left
-        float uiLeft = left;
-        float uiTop = Screen.height - top;
-
-        gridElement.style.position = Position.Absolute;
-        gridElement.style.left = uiLeft;
-        gridElement.style.top = uiTop;
-        gridElement.style.width = width;
-        gridElement.style.height = height;
-        gridElement.MarkDirtyRepaint();
-    }
 }

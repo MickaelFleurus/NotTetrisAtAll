@@ -43,7 +43,7 @@ public class CellVisualLogic : MonoBehaviour
         currentState = CellState.MaybeNext;
         spriteRenderer.sprite = MaybeNextSprite;
         var color = spriteRenderer.color;
-        color.a = 0.50f;
+        color.a = 0.20f;
         spriteRenderer.color = color;
     }
 
