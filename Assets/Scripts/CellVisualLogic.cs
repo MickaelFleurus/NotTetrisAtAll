@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CellLogic : MonoBehaviour
+public class CellVisualLogic : MonoBehaviour
 {
     public static readonly float BlinkDuration = 0.5f;
     [SerializeField] private Sprite EmptySprite;

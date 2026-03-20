@@ -9,13 +9,11 @@ using Unity.VisualScripting;
 
 public class GridHandler : MonoBehaviour
 {
-    private List<List<CellLogic>> cell = new List<List<CellLogic>>();
+    private List<List<CellVisualLogic>> cell = new List<List<CellVisualLogic>>();
 
     [SerializeField] float DropInitialDelayMs = 0.15f;
-    [SerializeField] PiecePrefabMap prefabMap;
     [SerializeField] GameObject prefabCell;
 
-    private Dictionary<PieceType, GameObject> piecePrefabs = new();
     private int score = 0;
     private int lineCompleted = 0;
     private float delayNextDropMs = 0.15f;
@@ -32,25 +30,20 @@ public class GridHandler : MonoBehaviour
         var originalPosition = new Vector3(0.0f, 0.0f);
         for (int j = 0; j < Height; j++)
         {
-            List<CellLogic> line = new List<CellLogic>();
+            List<CellVisualLogic> line = new List<CellVisualLogic>();
             originalPosition.x = 0.0f;
             originalPosition.y = j;
 
             for (int i = 0; i < Width; i++)
             {
                 var go = Instantiate(prefabCell, this.transform);
-                line.Add(go.GetComponent<CellLogic>());
+                line.Add(go.GetComponent<CellVisualLogic>());
                 originalPosition.x = i;
                 go.transform.localPosition = originalPosition;
             }
             cell.Add(line);
         }
         delayNextDropMs = DropInitialDelayMs;
-
-        if (prefabMap != null)
-            piecePrefabs = prefabMap.ToDictionary();
-        else
-            piecePrefabs = new Dictionary<PieceType, GameObject>();
 
         // setup input actions
         inputActions = new InputSystem_Actions();
@@ -73,10 +66,13 @@ public class GridHandler : MonoBehaviour
 
         if (!currentPieceGo)
         {
-            var nextType = PieceTypes.GetRandomPieceType();
-            currentPieceGo = Instantiate(piecePrefabs[nextType], this.transform);
-            currentPiece = currentPieceGo.GetComponent<PieceObject>();
-            currentPiece.Initialize(this);
+            var go = new GameObject("Piece");
+            go.transform.SetParent(this.transform, false);
+
+            var piece = go.AddComponent<PieceObject>();
+            piece.Initialize(this);
+            currentPieceGo = go;
+            currentPiece = piece;
             UpdateDestinationIndexes();
         }
         else
@@ -207,7 +203,7 @@ public class GridHandler : MonoBehaviour
         if (completedLines.Count > 0)
         {
             pauseGameLoop = true;
-            StartCoroutine(RemoveEmptyLines(completedLines, CellLogic.BlinkDuration + 0.1f));
+            StartCoroutine(RemoveEmptyLines(completedLines, CellVisualLogic.BlinkDuration + 0.1f));
         }
 
     }
@@ -271,4 +267,6 @@ public class GridHandler : MonoBehaviour
 
     public static int Width => 15;
     public static int Height => 30;
+
+    public static int PieceSize => 4;
 }

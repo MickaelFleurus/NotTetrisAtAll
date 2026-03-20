@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -256,6 +257,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7e74e063f12c4917a6bd0364e4d6dde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraControl
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,6 +595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridHandler
   DropInitialDelayMs: 0.5
+  prefabMap: {fileID: 11400000, guid: 410427705d9e3487f83c31403e7fc54a, type: 2}
   prefabCell: {fileID: 5854518308175524040, guid: 03257169a58284fc6919f111addd6842, type: 3}
   pauseGameLoop: 0
 --- !u!1660057539 &9223372036854775807

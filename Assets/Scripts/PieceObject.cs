@@ -10,7 +10,6 @@ public class PieceObject : MonoBehaviour
     public List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
 
     public GridHandler grid { get; private set; }
-    public void Initialize(GridHandler g) => grid = g;
 
     private Vector2Int positionIndex = new Vector2Int(GridHandler.Width / 2, GridHandler.Height + 1);
     private List<Vector2Int> pieceIndices = new List<Vector2Int>();
@@ -25,16 +24,24 @@ public class PieceObject : MonoBehaviour
     };
 
 
-    void Awake()
+    public void Initialize(GridHandler g)
     {
-        spriteRenderers = new List<SpriteRenderer>(GetComponentsInChildren<SpriteRenderer>());
-        foreach (var sr in spriteRenderers)
+        grid = g;
+        this.pieceIndices = Piece.PieceHelper.GetRandomPieceShape(GridHandler.PieceSize);
+        var sprite = Piece.PieceHelper.GetSpriteForColor(Piece.PieceHelper.GetRandomColor());
+        for (int i = 0; i < pieceIndices.Count; i++)
         {
-            Vector3 partPosition = sr.transform.localPosition;
-            pieceIndices.Add(new Vector2Int((int)partPosition.x, (int)partPosition.y));
+            GameObject go = new GameObject($"Piece_{i}");
+            go.transform.parent = this.transform;
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = sprite;
+            sr.sortingOrder = 1;
+            spriteRenderers.Add(sr);
+            go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
         }
 
     }
+
 
     void Start()
     {
