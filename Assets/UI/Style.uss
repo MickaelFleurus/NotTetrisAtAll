@@ -42,3 +42,6 @@ VisualElement {
     font-size: 95%;
     -unity-text-align: middle-center;
 }
+
+.pieceTex {
+}

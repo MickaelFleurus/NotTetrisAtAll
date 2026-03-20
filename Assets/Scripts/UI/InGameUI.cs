@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,6 +10,9 @@ public class InGameUI : MonoBehaviour
     private Label lineCompletedLabel;
     private Label levelLabel;
     private Image gameRender;
+    private Image heldPiece;
+    private List<Image> nextPieces = new List<Image>(3);
+
     Gradient myGradient = new Gradient
     {
         colorKeys = new GradientColorKey[]
@@ -31,6 +35,12 @@ public class InGameUI : MonoBehaviour
         scoreLabel = uiDocument.rootVisualElement.Q<Label>("ScoreValue");
         lineCompletedLabel = uiDocument.rootVisualElement.Q<Label>("LinesValue");
         levelLabel = uiDocument.rootVisualElement.Q<Label>("LevelValue");
+
+        nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece1Image"));
+        nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece2Image"));
+        nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece3Image"));
+
+        heldPiece = uiDocument.rootVisualElement.Q<Image>("HeldPieceImage");
 
         var texture = GradientToTexture(myGradient);
         element.style.backgroundImage = new StyleBackground(texture);
@@ -71,5 +81,21 @@ public class InGameUI : MonoBehaviour
         levelLabel.text = level.ToString();
     }
 
+
+    public void UpdateHeldPieceTexture(Sprite sprite)
+    {
+        heldPiece.sprite = sprite;
+    }
+
+    public Sprite PushNextPieceTexture(Sprite sprite)
+    {
+        Sprite popedSprite = nextPieces[0].sprite;
+        for (int i = 0; i < nextPieces.Count - 1; i++)
+        {
+            nextPieces[i].sprite = nextPieces[i + 1].sprite;
+        }
+        nextPieces[2].sprite = sprite;
+        return popedSprite;
+    }
 
 }

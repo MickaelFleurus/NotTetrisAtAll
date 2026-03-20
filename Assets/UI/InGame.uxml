@@ -7,17 +7,25 @@
     <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 918px; width: 17.5%; align-self: center; align-content: center; background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement name="HeldPiece" class="CaseContainer" style="flex-grow: initial; align-self: center; align-content: auto; height: 200px; top: 25%; background-color: rgba(0, 0, 0, 0); width: 100%;">
             <ui:Label text="HOLD" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" parse-escape-sequences="false" name="HoldLabel" class="UIText" style="align-self: auto; width: 100%;"/>
-            <ui:VisualElement name="HeldPieceContainer" class="Case"/>
+            <ui:VisualElement name="HeldPieceContainer" class="Case">
+                <ui:Image name="HeldPieceImage" class="pieceTex"/>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="RightColumn" style="flex-grow: 1; width: 17.5%; flex-direction: column; align-self: center; align-items: center; align-content: center; height: 100%; justify-content: flex-start; position: absolute; right: 0;">
         <ui:VisualElement name="NextPieces" class="CaseContainer" style="width: 100%; height: 459px;">
             <ui:Label text="NEXT" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" parse-escape-sequences="false" name="NextLabel" class="UIText"/>
-            <ui:VisualElement name="NextPiece1" class="Case"/>
+            <ui:VisualElement name="NextPiece1" class="Case">
+                <ui:Image name="NextPiece1Image" class="pieceTex" style="width: 90%; height: 90%;"/>
+            </ui:VisualElement>
             <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 8px;"/>
-            <ui:VisualElement name="NextPiece2" class="Case"/>
+            <ui:VisualElement name="NextPiece2" class="Case">
+                <ui:Image name="NextPiece2Image" class="pieceTex"/>
+            </ui:VisualElement>
             <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 8px;"/>
-            <ui:VisualElement name="NextPiece3" class="Case"/>
+            <ui:VisualElement name="NextPiece3" class="Case">
+                <ui:Image name="NextPiece3Image" class="pieceTex"/>
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="RunInfo" class="CaseContainer" style="height: 289px; top: auto;">
             <ui:Label text="Score:" name="Score" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="UIText"/>

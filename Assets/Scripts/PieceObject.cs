@@ -24,10 +24,11 @@ public class PieceObject : MonoBehaviour
     };
 
 
-    public void Initialize(GridHandler g)
+    public Sprite Initialize(GridHandler g)
     {
         grid = g;
         this.pieceIndices = Piece.PieceHelper.GetRandomPieceShape(GridHandler.PieceSize);
+
         var sprite = Piece.PieceHelper.GetSpriteForColor(Piece.PieceHelper.GetRandomColor());
         for (int i = 0; i < pieceIndices.Count; i++)
         {
@@ -40,7 +41,7 @@ public class PieceObject : MonoBehaviour
             spriteRenderers.Add(sr);
             go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
         }
-
+        return Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices);
     }
 
 

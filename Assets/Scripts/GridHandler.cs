@@ -19,8 +19,12 @@ public class GridHandler : MonoBehaviour
     private int score = 0;
     private int lineCompleted = 0;
     private float delayNextDropMs = 0.15f;
-    GameObject currentPieceGo = null;
+
     PieceObject currentPiece = null;
+    PieceObject[] nextPieces = new PieceObject[3];
+
+
+
     private int stuckCount = 0;
     private InputSystem_Actions inputActions;
 
@@ -59,24 +63,37 @@ public class GridHandler : MonoBehaviour
         inputActions.Enable();
     }
 
+    private PieceObject CreateNewPiece()
+    {
+        var go = new GameObject("Piece");
+        go.transform.SetParent(this.transform, false);
+
+        var piece = go.AddComponent<PieceObject>();
+        inGameUI.PushNextPieceTexture(piece.Initialize(this));
+        return piece;
+    }
+
     void Start()
     {
         this.transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
+
+        var go = new GameObject("Piece");
+        go.transform.SetParent(this.transform, false);
+        nextPieces[0] = CreateNewPiece();
+        nextPieces[1] = CreateNewPiece();
+        nextPieces[2] = CreateNewPiece();
     }
 
     void Update()
     {
         if (pauseGameLoop) return;
 
-        if (!currentPieceGo)
+        if (!currentPiece)
         {
-            var go = new GameObject("Piece");
-            go.transform.SetParent(this.transform, false);
-
-            var piece = go.AddComponent<PieceObject>();
-            piece.Initialize(this);
-            currentPieceGo = go;
-            currentPiece = piece;
+            currentPiece = nextPieces[0];
+            nextPieces[0] = nextPieces[1];
+            nextPieces[1] = nextPieces[2];
+            nextPieces[2] = CreateNewPiece();
             UpdateDestinationIndexes();
         }
         else
@@ -183,9 +200,8 @@ public class GridHandler : MonoBehaviour
         {
             cell[pair.Key.y][pair.Key.x].SetFilled(pair.Value);
         }
-        Destroy(currentPieceGo);
+        Destroy(currentPiece.gameObject);
         currentPiece = null;
-        currentPieceGo = null;
         CheckCompletedLines();
     }
 
