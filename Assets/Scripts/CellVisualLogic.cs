@@ -43,14 +43,12 @@ public class CellVisualLogic : MonoBehaviour
         currentState = CellState.MaybeNext;
         spriteRenderer.sprite = MaybeNextSprite;
         var color = spriteRenderer.color;
-        color.a = 0.20f;
+        color.a = 0.40f;
         spriteRenderer.color = color;
     }
 
-    // Optionally make SetFilled treat null as Clear:
     public void SetFilled(Sprite sprite)
     {
-        if (sprite == null) { Clear(); return; }
         spriteRenderer.sprite = sprite;
         currentState = CellState.Filled;
         var color = spriteRenderer.color;
@@ -65,8 +63,6 @@ public class CellVisualLogic : MonoBehaviour
         blinkingTimeLeft = BlinkDuration;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         if (currentState == CellState.Blinking)

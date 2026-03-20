@@ -27,7 +27,7 @@
                 <ui:Image name="NextPiece3Image" class="pieceTex"/>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="RunInfo" class="CaseContainer" style="height: 289px; top: auto;">
+        <ui:VisualElement name="RunInfo" class="CaseContainer" style="height: 289px; top: 641px;">
             <ui:Label text="Score:" name="Score" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="UIText"/>
             <ui:Label text="0" name="ScoreValue" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="UIText" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
             <ui:VisualElement name="Spacer" style="flex-grow: initial; height: 15px;"/>

@@ -1,18 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Data.Common;
 using System;
 using System.Linq;
 
 
 public class PieceObject : MonoBehaviour
 {
-    public List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+    public List<GameObject> parts = new List<GameObject>();
+    public Piece.PieceColor color { get; private set; }
 
     public GridHandler grid { get; private set; }
 
     private Vector2Int positionIndex = new Vector2Int(GridHandler.Width / 2, GridHandler.Height + 1);
     private List<Vector2Int> pieceIndices = new List<Vector2Int>();
+    static int pieceCounter = 0;
 
 
     private readonly Vector2Int[] kicks = {
@@ -27,23 +28,31 @@ public class PieceObject : MonoBehaviour
     public Sprite Initialize(GridHandler g)
     {
         grid = g;
+        color = Piece.PieceHelper.GetRandomColor();
         this.pieceIndices = Piece.PieceHelper.GetRandomPieceShape(GridHandler.PieceSize);
-
-        var sprite = Piece.PieceHelper.GetSpriteForColor(Piece.PieceHelper.GetRandomColor());
+        var sprite = Piece.PieceHelper.GetSpriteForColor(color);
         for (int i = 0; i < pieceIndices.Count; i++)
         {
-            GameObject go = new GameObject($"Piece_{i}");
+            GameObject go = new GameObject($"Piece_{pieceCounter}_{i}");
             go.transform.parent = this.transform;
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = sprite;
+            sr.color = Color.white;
             sr.sortingOrder = 1;
+            sr.material = new Material(Shader.Find("Sprites/Default"));
             sr.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
-            spriteRenderers.Add(sr);
+            parts.Add(go);
             go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
+
+            Debug.Log($"Part {i}: sprite={sprite.name}, sr.color={sr.color}");
         }
+        pieceCounter++;
         return Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices);
     }
 
+    void Awake()
+    {
+    }
 
     void Start()
     {
@@ -156,9 +165,9 @@ public class PieceObject : MonoBehaviour
                 pieceIndices = newPieceIndices;
                 positionIndex += kick;
                 transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
-                for (int i = 0; i < spriteRenderers.Count && i < pieceIndices.Count; i++)
+                for (int i = 0; i < parts.Count && i < pieceIndices.Count; i++)
                 {
-                    spriteRenderers[i].transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
+                    parts[i].transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
                 }
                 return true;
             }
@@ -167,20 +176,9 @@ public class PieceObject : MonoBehaviour
         return false;
     }
 
-    public Dictionary<Vector2Int, Sprite> GetIndexes()
+    public List<Vector2Int> GetIndexes()
     {
-        int i = 0;
-        Dictionary<Vector2Int, Sprite> indices = new Dictionary<Vector2Int, Sprite>();
-        foreach (var piece in pieceIndices)
-        {
-            Vector2Int index = piece + positionIndex;
-            if (index.x >= 0 && index.y >= 0)
-            {
-                indices.Add(index, spriteRenderers[i].sprite);
-            }
-            i++;
-        }
-        return indices;
+        return pieceIndices.Select(p => p + positionIndex).ToList();
     }
 
     public bool IsInGrid()
@@ -188,12 +186,12 @@ public class PieceObject : MonoBehaviour
         foreach (var piece in pieceIndices)
         {
             Vector2Int index = piece + positionIndex;
-            if (index.x >= 0 && index.y >= 0 && index.x < GridHandler.Width && index.y < GridHandler.Height)
+            if (index.x < 0 || index.y < 0 || index.x >= GridHandler.Width || index.y >= GridHandler.Height)
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private int FigureLowestPossibleHeight()

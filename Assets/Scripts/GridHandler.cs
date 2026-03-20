@@ -19,6 +19,7 @@ public class GridHandler : MonoBehaviour
     private int score = 0;
     private int lineCompleted = 0;
     private float delayNextDropMs = 0.15f;
+    static int pieceCounter = 0;
 
     PieceObject currentPiece = null;
     PieceObject[] nextPieces = new PieceObject[3];
@@ -65,11 +66,12 @@ public class GridHandler : MonoBehaviour
 
     private PieceObject CreateNewPiece()
     {
-        var go = new GameObject("Piece");
+        var go = new GameObject($"Piece_{pieceCounter}");
         go.transform.SetParent(this.transform, false);
 
         var piece = go.AddComponent<PieceObject>();
         inGameUI.PushNextPieceTexture(piece.Initialize(this));
+        pieceCounter++;
         return piece;
     }
 
@@ -77,8 +79,6 @@ public class GridHandler : MonoBehaviour
     {
         this.transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
 
-        var go = new GameObject("Piece");
-        go.transform.SetParent(this.transform, false);
         nextPieces[0] = CreateNewPiece();
         nextPieces[1] = CreateNewPiece();
         nextPieces[2] = CreateNewPiece();
@@ -94,6 +94,7 @@ public class GridHandler : MonoBehaviour
             nextPieces[0] = nextPieces[1];
             nextPieces[1] = nextPieces[2];
             nextPieces[2] = CreateNewPiece();
+            Debug.Log($"Spawn new piece with color {currentPiece.color} ");
             UpdateDestinationIndexes();
         }
         else
@@ -196,9 +197,13 @@ public class GridHandler : MonoBehaviour
 
     private void PlaceCurrentPiece()
     {
-        foreach (var pair in currentPiece.GetIndexes())
+        Debug.Log($"Place piece with color {currentPiece.color}");
+        Sprite pieceSprite = Piece.PieceHelper.GetSpriteForColor(currentPiece.color);
+        Debug.Log($"Got sprite: {pieceSprite.name} from texture {pieceSprite.texture.name}");
+
+        foreach (var index in currentPiece.GetIndexes())
         {
-            cell[pair.Key.y][pair.Key.x].SetFilled(pair.Value);
+            cell[index.y][index.x].SetFilled(pieceSprite);
         }
         Destroy(currentPiece.gameObject);
         currentPiece = null;

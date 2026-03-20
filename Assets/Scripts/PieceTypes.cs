@@ -20,6 +20,7 @@ namespace Piece
 
     public static class PieceHelper
     {
+        static Dictionary<PieceColor, Sprite> cache = new Dictionary<PieceColor, Sprite>();
         public static PieceColor GetRandomColor()
         {
             var values = System.Enum.GetValues(typeof(PieceColor));
@@ -28,7 +29,12 @@ namespace Piece
 
         public static Sprite GetSpriteForColor(PieceColor color)
         {
-            return Resources.Load<Sprite>($"Sprites/{color.ToString()}Cube");
+            if (!cache.ContainsKey(color))
+            {
+                var sprite = Resources.Load<Sprite>($"Sprites/{color.ToString()}Cube");
+                cache[color] = sprite;
+            }
+            return cache[color];
         }
 
         static List<Vector2Int> NormalizeToCentroid(List<Vector2Int> shape)
@@ -145,8 +151,6 @@ namespace Piece
                 Directory.CreateDirectory(folderPath);
 
             string fullPath = Path.Combine(folderPath, $"{name}.png");
-            Debug.Log($"Saving generated sprite to: {fullPath}");
-
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(fullPath, bytes);
         }
