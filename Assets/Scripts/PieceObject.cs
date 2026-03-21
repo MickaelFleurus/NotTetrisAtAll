@@ -47,7 +47,7 @@ public class PieceObject : MonoBehaviour
             Debug.Log($"Part {i}: sprite={sprite.name}, sr.color={sr.color}");
         }
         pieceCounter++;
-        return Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices);
+        return Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices, color);
     }
 
     void Awake()

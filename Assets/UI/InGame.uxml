@@ -1,6 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3"/>
-    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 157, 0); background-image: none; position: absolute; width: 100%; height: 100%;"/>
+    <ui:VisualElement name="Background2" style="flex-grow: 1; background-color: rgba(255, 255, 255, 0); background-image: resource(&quot;Background&quot;); position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgb(255, 255, 255);"/>
+    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 157, 0); background-image: none; position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgba(255, 255, 255, 0.97);"/>
     <ui:VisualElement name="GameContainer" style="flex-grow: 1; align-content: center; justify-content: center;">
         <ui:Image name="Game" style="position: relative; top: auto; background-image: url(&quot;project://database/Assets/UI/Game.renderTexture?fileID=8400000&amp;guid=646ff94ed0389415e8c9b7af78cd232f&amp;type=2#Game&quot;); width: 65%; aspect-ratio: 0.5387701; justify-content: flex-start; align-items: center; align-self: center; left: auto; right: auto; bottom: auto; height: auto;"/>
     </ui:VisualElement>

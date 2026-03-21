@@ -292,8 +292,8 @@ public class GridHandler : MonoBehaviour
         return cell[indices.y][indices.x].IsEmpty();
     }
 
-    public static int Width => 10;
-    public static int Height => 20;
+    public static int Width => 15;
+    public static int Height => 30;
 
-    public static int PieceSize => 4;
+    public static int PieceSize => 9;
 }

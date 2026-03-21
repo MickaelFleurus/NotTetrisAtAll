@@ -44,6 +44,16 @@ namespace Piece
             var offset = new Vector2Int(Mathf.RoundToInt(avgX), Mathf.RoundToInt(avgY));
             return shape.Select(p => p - offset).ToList();
         }
+
+        static List<Vector2Int> DenormalizeToCentroid(List<Vector2Int> shape, Vector2Int targetCentroid)
+        {
+            float avgX = shape.Aggregate(0, (sum, p) => sum + p.x) / (float)shape.Count;
+            float avgY = shape.Aggregate(0, (sum, p) => sum + p.y) / (float)shape.Count;
+            var currentCentroid = new Vector2Int(Mathf.RoundToInt(avgX), Mathf.RoundToInt(avgY));
+            var offset = targetCentroid - currentCentroid;
+            return shape.Select(p => p + offset).ToList();
+        }
+
         public static List<Vector2Int> GetRandomPieceShape(int size)
         {
             List<Vector2Int> shape = new List<Vector2Int>
@@ -71,7 +81,15 @@ namespace Piece
             return NormalizeToCentroid(shape);
         }
 
-        public static Sprite CreatePieceSpriteFile(List<Vector2Int> shape, int tileSize = 16, int border = 1)
+        static List<Vector2Int> DenormalizeByMin(List<Vector2Int> shape, Vector2Int targetMin)
+        {
+            int minX = shape.Min(p => p.x);
+            int minY = shape.Min(p => p.y);
+            var offset = targetMin - new Vector2Int(minX, minY);
+            return shape.Select(p => p + offset).ToList();
+        }
+
+        public static Sprite CreatePieceSpriteFile(List<Vector2Int> shape, PieceColor color)
         {
             if (shape == null || shape.Count == 0) return null;
             string uniqueName = CreateUniqueNameForShape(shape);
@@ -90,31 +108,33 @@ namespace Piece
             int wCells = maxX - minX + 1;
             int hCells = maxY - minY + 1;
 
-            int texW = wCells * tileSize;
-            int texH = hCells * tileSize;
+            int canvasCells = shape.Count;
+            int texW = 64; //canvasCells* tileSize;
+            int texH = 64; //canvasCells* tileSize;
+
+            int tileSize = texW / (canvasCells + 1);
+            int offsetX = (texW - wCells * tileSize) / 2;
+            int offsetY = (texH - hCells * tileSize) / 2;
+
             var tex = new Texture2D(texW, texH, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Point;
 
-            Sprite baseTileSprite = GetSpriteForColor(PieceColor.Grey);
+            Sprite baseTileSprite = GetSpriteForColor(color);
             Rect rect = baseTileSprite.rect;
             Texture2D baseTex = baseTileSprite.texture;
             int baseW = (int)rect.width;
             int baseH = (int)rect.height;
-            Color[] basePixels = baseTex.GetPixels((int)rect.x, (int)rect.y, baseW, baseH);
+            Color[] basePixels = baseTex.GetPixels(0, 0, baseW, baseH);
 
             Color[] outPixels = new Color[texW * texH];
             Color clear = new Color(0, 0, 0, 0);
             for (int i = 0; i < outPixels.Length; i++) outPixels[i] = clear;
+            var zeroedShape = DenormalizeByMin(shape, Vector2Int.zero);
 
-            Color borderBlend = Color.black;
-
-            for (int pi = 0; pi < shape.Count; ++pi)
+            foreach (Vector2Int piece in zeroedShape)
             {
-                var p = shape[pi];
-                int cellX = p.x - minX;
-                int cellY = p.y - minY;
-                int startX = cellX * tileSize;
-                int startY = cellY * tileSize;
+                int startX = offsetX + piece.x * tileSize;
+                int startY = offsetY + piece.y * tileSize;
 
                 for (int y = 0; y < tileSize; y++)
                 {
@@ -122,15 +142,11 @@ namespace Piece
                     {
                         int px = startX + x;
                         int py = startY + y;
-                        // nearest-neighbour sample from base tile
+
                         int sx = Mathf.Clamp(Mathf.FloorToInt(x * (baseW / (float)tileSize)), 0, baseW - 1);
                         int sy = Mathf.Clamp(Mathf.FloorToInt(y * (baseH / (float)tileSize)), 0, baseH - 1);
-                        Color sample = basePixels[sy * baseW + sx];
 
-                        bool isBorder = border > 0 && (x < border || y < border || x >= tileSize - border || y >= tileSize - border);
-                        Color final = isBorder ? Color.Lerp(sample, borderBlend, 0.35f) : sample;
-
-                        outPixels[py * texW + px] = final;
+                        outPixels[py * texW + px] = basePixels[sy * baseW + sx];
                     }
                 }
             }
@@ -140,7 +156,11 @@ namespace Piece
 
             SaveSpriteToPng(tex, uniqueName);
 
-            var sprite = Sprite.Create(tex, new Rect(0, 0, texW, texH), new Vector2(0.5f, 0.5f), tileSize, 0, SpriteMeshType.FullRect);
+            // Calculate center of the visual content
+            float pivotX = 0.5f;
+            float pivotY = 0.5f;
+
+            var sprite = Sprite.Create(tex, new Rect(0, 0, texW, texH), new Vector2(pivotX, pivotY), tileSize, 0, SpriteMeshType.FullRect);
             return sprite;
         }
 

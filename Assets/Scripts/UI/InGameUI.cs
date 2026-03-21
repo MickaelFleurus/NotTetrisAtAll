@@ -17,9 +17,9 @@ public class InGameUI : MonoBehaviour
     {
         colorKeys = new GradientColorKey[]
         {
-            new GradientColorKey(new Color(0.007f, 0.047f, 0.40f), 0.0f),
-            new GradientColorKey(new Color(0.0f, 0.2f, 1.0f), 0.5f),
-            new GradientColorKey(new Color(0.56f, 0.325f, 0.929f), 1.0f)
+            new GradientColorKey(new Color(0.02f, 0.05f, 0.20f), 0.0f),
+            new GradientColorKey(new Color(0.07f, 0.16f, 0.40f), 0.5f),
+            new GradientColorKey(new Color(0.02f, 0.05f, 0.20f), 1.0f)
         },
         alphaKeys = new GradientAlphaKey[]
         {
@@ -53,13 +53,22 @@ public class InGameUI : MonoBehaviour
         Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
         tex.wrapMode = TextureWrapMode.Clamp;
 
+        Vector2 center = new Vector2(width / 2f, height / 2f);
+        float maxDist = Mathf.Max(width, height) / 2f;
+
         for (int y = 0; y < height; y++)
         {
-            float t = y / (float)(height - 1);
-            Color color = gradient.Evaluate(t);
-
             for (int x = 0; x < width; x++)
+            {
+                Vector2 pos = new Vector2(x, y);
+                float dist = Vector2.Distance(pos, center);
+                float vignette = 1f - Mathf.Clamp01(dist / maxDist);
+                vignette = Mathf.Pow(vignette, 0.5f); // smooth falloff curve
+
+                Color color = gradient.Evaluate(0.5f);
+                color = Color.Lerp(Color.black, color, vignette);  // ← blend to black
                 tex.SetPixel(x, y, color);
+            }
         }
 
         tex.Apply();
