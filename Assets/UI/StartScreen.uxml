@@ -1,0 +1,18 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
+    <ui:VisualElement name="Root" style="flex-grow: 1; position: absolute; top: 0; left: 0; bottom: 0; right: 0;">
+        <ui:Label text="Too Many Cubes" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="Title" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; top: 20%; font-size: 60px;"/>
+        <ui:VisualElement name="ButtonsContainer" style="flex-grow: initial; width: 60%; height: 50%; left: 20%; top: 30%;">
+            <ui:Button text="Start" name="StartButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
+            <ui:VisualElement name="Spacer" class="Spacer"/>
+            <ui:Button text="Settings" name="SettingsButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
+            <ui:VisualElement name="Spacer" class="Spacer"/>
+            <ui:Button text="Credits" name="CreditsButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
+            <ui:VisualElement name="Spacer" class="Spacer"/>
+            <ui:Button text="Exit" name="ExitButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="Credits" class="title_screen_panel" style="display: none; visibility: visible;">
+        <ui:ScrollView name="CreditsView" style="width: 100%; height: 100%; visibility: visible; display: flex;"/>
+    </ui:VisualElement>
+</ui:UXML>

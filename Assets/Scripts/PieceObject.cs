@@ -43,8 +43,6 @@ public class PieceObject : MonoBehaviour
             sr.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             parts.Add(go);
             go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
-
-            Debug.Log($"Part {i}: sprite={sprite.name}, sr.color={sr.color}");
         }
         pieceCounter++;
         return Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices, color);

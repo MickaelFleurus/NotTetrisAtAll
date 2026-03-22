@@ -5,11 +5,11 @@ public class CameraControl : MonoBehaviour
     [SerializeField] Camera mainCamera;
     [SerializeField] RenderTexture renderTexture;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         float aspectRatio = (float)GridHandler.Width / GridHandler.Height;
-        float verticalSize = GridHandler.Height / 2.0f; // add some padding
+        float verticalSize = GridHandler.Height / 2.0f;
         mainCamera.orthographicSize = verticalSize;
         mainCamera.aspect = aspectRatio;
     }

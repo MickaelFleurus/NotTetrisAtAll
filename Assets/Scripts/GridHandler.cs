@@ -94,7 +94,6 @@ public class GridHandler : MonoBehaviour
             nextPieces[0] = nextPieces[1];
             nextPieces[1] = nextPieces[2];
             nextPieces[2] = CreateNewPiece();
-            Debug.Log($"Spawn new piece with color {currentPiece.color} ");
             UpdateDestinationIndexes();
         }
         else
@@ -197,9 +196,7 @@ public class GridHandler : MonoBehaviour
 
     private void PlaceCurrentPiece()
     {
-        Debug.Log($"Place piece with color {currentPiece.color}");
         Sprite pieceSprite = Piece.PieceHelper.GetSpriteForColor(currentPiece.color);
-        Debug.Log($"Got sprite: {pieceSprite.name} from texture {pieceSprite.texture.name}");
 
         foreach (var index in currentPiece.GetIndexes())
         {
