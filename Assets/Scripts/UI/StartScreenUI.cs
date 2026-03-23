@@ -23,13 +23,16 @@ public class StartScreenUI : MonoBehaviour
     public VisualElement LastSelectedElement { get; set; }
     private SettingsPanel mSettingsPanel = null;
 
+    [SerializeField] private AudioClip mainMenuMusic;
+    [SerializeField] private AudioClip navigationSFX;
+    [SerializeField] private AudioClip selectSFX;
+
     private void Awake()
     {
         var rootVisualElement = uiDocument.rootVisualElement;
 
         rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
         rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
-        rootVisualElement.RegisterCallback<NavigationSubmitEvent>(OnSubmit);
         mCreditsView = rootVisualElement.Q<ScrollView>("CreditsView");
 
         mCreditsParent = rootVisualElement.Q<VisualElement>("Credits");
@@ -48,6 +51,7 @@ public class StartScreenUI : MonoBehaviour
         rootVisualElement.Q<Button>("CreditsButton").clicked += ShowCredits;
         rootVisualElement.Q<Button>("SettingsBackButton").clicked += () =>
         {
+            AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
             mSettingsParent.style.display = DisplayStyle.None;
             mMainMenuButtons.style.display = DisplayStyle.Flex;
             mMainMenuFocusedButton.Focus();
@@ -69,17 +73,25 @@ public class StartScreenUI : MonoBehaviour
 
     private void Start()
     {
-        //SoundManager.Instance.StartMainMenuMusic();
+        AudioMixer.Instance.PlayMusic("mainmenu", mainMenuMusic);
     }
 
     private void StartGame()
     {
-        SceneManager.LoadScene("GameScene");
+        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        Invoke("LoadGameScene", 0.5f);
         //GameEvents.InvokeInGame();
+    }
+
+    private void LoadGameScene()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 
     private void ShowCredits()
     {
+        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+
         // mMainMenuButtons.style.display = DisplayStyle.None;
         // mOptionsButtons.style.display = DisplayStyle.None;
         // mCreditsButtons.style.display = DisplayStyle.Flex;
@@ -91,6 +103,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void ShowOptions()
     {
+        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
         mMainMenuButtons.style.display = DisplayStyle.None;
         mSettingsPanel.Show();
     }
@@ -105,6 +118,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void CloseGame()
     {
+        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBGL
@@ -156,15 +170,7 @@ public class StartScreenUI : MonoBehaviour
 
     void OnMove(NavigationMoveEvent evt)
     {
-
-    }
-
-    void OnSubmit(NavigationSubmitEvent evt)
-    {
-        if (evt.target is Button button)
-        {
-            //button.clicked?.Invoke();
-        }
+        AudioMixer.Instance.PlaySFX(navigationSFX, GameSettings.Instance.SoundEffectsVolume);
     }
 
     void OnCancel(NavigationCancelEvent evt)

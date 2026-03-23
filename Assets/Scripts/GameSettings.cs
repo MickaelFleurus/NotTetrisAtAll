@@ -102,12 +102,10 @@ public class GameSettings : ScriptableObject
         // WebGL: use PlayerPrefs (LocalStorage) - File I/O can cause "Permissions check failed" in iframes
         PlayerPrefs.SetString(WebGLPrefsKey, json);
         PlayerPrefs.Save();
-        Debug.Log("Settings saved (WebGL PlayerPrefs)");
 #else
         // Standalone/Editor: save to JSON file
         string savePath = Path.Combine(Application.persistentDataPath, "GameSettings.json");
         File.WriteAllText(savePath, json);
-        Debug.Log($"Settings saved to {savePath}");
 #endif
     }
 
@@ -119,7 +117,6 @@ public class GameSettings : ScriptableObject
         {
             string json = PlayerPrefs.GetString(WebGLPrefsKey);
             JsonUtility.FromJsonOverwrite(json, this);
-            Debug.Log("Settings loaded (WebGL PlayerPrefs)");
         }
 #else
         // Standalone/Editor: load from JSON file
@@ -128,7 +125,6 @@ public class GameSettings : ScriptableObject
         {
             string json = File.ReadAllText(loadPath);
             JsonUtility.FromJsonOverwrite(json, this);
-            Debug.Log($"Settings loaded from {loadPath}");
         }
 #endif
     }
