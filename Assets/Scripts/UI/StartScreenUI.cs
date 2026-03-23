@@ -10,8 +10,6 @@ public class StartScreenUI : MonoBehaviour
     [SerializeField] private UIDocument uiDocument;
     private ScrollView mCreditsView;
     private VisualElement mMainMenuButtons;
-    private VisualElement mCreditsButtons;
-    private VisualElement mOptionsButtons;
 
     private VisualElement mCreditsParent;
     private VisualElement mSettingsParent;
@@ -19,7 +17,6 @@ public class StartScreenUI : MonoBehaviour
     private Button mMainMenuFocusedButton;
     private Button mCreditsFocusedButton;
 
-    public List<List<VisualElement>> Navigation { get; set; }
     public VisualElement LastSelectedElement { get; set; }
     private SettingsPanel mSettingsPanel = null;
 
@@ -38,37 +35,20 @@ public class StartScreenUI : MonoBehaviour
         mCreditsParent = rootVisualElement.Q<VisualElement>("Credits");
         mSettingsParent = rootVisualElement.Q<VisualElement>("SettingsPanel");
         mMainMenuButtons = rootVisualElement.Q<VisualElement>("MainMenuButtons");
-        mCreditsButtons = rootVisualElement.Q<VisualElement>("CreditsButtons");
-        mOptionsButtons = rootVisualElement.Q<VisualElement>("OptionsButtons");
 
         mMainMenuFocusedButton = rootVisualElement.Q<Button>("StartButton");
-        //mCreditsFocusedButton = rootVisualElement.Q<Button>("BackCredits");
+        mCreditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
 
         mMainMenuFocusedButton.Focus();
         mMainMenuFocusedButton.clicked += StartGame;
         rootVisualElement.Q<Button>("ExitButton").clicked += CloseGame;
         rootVisualElement.Q<Button>("SettingsButton").clicked += ShowOptions;
         rootVisualElement.Q<Button>("CreditsButton").clicked += ShowCredits;
-        rootVisualElement.Q<Button>("SettingsBackButton").clicked += () =>
-        {
-            AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
-            mSettingsParent.style.display = DisplayStyle.None;
-            mMainMenuButtons.style.display = DisplayStyle.Flex;
-            mMainMenuFocusedButton.Focus();
-        };
-
+        rootVisualElement.Q<Button>("SettingsBackButton").clicked += BackToTitle;
+        mCreditsFocusedButton.clicked += BackToTitle;
         mSettingsPanel = new SettingsPanel(mSettingsParent);
 
-        //LoadCredits();
-
-        Navigation = new List<List<VisualElement>>
-        {
-            new List<VisualElement> {
-            rootVisualElement.Q<Button>("StartButton"),
-            rootVisualElement.Q<Button>("SettingsButton"),
-            rootVisualElement.Q<Button>("CreditsButton"),
-            rootVisualElement.Q<Button>("ExitButton") }
-        };
+        LoadCredits();
     }
 
     private void Start()
@@ -92,13 +72,10 @@ public class StartScreenUI : MonoBehaviour
     {
         AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
 
-        // mMainMenuButtons.style.display = DisplayStyle.None;
-        // mOptionsButtons.style.display = DisplayStyle.None;
-        // mCreditsButtons.style.display = DisplayStyle.Flex;
-
-        // mOptionsParent.style.display = DisplayStyle.None;
-        // mCreditsParent.style.display = DisplayStyle.Flex;
-        // mCreditsFocusedButton.Focus();
+        mMainMenuButtons.style.display = DisplayStyle.None;
+        mSettingsParent.style.display = DisplayStyle.None;
+        mCreditsParent.style.display = DisplayStyle.Flex;
+        mCreditsFocusedButton.Focus();
     }
 
     private void ShowOptions()
@@ -110,9 +87,10 @@ public class StartScreenUI : MonoBehaviour
 
     private void BackToTitle()
     {
+        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
         mMainMenuButtons.style.display = DisplayStyle.Flex;
         mSettingsParent.style.display = DisplayStyle.None;
-        //mCreditsButtons.style.display = DisplayStyle.None;
+        mCreditsParent.style.display = DisplayStyle.None;
         mMainMenuFocusedButton.Focus();
     }
 
@@ -151,7 +129,7 @@ public class StartScreenUI : MonoBehaviour
                 else if (line.StartsWith("@"))
                 {
                     Label sectionLabel = new Label(line.Substring(2));
-                    sectionLabel.AddToClassList("credit_section");
+                    sectionLabel.AddToClassList("credit_subtitle");
                     mCreditsView.Add(sectionLabel);
                 }
                 else
