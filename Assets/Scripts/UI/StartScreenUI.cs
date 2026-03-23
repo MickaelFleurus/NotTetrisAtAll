@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
+using UnityEditor.SettingsManagement;
 
 public class StartScreenUI : MonoBehaviour
 {
@@ -13,50 +14,56 @@ public class StartScreenUI : MonoBehaviour
     private VisualElement mOptionsButtons;
 
     private VisualElement mCreditsParent;
-    private VisualElement mOptionsParent;
+    private VisualElement mSettingsParent;
 
     private Button mMainMenuFocusedButton;
     private Button mCreditsFocusedButton;
 
     public List<List<VisualElement>> Navigation { get; set; }
     public VisualElement LastSelectedElement { get; set; }
+    private SettingsPanel mSettingsPanel = null;
 
     private void Awake()
     {
         var rootVisualElement = uiDocument.rootVisualElement;
 
-        // Register for navigation events
         rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
         rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
         rootVisualElement.RegisterCallback<NavigationSubmitEvent>(OnSubmit);
-        // mCreditsView = rootVisualElement.Q<ScrollView>("CreditsView");
+        mCreditsView = rootVisualElement.Q<ScrollView>("CreditsView");
 
         mCreditsParent = rootVisualElement.Q<VisualElement>("Credits");
-        mOptionsParent = rootVisualElement.Q<VisualElement>("Options");
+        mSettingsParent = rootVisualElement.Q<VisualElement>("SettingsPanel");
         mMainMenuButtons = rootVisualElement.Q<VisualElement>("MainMenuButtons");
         mCreditsButtons = rootVisualElement.Q<VisualElement>("CreditsButtons");
         mOptionsButtons = rootVisualElement.Q<VisualElement>("OptionsButtons");
 
-        mMainMenuFocusedButton = rootVisualElement.Q<Button>("Start");
-        mCreditsFocusedButton = rootVisualElement.Q<Button>("BackCredits");
+        mMainMenuFocusedButton = rootVisualElement.Q<Button>("StartButton");
+        //mCreditsFocusedButton = rootVisualElement.Q<Button>("BackCredits");
 
         mMainMenuFocusedButton.Focus();
         mMainMenuFocusedButton.clicked += StartGame;
-        rootVisualElement.Q<Button>("Exit").clicked += CloseGame;
-        rootVisualElement.Q<Button>("OptionsButton").clicked += ShowOptions;
+        rootVisualElement.Q<Button>("ExitButton").clicked += CloseGame;
+        rootVisualElement.Q<Button>("SettingsButton").clicked += ShowOptions;
         rootVisualElement.Q<Button>("CreditsButton").clicked += ShowCredits;
-        mCreditsFocusedButton.clicked += BackToTitle;
-        rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
+        rootVisualElement.Q<Button>("SettingsBackButton").clicked += () =>
+        {
+            mSettingsParent.style.display = DisplayStyle.None;
+            mMainMenuButtons.style.display = DisplayStyle.Flex;
+            mMainMenuFocusedButton.Focus();
+        };
 
-        LoadCredits();
+        mSettingsPanel = new SettingsPanel(mSettingsParent);
+
+        //LoadCredits();
 
         Navigation = new List<List<VisualElement>>
         {
             new List<VisualElement> {
-            rootVisualElement.Q<Button>("Start"),
-            rootVisualElement.Q<Button>("OptionsButton"),
+            rootVisualElement.Q<Button>("StartButton"),
+            rootVisualElement.Q<Button>("SettingsButton"),
             rootVisualElement.Q<Button>("CreditsButton"),
-            rootVisualElement.Q<Button>("Exit") }
+            rootVisualElement.Q<Button>("ExitButton") }
         };
     }
 
@@ -67,40 +74,32 @@ public class StartScreenUI : MonoBehaviour
 
     private void StartGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("GameScene");
         //GameEvents.InvokeInGame();
     }
 
     private void ShowCredits()
     {
-        mMainMenuButtons.style.display = DisplayStyle.None;
-        mOptionsButtons.style.display = DisplayStyle.None;
-        mCreditsButtons.style.display = DisplayStyle.Flex;
+        // mMainMenuButtons.style.display = DisplayStyle.None;
+        // mOptionsButtons.style.display = DisplayStyle.None;
+        // mCreditsButtons.style.display = DisplayStyle.Flex;
 
-        mOptionsParent.style.display = DisplayStyle.None;
-        mCreditsParent.style.display = DisplayStyle.Flex;
-        mCreditsFocusedButton.Focus();
+        // mOptionsParent.style.display = DisplayStyle.None;
+        // mCreditsParent.style.display = DisplayStyle.Flex;
+        // mCreditsFocusedButton.Focus();
     }
 
     private void ShowOptions()
     {
         mMainMenuButtons.style.display = DisplayStyle.None;
-        mOptionsButtons.style.display = DisplayStyle.Flex;
-        mCreditsButtons.style.display = DisplayStyle.None;
-
-        mOptionsParent.style.display = DisplayStyle.Flex;
-        mCreditsParent.style.display = DisplayStyle.None;
-        // mOptionPanel.OnShow();
+        mSettingsPanel.Show();
     }
 
     private void BackToTitle()
     {
         mMainMenuButtons.style.display = DisplayStyle.Flex;
-        mOptionsButtons.style.display = DisplayStyle.None;
-        mCreditsButtons.style.display = DisplayStyle.None;
-
-        mOptionsParent.style.display = DisplayStyle.None;
-        mCreditsParent.style.display = DisplayStyle.None;
+        mSettingsParent.style.display = DisplayStyle.None;
+        //mCreditsButtons.style.display = DisplayStyle.None;
         mMainMenuFocusedButton.Focus();
     }
 
@@ -170,7 +169,7 @@ public class StartScreenUI : MonoBehaviour
 
     void OnCancel(NavigationCancelEvent evt)
     {
-        if (mOptionsParent.style.display == DisplayStyle.Flex)
+        if (mSettingsParent.style.display == DisplayStyle.Flex)
         {
             BackToTitle();
         }

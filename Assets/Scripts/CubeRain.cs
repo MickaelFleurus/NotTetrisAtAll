@@ -1,5 +1,7 @@
 using UnityEngine;
 using Piece;
+using System.Collections;
+using System.Collections.Generic;
 
 public class CubeRain : MonoBehaviour
 {
@@ -16,11 +18,17 @@ public class CubeRain : MonoBehaviour
     private float screenRight;
     private float screenTop;
     private float screenBottom;
+    private const int MaxActiveCubes = 200; // Limit the number of active cubes to prevent performance issues
+    private Queue<FallingCube> activeCubes = new Queue<FallingCube>(); // Pool of cubes to reuse
 
     void Start()
     {
         mainCamera = Camera.main;
         UpdateCameraBounds();
+        for (int i = 0; i < MaxActiveCubes; i++)
+        {
+            activeCubes.Enqueue(SpawnCube()); // Pre-instantiate cubes and add to the pool
+        }
     }
 
     void Update()
@@ -29,10 +37,25 @@ public class CubeRain : MonoBehaviour
 
         if (spawnTimer <= 0f)
         {
-            SpawnCube();
+            if (activeCubes.Count > 0)
+            {
+                LaunchCube();
+            }
             spawnTimer = spawnRate;
         }
 
+    }
+
+    private void LaunchCube()
+    {
+        FallingCube cube = activeCubes.Dequeue();
+        // Random horizontal position with edge margins for better spread
+        float spawnLeft = screenLeft - edgeMargin;
+        float spawnRight = screenRight + edgeMargin;
+        float randomX = Random.Range(spawnLeft, spawnRight);
+        Vector3 spawnPos = new Vector3(randomX, screenTop, 0f);
+        float randomSpeed = Random.Range(minFallSpeed, maxFallSpeed);
+        cube.Launch(spawnPos, randomSpeed);
     }
 
     private void UpdateCameraBounds()
@@ -49,7 +72,7 @@ public class CubeRain : MonoBehaviour
         screenBottom = cameraPos.y - cameraHeight / 2f;
     }
 
-    private void SpawnCube()
+    private FallingCube SpawnCube()
     {
         // Create a new GameObject for the cube
         GameObject cubeGO = new GameObject("FallingCube");
@@ -60,59 +83,64 @@ public class CubeRain : MonoBehaviour
 
         // Add SpriteRenderer
         SpriteRenderer sr = cubeGO.AddComponent<SpriteRenderer>();
-
-        // Get random color and apply sprite
-        PieceColor randomColor = PieceHelper.GetRandomColor();
-        Sprite coloredSprite = PieceHelper.GetSpriteForColor(randomColor);
-        sr.sprite = coloredSprite;
         sr.color = Color.white;
         sr.material = new Material(Shader.Find("Sprites/Default"));
 
         // Set scale based on random size
         cubeGO.transform.localScale = new Vector3(randomSize, randomSize, 1f);
 
-        // Add Rigidbody2D for physics
-        Rigidbody2D rb = cubeGO.AddComponent<Rigidbody2D>();
-        rb.gravityScale = 0f; // We'll handle gravity manually
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-
-        // Add BoxCollider2D
-        BoxCollider2D collider = cubeGO.AddComponent<BoxCollider2D>();
-        collider.size = new Vector2(randomSize, randomSize);
-
         // Add the falling behavior script
         FallingCube fallingCube = cubeGO.AddComponent<FallingCube>();
-        fallingCube.Initialize(Random.Range(minFallSpeed, maxFallSpeed), screenBottom);
+        fallingCube.Initialize(screenBottom, sr, this);
+        return fallingCube;
+    }
 
-        // Random horizontal position with edge margins for better spread
-        float spawnLeft = screenLeft - edgeMargin;
-        float spawnRight = screenRight + edgeMargin;
-        float randomX = Random.Range(spawnLeft, spawnRight);
-        cubeGO.transform.position = new Vector3(randomX, screenTop, 0f);
+    public void QueueCube(FallingCube cube)
+    {
+        activeCubes.Enqueue(cube);
     }
 }
 
 // Helper script to handle individual cube falling
 public class FallingCube : MonoBehaviour
 {
-    private float fallSpeed;
     private float screenBottom;
+    private SpriteRenderer sr;
+    private CubeRain parent;
 
-    public void Initialize(float speed, float bottom)
+    private bool isActive = false;
+    private float fallSpeed;
+
+    public void Initialize(float bottom, SpriteRenderer sr, CubeRain cubeRain)
     {
-        fallSpeed = speed;
         screenBottom = bottom;
+        this.sr = sr;
+        parent = cubeRain;
+    }
+
+    public void Launch(Vector3 position, float speed)
+    {
+        PieceColor randomColor = PieceHelper.GetRandomColor();
+        Sprite coloredSprite = PieceHelper.GetSpriteForColor(randomColor);
+        sr.sprite = coloredSprite;
+
+        transform.position = position;
+        fallSpeed = speed;
+        isActive = true;
     }
 
     void Update()
     {
+        if (!isActive) return;
+
         // Move the cube downward
         transform.Translate(Vector3.down * fallSpeed * Time.deltaTime);
 
         // Destroy when off screen
         if (transform.position.y < screenBottom - 1f)
         {
-            Destroy(gameObject);
+            isActive = false;
+            parent.QueueCube(this); // Return the cube to the pool instead of destroying
         }
     }
 }

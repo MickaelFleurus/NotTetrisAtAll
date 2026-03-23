@@ -38,27 +38,13 @@ VisualElement {
 }
 
 .UIText {
-    color: rgba(255, 255, 255, 0.53);
-    font-size: 95%;
+    color: rgb(255, 255, 255);
+    font-size: 247%;
     -unity-text-align: middle-center;
 }
 
-.pieceTex {
-}
 
 .StartScreenButton {
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-left-color: rgb(255, 255, 255);
-    border-right-color: rgb(255, 255, 255);
-    border-top-color: rgb(255, 255, 255);
-    border-bottom-color: rgb(255, 255, 255);
     width: 40%;
     align-self: center;
     padding-top: 2px;
@@ -66,7 +52,10 @@ VisualElement {
     padding-bottom: 2px;
     padding-left: 3px;
     -unity-text-align: middle-center;
-    font-size: 50px;
+    font-size: 70px;
+    background-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 1px;
 }
 
 .Spacer {
@@ -75,4 +64,47 @@ VisualElement {
     padding-right: 3px;
     padding-bottom: 2px;
     padding-left: 3px;
+}
+
+.StartScreenButton:active {
+    width: 40%;
+    align-self: center;
+    padding-top: 2px;
+    padding-right: 3px;
+    padding-bottom: 2px;
+    padding-left: 3px;
+    -unity-text-align: middle-center;
+    font-size: 72px;
+    background-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 211, 0);
+    -unity-text-outline-width: 1px;
+}
+
+.StartScreenButton:focus {
+    width: 40%;
+    align-self: center;
+    padding-top: 2px;
+    padding-right: 3px;
+    padding-bottom: 2px;
+    padding-left: 3px;
+    -unity-text-align: middle-center;
+    font-size: 72px;
+    background-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 211, 0);
+    -unity-text-outline-width: 1px;
+}
+
+.settingsSliders {
+    font-size: 35px;
+    color: rgb(255, 255, 255);
+    margin-bottom: 22px;
+}
+
+.settingsSliders:focus > Label {
+    font-size: 36px;
+    color: rgb(255, 211, 0);
+}
+
+.unity-slider__label {
+    width: 40%;
 }

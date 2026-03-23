@@ -1,0 +1,13 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
+    <ui:VisualElement name="Settings" style="flex-grow: 1; position: relative; top: auto; align-self: auto; width: auto; height: auto; display: flex; left: auto; justify-content: space-evenly; align-content: auto;">
+        <ui:Label text="Audio" name="AudioCategoryLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" style="font-size: 50px; color: rgb(255, 255, 255); height: auto;">
+            <ui:VisualElement name="AudioCategory" style="flex-grow: 0; top: 100px; left: auto; align-self: stretch; justify-content: space-evenly; padding-left: 50px;">
+                <ui:Slider label="Master Volume" value="100" high-value="100" name="MasterAudio" class="settingsSliders" style="margin-top: 0; margin-left: 0;"/>
+                <ui:Slider label="Music Volume" value="100" high-value="100" name="MusicVolume" class="settingsSliders" style="height: 56px;"/>
+                <ui:Slider label="SFX Volume" value="100" high-value="100" name="SFXVolume" class="settingsSliders"/>
+            </ui:VisualElement>
+        </ui:Label>
+    </ui:VisualElement>
+    <ui:Button text="Back" name="SettingsBackButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton" style="top: 100px; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
+</ui:UXML>
