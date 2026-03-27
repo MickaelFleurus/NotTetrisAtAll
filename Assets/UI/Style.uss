@@ -55,6 +55,10 @@ VisualElement {
     background-color: rgba(0, 0, 0, 0);
     color: rgb(255, 255, 255);
     -unity-text-outline-width: 1px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
 }
 
 .Spacer {
@@ -128,9 +132,9 @@ VisualElement {
 }
 
 .EndScreenStats {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgb(255, 255, 255);
     -unity-text-align: upper-center;
-    font-size: 30px;
+    font-size: 43px;
 }
 
 .GameOverShown {
@@ -147,4 +151,13 @@ VisualElement {
     font-size: 30px;
     transform-origin: bottom;
     translate: 0 100%;
+    opacity: 0;
+}
+
+.tiltLeft {
+    rotate: 7deg;
+}
+
+.tiltRight {
+    rotate: 7deg;
 }

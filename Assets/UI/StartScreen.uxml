@@ -1,9 +1,10 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="SettingsPanel" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
-    <ui:Label text="Too Many&#10;Cubes" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="Title" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; top: auto; font-size: 135px; transition-property: all, color; transition-duration: 0s, 0s; transition-timing-function: ease, ease; transition-delay: 0s, 0s; margin-top: 20%; margin-bottom: 40%;"/>
+    <ui:VisualElement focusable="true" style="flex-grow: 1; position: absolute; width: 100%; height: 100%;"/>
+    <AnimatedLabel text="Too Many&#10;Cubes" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="Title" min-rotation="-11" max-rotation="11" rotation-duration="1" rotation-mode="Oscillate" min-scale="0.9" max-scale="1.1" scale-duration="0.8" scale-mode="Oscillate" class="tiltLeft" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; top: auto; font-size: 135px; margin-top: 20%; margin-bottom: 40%; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&amp;guid=64b567f78eb144a20b4d5b5a10fc7395&amp;type=3#Super Starfish&quot;);"/>
     <ui:VisualElement name="ActionZone" style="flex-grow: 1;">
-        <ui:VisualElement name="MainMenuButtons" style="flex-grow: initial; width: 60%; height: 50%; left: auto; top: auto; justify-content: center; position: relative; display: none; align-self: center;">
+        <ui:VisualElement name="MainMenuButtons" style="flex-grow: initial; width: 60%; height: 50%; left: auto; top: auto; justify-content: center; position: relative; display: flex; align-self: center;">
             <ui:Button text="Start" name="StartButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
             <ui:VisualElement name="Spacer" class="Spacer"/>
             <ui:Button text="Settings" name="SettingsButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
@@ -12,7 +13,7 @@
             <ui:VisualElement name="Spacer" class="Spacer"/>
             <ui:Button text="Exit" name="ExitButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
         </ui:VisualElement>
-        <ui:VisualElement name="Credits" class="title_screen_panel" style="display: flex; visibility: visible;">
+        <ui:VisualElement name="Credits" class="title_screen_panel" style="display: none; visibility: visible;">
             <ui:ScrollView name="CreditsView" style="width: 100%; height: 100%; visibility: visible; display: flex; margin-bottom: 80px; background-color: rgba(255, 255, 255, 0.1); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;"/>
             <ui:Button text="Back" name="CreditsBackButton" class="StartScreenButton"/>
         </ui:VisualElement>

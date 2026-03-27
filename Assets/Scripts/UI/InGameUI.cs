@@ -12,6 +12,14 @@ public class InGameUI : MonoBehaviour
     private Image gameRender;
     private Image heldPiece;
     private List<Image> nextPieces = new List<Image>(3);
+    // Game Over Screen
+
+    private VisualElement gameOverScreen;
+    private Button restartButton;
+    private Label finalScoreLabel;
+    private Label linesCompletedLabel;
+    private Label timeSurvivedLabel;
+    private Label levelReachedLabel;
 
     Gradient myGradient = new Gradient
     {
@@ -41,11 +49,27 @@ public class InGameUI : MonoBehaviour
         nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece3Image"));
 
         heldPiece = uiDocument.rootVisualElement.Q<Image>("HeldPieceImage");
+        gameOverScreen = uiDocument.rootVisualElement.Q<VisualElement>("GameOverScreen");
+        finalScoreLabel = uiDocument.rootVisualElement.Q<Label>("FinalScore");
+        linesCompletedLabel = uiDocument.rootVisualElement.Q<Label>("LinesCompleted");
+        timeSurvivedLabel = uiDocument.rootVisualElement.Q<Label>("TimeSurvived");
+        levelReachedLabel = uiDocument.rootVisualElement.Q<Label>("LevelReached");
 
         var texture = GradientToTexture(myGradient);
         element.style.backgroundImage = new StyleBackground(texture);
 
         gameRender.style.aspectRatio = GridHandler.Width / (float)GridHandler.Height;
+
+        restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
+
+        restartButton.clicked += () =>
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        };
+        uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton").clicked += () =>
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        };
     }
 
     private Texture2D GradientToTexture(Gradient gradient, int width = 16, int height = 256)
@@ -105,6 +129,28 @@ public class InGameUI : MonoBehaviour
         }
         nextPieces[2].sprite = sprite;
         return popedSprite;
+    }
+
+    public void ShowGameOver()
+    {
+        gameOverScreen.RemoveFromClassList("GameOverHidden");
+        levelLabel.style.display = DisplayStyle.None;
+        lineCompletedLabel.style.display = DisplayStyle.None;
+        scoreLabel.style.display = DisplayStyle.None;
+
+        UpdateLabel(finalScoreLabel, scoreLabel.text);
+        UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
+        UpdateLabel(timeSurvivedLabel, lineCompletedLabel.text);
+        UpdateLabel(levelReachedLabel, levelLabel.text);
+
+        restartButton.Focus();
+    }
+
+    private void UpdateLabel(Label label, string value)
+    {
+        var text = label.text;
+        text = text.Replace("{x}", value.ToString());
+        label.text = text;
     }
 
 }

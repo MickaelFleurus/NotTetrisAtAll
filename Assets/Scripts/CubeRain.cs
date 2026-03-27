@@ -18,7 +18,7 @@ public class CubeRain : MonoBehaviour
     private float screenRight;
     private float screenTop;
     private float screenBottom;
-    private const int MaxActiveCubes = 200; // Limit the number of active cubes to prevent performance issues
+    private const int MaxActiveCubes = 50; // Limit the number of active cubes to prevent performance issues
     private Queue<FallingCube> activeCubes = new Queue<FallingCube>(); // Pool of cubes to reuse
 
     void Start()

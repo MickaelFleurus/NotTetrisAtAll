@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 
 public class AudioMixer : MonoBehaviour
 {
@@ -59,6 +58,7 @@ public class AudioMixer : MonoBehaviour
         {
             musicAudioSource.clip = clip;
             musicAudioSource.Play();
+            musicAudioSource.loop = true;
         }
 
         musicClips[musicName] = clip;
@@ -80,9 +80,6 @@ public class AudioMixer : MonoBehaviour
         Destroy(sfxGO, clip.length);
     }
 
-    /// <summary>
-    /// Stop music with optional fade out.
-    /// </summary>
     public void StopMusic(float fadeDuration = 0.5f)
     {
         if (musicAudioSource == null || !musicAudioSource.isPlaying) return;

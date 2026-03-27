@@ -77,7 +77,7 @@ public class GridHandler : MonoBehaviour
 
     void Start()
     {
-        this.transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
+        transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
 
         nextPieces[0] = CreateNewPiece();
         nextPieces[1] = CreateNewPiece();
@@ -110,7 +110,9 @@ public class GridHandler : MonoBehaviour
                     else
                     {
                         this.enabled = false;
-                        Debug.Log("Game Over!");
+                        inGameUI.ShowGameOver();
+                        pauseGameLoop = true;
+                        return;
                     }
                 }
                 if (stuckCount >= 3)
@@ -289,8 +291,8 @@ public class GridHandler : MonoBehaviour
         return cell[indices.y][indices.x].IsEmpty();
     }
 
-    public static int Width => 15;
-    public static int Height => 30;
+    public static int Width => 10;
+    public static int Height => 20;
 
-    public static int PieceSize => 9;
+    public static int PieceSize => 4;
 }

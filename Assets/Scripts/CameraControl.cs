@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class CameraControl : MonoBehaviour
@@ -12,6 +13,9 @@ public class CameraControl : MonoBehaviour
         float verticalSize = GridHandler.Height / 2.0f;
         mainCamera.orthographicSize = verticalSize;
         mainCamera.aspect = aspectRatio;
+        mainCamera.transform.position = new Vector3(0.0f, 0.0f, -1.0f);
+        // mainCamera.targetTexture = renderTexture;
+
     }
 
     // Update is called once per frame

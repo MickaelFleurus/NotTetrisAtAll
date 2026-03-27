@@ -1,13 +1,13 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using UnityEditor.SettingsManagement;
+using UnityEngine.EventSystems;
 
 public class StartScreenUI : MonoBehaviour
 {
 
     [SerializeField] private UIDocument uiDocument;
+    private AnimatedLabel mTitleAnimation;
     private ScrollView mCreditsView;
     private VisualElement mMainMenuButtons;
 
@@ -27,6 +27,7 @@ public class StartScreenUI : MonoBehaviour
     private void Awake()
     {
         var rootVisualElement = uiDocument.rootVisualElement;
+        mTitleAnimation = rootVisualElement.Q<AnimatedLabel>("Title");
 
         rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
         rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
@@ -54,6 +55,12 @@ public class StartScreenUI : MonoBehaviour
     private void Start()
     {
         AudioMixer.Instance.PlayMusic("mainmenu", mainMenuMusic);
+    }
+
+    private void Update()
+    {
+        if (mTitleAnimation != null)
+            mTitleAnimation.Update(Time.deltaTime);
     }
 
     private void StartGame()
