@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class StartScreenUI : MonoBehaviour
 {
 
     [SerializeField] private UIDocument uiDocument;
-    private AnimatedLabel mTitleAnimation;
+    private List<IAnimatedElement> AnimatedElements = new List<IAnimatedElement>();
     private ScrollView mCreditsView;
     private VisualElement mMainMenuButtons;
 
@@ -19,15 +19,48 @@ public class StartScreenUI : MonoBehaviour
 
     public VisualElement LastSelectedElement { get; set; }
     private SettingsPanel mSettingsPanel = null;
+    private GameModePanel mGameModePanel = null;
 
     [SerializeField] private AudioClip mainMenuMusic;
     [SerializeField] private AudioClip navigationSFX;
     [SerializeField] private AudioClip selectSFX;
 
+    [SerializeField] private UIAnimationData buttonsAnimationData;
+    [SerializeField] private UIAnimationData slidersAnimationData;
+    [SerializeField] private UIAnimationData titleAnimationData;
+
+    private void SearchInChildren<T>(VisualElement parent, List<T> container) where T : class
+    {
+        if (parent is T)
+        {
+            container.Add(parent as T);
+        }
+        foreach (var element in parent.Children())
+        {
+            SearchInChildren<T>(element, container);
+        }
+    }
+
     private void Awake()
     {
         var rootVisualElement = uiDocument.rootVisualElement;
-        mTitleAnimation = rootVisualElement.Q<AnimatedLabel>("Title");
+
+        SearchInChildren(rootVisualElement, AnimatedElements);
+        foreach (var animated in AnimatedElements)
+        {
+            switch (animated.GetAnimatedType())
+            {
+                case AnimatedElementType.Title:
+                    animated.Copy(titleAnimationData);
+                    break;
+                case AnimatedElementType.Slider:
+                    animated.Copy(slidersAnimationData);
+                    break;
+                case AnimatedElementType.Button:
+                    animated.Copy(buttonsAnimationData);
+                    break;
+            }
+        }
 
         rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
         rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
@@ -41,13 +74,17 @@ public class StartScreenUI : MonoBehaviour
         mCreditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
 
         mMainMenuFocusedButton.Focus();
-        mMainMenuFocusedButton.clicked += StartGame;
+        mMainMenuFocusedButton.clicked += ShowGameModePanel;
         rootVisualElement.Q<Button>("ExitButton").clicked += CloseGame;
         rootVisualElement.Q<Button>("SettingsButton").clicked += ShowOptions;
         rootVisualElement.Q<Button>("CreditsButton").clicked += ShowCredits;
-        rootVisualElement.Q<Button>("SettingsBackButton").clicked += BackToTitle;
         mCreditsFocusedButton.clicked += BackToTitle;
         mSettingsPanel = new SettingsPanel(mSettingsParent);
+        mSettingsPanel.OnClosed += BackToTitle;
+
+        mGameModePanel = new GameModePanel(rootVisualElement.Q<VisualElement>("GameModePanel"));
+        mGameModePanel.OnClosed += BackToTitle;
+        mGameModePanel.OnStarted += StartGame;
 
         LoadCredits();
     }
@@ -59,12 +96,15 @@ public class StartScreenUI : MonoBehaviour
 
     private void Update()
     {
-        if (mTitleAnimation != null)
-            mTitleAnimation.Update(Time.deltaTime);
+        foreach (var element in AnimatedElements)
+        {
+            element.Update(Time.deltaTime);
+        }
     }
 
-    private void StartGame()
+    private void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
     {
+        Debug.Log("Game Started with mode: " + gameMode + ", level start: " + levelStart + ", block size: " + blockSize + ", time limit: " + timeLimit);
         AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
         Invoke("LoadGameScene", 0.5f);
         //GameEvents.InvokeInGame();
@@ -90,6 +130,13 @@ public class StartScreenUI : MonoBehaviour
         AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
         mMainMenuButtons.style.display = DisplayStyle.None;
         mSettingsPanel.Show();
+    }
+
+    private void ShowGameModePanel()
+    {
+        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        mMainMenuButtons.style.display = DisplayStyle.None;
+        mGameModePanel.Show();
     }
 
     private void BackToTitle()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,18 +7,22 @@ using UnityEngine.UIElements;
 public class SettingsPanel
 {
     private VisualElement mSettingsPanel;
-    private Slider mMasterVolume;
-    private Slider mMusicVolume;
-    private Slider mSoundEffectsVolume;
+    private AnimatedSlider mMasterVolume;
+    private AnimatedSlider mMusicVolume;
+    private AnimatedSlider mSoundEffectsVolume;
+    private AnimatedButton mBackButton;
+    public event Action OnClosed;
 
 
     public SettingsPanel(VisualElement settingsPanel)
     {
         mSettingsPanel = settingsPanel;
 
-        mMasterVolume = mSettingsPanel.Q<Slider>("MasterAudio");
-        mMusicVolume = mSettingsPanel.Q<Slider>("MusicVolume");
-        mSoundEffectsVolume = mSettingsPanel.Q<Slider>("SFXVolume");
+        mMasterVolume = mSettingsPanel.Q<AnimatedSlider>("MasterAudio");
+        mMusicVolume = mSettingsPanel.Q<AnimatedSlider>("MusicVolume");
+        mSoundEffectsVolume = mSettingsPanel.Q<AnimatedSlider>("SFXVolume");
+        mBackButton = mSettingsPanel.Q<AnimatedButton>("SettingsBackButton");
+        mBackButton.clicked += Hide;
 
         mMasterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
         mMusicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
@@ -52,6 +57,7 @@ public class SettingsPanel
     public void Hide()
     {
         mSettingsPanel.style.display = DisplayStyle.None;
+        OnClosed.Invoke();
     }
 
     public void OnMove(NavigationMoveEvent evt)

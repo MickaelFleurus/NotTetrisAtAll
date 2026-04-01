@@ -486,9 +486,6 @@ MonoBehaviour:
   mainMenuMusic: {fileID: 8300000, guid: 042e3d64119a547088c6827e5c0952b0, type: 3}
   navigationSFX: {fileID: 8300000, guid: 5e9390fe7877d4b5c81cd04f8117148d, type: 3}
   selectSFX: {fileID: 8300000, guid: 4aba36a84f2bd45bebe74c2c51a0544f, type: 3}
-  buttonsAnimationData: {fileID: 11400000, guid: b5889b3ea09974e478c3d8a4f116b01e, type: 2}
-  slidersAnimationData: {fileID: 11400000, guid: 4d070ffbe003849ca9feb5f48bd186f3, type: 2}
-  titleAnimationData: {fileID: 11400000, guid: 0236246ce12ab47189431b8861819e4a, type: 2}
 --- !u!114 &1651905286
 MonoBehaviour:
   m_ObjectHideFlags: 0

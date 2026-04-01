@@ -2,6 +2,7 @@ Made with <b>Unity</b> by <b>Mickaël Fleurus</b>.
 Music by <b>chajamakesmusic</b> - <a href="https://chajamakesmusic.itch.io">https://chajamakesmusic.itch.io</a>
 Sound Effects by <b>JDSherbert</b> – <a href="https://jdsherbert.itch.io">https://jdsherbert.itch.io</a>
 Blocks design created by <b>pixelharbor</b> - <a href="https://pixelharbor.itch.io">https://pixelharbor.itch.io</a>
+<a href="https://www.flaticon.com/free-icons/arrow-white" title="arrow white icons">Arrow white icons created by ariefstudio - Flaticon</a>
 
 Special thanks to my wife Léa and to my kids for their support <3.
 

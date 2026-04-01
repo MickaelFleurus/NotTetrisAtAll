@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/ElementList.uss?fileID=7433441132597879392&amp;guid=7d94a2db6e4a843cb9441ece78042419&amp;type=3#ElementList"/>
+    <ui:Label text="Label" name="Label" class="UIText" style="align-items: auto; align-self: center; font-size: 30px;"/>
+    <ui:VisualElement name="Root" style="flex-grow: 1; flex-direction: row; justify-content: space-between;">
+        <ui:Button text="" enable-rich-text="false" emoji-fallback-support="false" display-tooltip-when-elided="false" triple-click-selects-line="false" double-click-selects-word="false" name="Left" class="MultipleChoiceListButton" style="background-image: resource(&quot;Sprites/Triangle&quot;); margin-right: 4px;"/>
+        <ui:Label text="Mode!" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" selectable="false" focusable="false" name="Displayed" class="UIText" style="flex-grow: 1; -unity-text-align: middle-center; font-size: 22px; background-color: rgba(0, 0, 0, 0.25); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-bottom-left-radius: 12px;"/>
+        <ui:Button text="" name="Right" enable-rich-text="false" emoji-fallback-support="false" triple-click-selects-line="false" double-click-selects-word="false" display-tooltip-when-elided="false" class="MultipleChoiceListButton" style="background-image: resource(&quot;Sprites/InvertedTriangle&quot;); margin-left: 5px;"/>
+    </ui:VisualElement>
+</ui:UXML>
