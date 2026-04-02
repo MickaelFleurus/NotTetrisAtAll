@@ -36,6 +36,9 @@ public class GameModePanel
     private int mSelectedStartLevel = 1;
     private int mSelectedBlockSize = 4;
     private EGameTimeLimit mSelectedTimeLimit = EGameTimeLimit.None;
+    NavigationGrid mPageNavigation;
+    int mTimeLimitRowIndex = 6;
+
 
     public GameModePanel(VisualElement settingsPanel)
     {
@@ -67,11 +70,13 @@ public class GameModePanel
                 {
                     mTimeLimitLabel.style.display = DisplayStyle.Flex;
                     mTimeLimitParent.style.display = DisplayStyle.Flex;
+                    mPageNavigation.EnableRow(mTimeLimitRowIndex);
                 }
                 else
                 {
                     mTimeLimitLabel.style.display = DisplayStyle.None;
                     mTimeLimitParent.style.display = DisplayStyle.None;
+                    mPageNavigation.DisableRow(mTimeLimitRowIndex);
                 }
             };
         }
@@ -82,6 +87,7 @@ public class GameModePanel
             {
                 mSelectedStartLevel = int.Parse(elem.name);
                 SetChoiceAsSelected(mLevels, elem, true);
+                mPageNavigation.SelectColumnAsDefault();
             };
         }
         foreach (var elem in mBlockSize)
@@ -98,6 +104,7 @@ public class GameModePanel
                 {
                     mBlockSizeWarning.style.display = DisplayStyle.None;
                 }
+                mPageNavigation.SelectColumnAsDefault();
             };
         }
         foreach (var elem in mTimeLimit)
@@ -107,10 +114,34 @@ public class GameModePanel
                 int indexChoice = int.Parse(elem.name);
                 mSelectedTimeLimit = (EGameTimeLimit)indexChoice;
                 SetChoiceAsSelected(mTimeLimit, elem, true);
+                mPageNavigation.SelectColumnAsDefault();
             };
         }
 
+        SetupNavigation();
     }
+
+    private void SetupNavigation()
+    {
+        List<NavigationRow> rows = new List<NavigationRow>() {
+            new NavigationRow(new NavigationCell(mBackButton)),
+            new NavigationRow(new NavigationCell(mGameModes[0])),
+            new NavigationRow(new NavigationCell(mGameModes[1])),
+            new NavigationRow(new NavigationCell(mGameModes[2])),
+            new NavigationRow(mLevels.Cast<VisualElement>().ToList(), 3),
+            new NavigationRow(mBlockSize.Cast<VisualElement>().ToList(), 3),
+            new NavigationRow(mTimeLimit.Cast<VisualElement>().ToList(), 0, false),
+            new NavigationRow(new NavigationCell(mStartButton)),
+        };
+        mPageNavigation = new NavigationGrid(rows, 0, 1);
+        mTimeLimitRowIndex = 6;
+    }
+
+    public bool IsShown()
+    {
+        return mGameModePanel.style.display == DisplayStyle.Flex;
+    }
+
 
     private void SetChoiceAsSelected(List<AnimatedButton> group, VisualElement element, bool isSmall = false)
     {
@@ -128,6 +159,7 @@ public class GameModePanel
     public void Show()
     {
         mGameModePanel.style.display = DisplayStyle.Flex;
+        mPageNavigation.RestoreFocus();
 
     }
 
@@ -140,6 +172,11 @@ public class GameModePanel
     private void OnStartPressed()
     {
         OnStarted.Invoke(mSelectedGameMode, mSelectedStartLevel, mSelectedBlockSize, mSelectedTimeLimit);
+    }
+
+    public bool OnMove(NavigationMoveEvent evt)
+    {
+        return mPageNavigation.OnNavigationEvent(evt);
     }
 
 }

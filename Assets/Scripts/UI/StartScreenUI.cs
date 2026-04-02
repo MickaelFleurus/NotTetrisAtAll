@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class StartScreenUI : MonoBehaviour
 {
@@ -14,12 +15,16 @@ public class StartScreenUI : MonoBehaviour
     private VisualElement mCreditsParent;
     private VisualElement mSettingsParent;
 
-    private Button mMainMenuFocusedButton;
+    private Button mStartButton;
+    private Button mSettingsButton;
+    private Button mCreditButton;
+    private Button mQuitButton;
     private Button mCreditsFocusedButton;
 
-    public VisualElement LastSelectedElement { get; set; }
     private SettingsPanel mSettingsPanel = null;
     private GameModePanel mGameModePanel = null;
+
+    NavigationGrid mPageNavigation;
 
     [SerializeField] private AudioClip mainMenuMusic;
     [SerializeField] private AudioClip navigationSFX;
@@ -61,6 +66,7 @@ public class StartScreenUI : MonoBehaviour
                     break;
             }
         }
+        rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
 
         rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
         rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
@@ -70,15 +76,21 @@ public class StartScreenUI : MonoBehaviour
         mSettingsParent = rootVisualElement.Q<VisualElement>("SettingsPanel");
         mMainMenuButtons = rootVisualElement.Q<VisualElement>("MainMenuButtons");
 
-        mMainMenuFocusedButton = rootVisualElement.Q<Button>("StartButton");
-        mCreditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
+        mStartButton = rootVisualElement.Q<Button>("StartButton");
+        mStartButton.clicked += ShowGameModePanel;
 
-        mMainMenuFocusedButton.Focus();
-        mMainMenuFocusedButton.clicked += ShowGameModePanel;
-        rootVisualElement.Q<Button>("ExitButton").clicked += CloseGame;
-        rootVisualElement.Q<Button>("SettingsButton").clicked += ShowOptions;
-        rootVisualElement.Q<Button>("CreditsButton").clicked += ShowCredits;
+        mQuitButton = rootVisualElement.Q<Button>("ExitButton");
+        mQuitButton.clicked += CloseGame;
+
+        mSettingsButton = rootVisualElement.Q<Button>("SettingsButton");
+        mSettingsButton.clicked += ShowOptions;
+
+        mCreditButton = rootVisualElement.Q<Button>("CreditsButton");
+        mCreditButton.clicked += ShowCredits;
+
+        mCreditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
         mCreditsFocusedButton.clicked += BackToTitle;
+
         mSettingsPanel = new SettingsPanel(mSettingsParent);
         mSettingsPanel.OnClosed += BackToTitle;
 
@@ -87,6 +99,7 @@ public class StartScreenUI : MonoBehaviour
         mGameModePanel.OnStarted += StartGame;
 
         LoadCredits();
+        SetupNavigation();
     }
 
     private void Start()
@@ -100,6 +113,18 @@ public class StartScreenUI : MonoBehaviour
         {
             element.Update(Time.deltaTime);
         }
+    }
+
+    private void SetupNavigation()
+    {
+        List<NavigationRow> rows = new List<NavigationRow>() {
+            new NavigationRow(new NavigationCell(mStartButton)),
+            new NavigationRow(new NavigationCell(mSettingsButton)),
+            new NavigationRow(new NavigationCell(mCreditButton)),
+            new NavigationRow(new NavigationCell(mQuitButton)),
+        };
+        mPageNavigation = new NavigationGrid(rows);
+
     }
 
     private void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
@@ -145,7 +170,8 @@ public class StartScreenUI : MonoBehaviour
         mMainMenuButtons.style.display = DisplayStyle.Flex;
         mSettingsParent.style.display = DisplayStyle.None;
         mCreditsParent.style.display = DisplayStyle.None;
-        mMainMenuFocusedButton.Focus();
+
+        mPageNavigation.RestoreFocus();
     }
 
     private void CloseGame()
@@ -203,6 +229,21 @@ public class StartScreenUI : MonoBehaviour
     void OnMove(NavigationMoveEvent evt)
     {
         AudioMixer.Instance.PlaySFX(navigationSFX, GameSettings.Instance.SoundEffectsVolume);
+        bool shouldIgnoreEvent = false;
+        if (mSettingsPanel.IsShown())
+        {
+            shouldIgnoreEvent = mSettingsPanel.OnMove(evt);
+        }
+        else if (mGameModePanel.IsShown())
+        {
+            shouldIgnoreEvent = mGameModePanel.OnMove(evt);
+        }
+        else if (mCreditsParent.style.display != DisplayStyle.Flex)
+        {
+            shouldIgnoreEvent = mPageNavigation.OnNavigationEvent(evt);
+        }
+        if (shouldIgnoreEvent)
+            uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
     }
 
     void OnCancel(NavigationCancelEvent evt)
@@ -216,5 +257,7 @@ public class StartScreenUI : MonoBehaviour
             BackToTitle();
         }
     }
+
+
 
 }

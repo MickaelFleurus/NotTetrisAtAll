@@ -12,6 +12,8 @@ public class SettingsPanel
     private AnimatedSlider mSoundEffectsVolume;
     private AnimatedButton mBackButton;
     public event Action OnClosed;
+    NavigationGrid mPageNavigation;
+
 
 
     public SettingsPanel(VisualElement settingsPanel)
@@ -27,8 +29,25 @@ public class SettingsPanel
         mMasterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
         mMusicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
         mSoundEffectsVolume.RegisterValueChangedCallback(OnSoundEffectsVolumeChanged);
+        SetupNavigation();
     }
 
+    private void SetupNavigation()
+    {
+        List<NavigationRow> rows = new List<NavigationRow>() {
+            new NavigationRow(new NavigationCell(mBackButton)),
+            new NavigationRow(new NavigationCell(mMasterVolume)),
+            new NavigationRow(new NavigationCell(mMusicVolume)),
+            new NavigationRow(new NavigationCell(mSoundEffectsVolume)),
+        };
+        mPageNavigation = new NavigationGrid(rows, 0, 1);
+
+    }
+
+    public bool IsShown()
+    {
+        return mSettingsPanel.style.display == DisplayStyle.Flex;
+    }
 
     private void OnMasterVolumeChanged(ChangeEvent<float> evt)
     {
@@ -51,7 +70,8 @@ public class SettingsPanel
         mMasterVolume.value = GameSettings.Instance.MasterVolume * 100f;
         mMusicVolume.value = GameSettings.Instance.MusicVolume * 100f;
         mSoundEffectsVolume.value = GameSettings.Instance.SoundEffectsVolume * 100f;
-        mMasterVolume.Focus();
+
+        mPageNavigation.RestoreFocus();
     }
 
     public void Hide()
@@ -60,9 +80,9 @@ public class SettingsPanel
         OnClosed.Invoke();
     }
 
-    public void OnMove(NavigationMoveEvent evt)
+    public bool OnMove(NavigationMoveEvent evt)
     {
-        // No navigation in settings for now
+        return mPageNavigation.OnNavigationEvent(evt);
     }
 
 }

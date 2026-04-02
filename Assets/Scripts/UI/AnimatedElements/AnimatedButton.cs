@@ -93,4 +93,6 @@ public partial class AnimatedButton : Button, IAnimatedElement
     {
         data.Copy(other);
     }
+
+
 }
