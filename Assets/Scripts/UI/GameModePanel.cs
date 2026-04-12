@@ -35,7 +35,7 @@ public class GameModePanel
     private EGameMode mSelectedGameMode = EGameMode.Marathon;
     private int mSelectedStartLevel = 1;
     private int mSelectedBlockSize = 4;
-    private EGameTimeLimit mSelectedTimeLimit = EGameTimeLimit.None;
+    private EGameTimeLimit mSelectedTimeLimit = EGameTimeLimit.One;
     NavigationGrid mPageNavigation;
     int mTimeLimitRowIndex = 6;
 
@@ -111,14 +111,26 @@ public class GameModePanel
         {
             elem.clicked += () =>
             {
-                int indexChoice = int.Parse(elem.name);
-                mSelectedTimeLimit = (EGameTimeLimit)indexChoice;
+                int timeLimit = int.Parse(elem.text);
+                mSelectedTimeLimit = IntToGameTimeLimit(timeLimit);
                 SetChoiceAsSelected(mTimeLimit, elem, true);
                 mPageNavigation.SelectColumnAsDefault();
             };
         }
 
         SetupNavigation();
+    }
+    private EGameTimeLimit IntToGameTimeLimit(int value)
+    {
+        return value switch
+        {
+            1 => EGameTimeLimit.One,
+            2 => EGameTimeLimit.Two,
+            5 => EGameTimeLimit.Five,
+            10 => EGameTimeLimit.Ten,
+            20 => EGameTimeLimit.Twenty,
+            _ => 0
+        };
     }
 
     private void SetupNavigation()

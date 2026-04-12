@@ -29,7 +29,7 @@ public class PieceObject : MonoBehaviour
     {
         grid = g;
         color = Piece.PieceHelper.GetRandomColor();
-        this.pieceIndices = Piece.PieceHelper.GetRandomPieceShape(GridHandler.PieceSize);
+        this.pieceIndices = Piece.PieceHelper.GetRandomPieceShape(GameData.Instance.blockSize);
         var sprite = Piece.PieceHelper.GetSpriteForColor(color);
         for (int i = 0; i < pieceIndices.Count; i++)
         {

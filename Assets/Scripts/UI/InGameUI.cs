@@ -6,6 +6,8 @@ public class InGameUI : MonoBehaviour
 {
 
     [SerializeField] private UIDocument uiDocument;
+    private Label gameOverLabel;
+    private Label timesUpLabel;
     private Label scoreLabel;
     private Label lineCompletedLabel;
     private Label levelLabel;
@@ -20,6 +22,8 @@ public class InGameUI : MonoBehaviour
     private Label linesCompletedLabel;
     private Label timeSurvivedLabel;
     private Label levelReachedLabel;
+
+    private Label timerLabel;
 
     Gradient myGradient = new Gradient
     {
@@ -43,6 +47,10 @@ public class InGameUI : MonoBehaviour
         scoreLabel = uiDocument.rootVisualElement.Q<Label>("ScoreValue");
         lineCompletedLabel = uiDocument.rootVisualElement.Q<Label>("LinesValue");
         levelLabel = uiDocument.rootVisualElement.Q<Label>("LevelValue");
+        timerLabel = uiDocument.rootVisualElement.Q<Label>("TimeNumber");
+
+        gameOverLabel = uiDocument.rootVisualElement.Q<Label>("GameOverLabel");
+        timesUpLabel = uiDocument.rootVisualElement.Q<Label>("TimeIsUpLabel");
 
         nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece1Image"));
         nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece2Image"));
@@ -114,6 +122,10 @@ public class InGameUI : MonoBehaviour
         levelLabel.text = level.ToString();
     }
 
+    public void UpdateTimer(string value)
+    {
+        timerLabel.text = value;
+    }
 
     public void UpdateHeldPieceTexture(Sprite sprite)
     {
@@ -137,13 +149,34 @@ public class InGameUI : MonoBehaviour
         levelLabel.style.display = DisplayStyle.None;
         lineCompletedLabel.style.display = DisplayStyle.None;
         scoreLabel.style.display = DisplayStyle.None;
+        timeSurvivedLabel.style.display = DisplayStyle.Flex;
+
+        gameOverLabel.style.display = DisplayStyle.Flex;
+        timesUpLabel.style.display = DisplayStyle.None;
+
+        UpdateLabel(finalScoreLabel, scoreLabel.text);
+        UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
+        UpdateLabel(timeSurvivedLabel, timerLabel.text);
+        UpdateLabel(levelReachedLabel, levelLabel.text);
+
+        restartButton.Focus();
+    }
+
+    public void ShowGameTimerDone()
+    {
+        gameOverScreen.RemoveFromClassList("GameOverHidden");
+        levelLabel.style.display = DisplayStyle.None;
+        lineCompletedLabel.style.display = DisplayStyle.None;
+        scoreLabel.style.display = DisplayStyle.None;
+        timeSurvivedLabel.style.display = DisplayStyle.None;
+
+        gameOverLabel.style.display = DisplayStyle.None;
+        timesUpLabel.style.display = DisplayStyle.Flex;
 
         UpdateLabel(finalScoreLabel, scoreLabel.text);
         UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
         UpdateLabel(timeSurvivedLabel, lineCompletedLabel.text);
         UpdateLabel(levelReachedLabel, levelLabel.text);
-
-        restartButton.Focus();
     }
 
     private void UpdateLabel(Label label, string value)

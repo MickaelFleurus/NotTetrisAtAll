@@ -129,10 +129,10 @@ public class StartScreenUI : MonoBehaviour
 
     private void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
     {
-        Debug.Log("Game Started with mode: " + gameMode + ", level start: " + levelStart + ", block size: " + blockSize + ", time limit: " + timeLimit);
         AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        GameData.Instance.OnGameStarted(gameMode, levelStart, blockSize, timeLimit);
+
         Invoke("LoadGameScene", 0.5f);
-        //GameEvents.InvokeInGame();
     }
 
     private void LoadGameScene()

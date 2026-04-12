@@ -125,6 +125,7 @@ VisualElement {
     color: rgb(255, 255, 255);
     -unity-text-align: upper-center;
     font-size: 43px;
+    -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
 }
 
 .GameOverShown {

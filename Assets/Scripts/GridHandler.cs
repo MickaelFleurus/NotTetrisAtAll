@@ -23,7 +23,9 @@ public class GridHandler : MonoBehaviour
 
     PieceObject currentPiece = null;
     PieceObject[] nextPieces = new PieceObject[3];
+    PieceObject pieceHeld = null;
 
+    Timer timer = null;
 
 
     private int stuckCount = 0;
@@ -64,20 +66,22 @@ public class GridHandler : MonoBehaviour
         inputActions.Enable();
     }
 
-    private PieceObject CreateNewPiece()
-    {
-        var go = new GameObject($"Piece_{pieceCounter}");
-        go.transform.SetParent(this.transform, false);
-
-        var piece = go.AddComponent<PieceObject>();
-        inGameUI.PushNextPieceTexture(piece.Initialize(this));
-        pieceCounter++;
-        return piece;
-    }
-
     void Start()
     {
+        var gameData = GameData.Instance;
+        inGameUI.UpdateLevel(gameData.levelStart);
         transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
+        if (gameData.gameMode != EGameMode.TimeLimit)
+        {
+            timer = new Timer(Timer.ETimerCountDirection.Up);
+        }
+        else
+        {
+            timer = new Timer(Timer.ETimerCountDirection.Down, GetTimeLimitMinutes(gameData.timeLimit));
+        }
+        timer.isDone += OnTimeOver;
+        timer.Start();
+
 
         nextPieces[0] = CreateNewPiece();
         nextPieces[1] = CreateNewPiece();
@@ -87,6 +91,8 @@ public class GridHandler : MonoBehaviour
     void Update()
     {
         if (pauseGameLoop) return;
+        timer.Update(Time.deltaTime);
+        inGameUI.UpdateTimer(timer.GetTime());
 
         if (!currentPiece)
         {
@@ -134,6 +140,29 @@ public class GridHandler : MonoBehaviour
             inputActions.Dispose();
         }
     }
+    private int GetTimeLimitMinutes(EGameTimeLimit timeLimit)
+    {
+        return timeLimit switch
+        {
+            EGameTimeLimit.One => 1,
+            EGameTimeLimit.Two => 2,
+            EGameTimeLimit.Five => 5,
+            EGameTimeLimit.Ten => 10,
+            EGameTimeLimit.Twenty => 20,
+            _ => 0
+        };
+    }
+
+    private PieceObject CreateNewPiece()
+    {
+        var go = new GameObject($"Piece_{pieceCounter}");
+        go.transform.SetParent(this.transform, false);
+
+        var piece = go.AddComponent<PieceObject>();
+        inGameUI.PushNextPieceTexture(piece.Initialize(this));
+        pieceCounter++;
+        return piece;
+    }
 
     private void UpdateDestinationIndexes()
     {
@@ -156,7 +185,7 @@ public class GridHandler : MonoBehaviour
 
     private void OnMove(float v)
     {
-        if (currentPiece == null) return;
+        if (pauseGameLoop || currentPiece == null) return;
         if (Mathf.Abs(v) > 0.5f)
         {
             int dx = v > 0 ? 1 : -1;
@@ -169,7 +198,7 @@ public class GridHandler : MonoBehaviour
 
     private void OnDrop()
     {
-        if (currentPiece == null) return;
+        if (pauseGameLoop || currentPiece == null) return;
         currentPiece.DropToLowest();
         stuckCount = 1000;
         delayNextDropMs = 0.0f;
@@ -177,7 +206,7 @@ public class GridHandler : MonoBehaviour
 
     private void OnRotateClockwise()
     {
-        if (currentPiece == null) return;
+        if (pauseGameLoop || currentPiece == null) return;
         if (currentPiece.TryRotateClockwise())
         {
             UpdateDestinationIndexes();
@@ -187,7 +216,7 @@ public class GridHandler : MonoBehaviour
 
     private void OnRotateCounterClockwise()
     {
-        if (currentPiece == null) return;
+        if (pauseGameLoop || currentPiece == null) return;
         if (currentPiece.TryRotateCounterClockwise())
         {
             UpdateDestinationIndexes();
@@ -291,8 +320,14 @@ public class GridHandler : MonoBehaviour
         return cell[indices.y][indices.x].IsEmpty();
     }
 
+    private void OnTimeOver()
+    {
+        pauseGameLoop = true;
+        this.enabled = false;
+        inGameUI.ShowGameOver();
+    }
+
     public static int Width => 10;
     public static int Height => 20;
 
-    public static int PieceSize => 4;
 }

@@ -1,6 +1,6 @@
 public enum EGameTimeLimit
 {
-    None, One, Two, Five, Ten, Twenty
+    One, Two, Five, Ten, Twenty
 }
 
 public enum EGameMode
