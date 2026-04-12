@@ -21,7 +21,7 @@ public class AudioMixer : MonoBehaviour
 
     private const float MuteDB = -80f;
     private const float MinDB = -40f;
-    private const float MaxDB = 1f;
+    private const float MaxDB = 0f;
 
     private const float MaxDBSfx = -10f;
 
@@ -68,11 +68,13 @@ public class AudioMixer : MonoBehaviour
     {
         GameObject sfxGO = new GameObject("SFX_Clip");
         sfxGO.transform.position = position;
+        sfxGO.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 
         AudioSource sfxSource = sfxGO.AddComponent<AudioSource>();
         sfxSource.outputAudioMixerGroup = sfxMixerGroup;
         sfxSource.clip = clip;
         sfxSource.volume = volume;
+
         sfxSource.spatialBlend = position == default ? 0f : 1f; // 2D if no position, 3D otherwise
         sfxSource.Play();
 
@@ -134,6 +136,7 @@ public class AudioMixer : MonoBehaviour
 
     private void SetMixerGroupVolume(AudioMixerGroup group, float volume)
     {
+        if (group == null) return;
         float max = group == sfxMixerGroup ? MaxDBSfx : MaxDB;
         float db = volume > 0.001f ? Mathf.Lerp(MinDB, max, volume) : MuteDB;
         group.audioMixer.SetFloat(GetVolumeParameterName(group), db);

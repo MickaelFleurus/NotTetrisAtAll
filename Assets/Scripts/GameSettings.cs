@@ -33,9 +33,9 @@ public class GameSettings : ScriptableObject
 
 
     [Header("Audio Settings")]
-    [SerializeField][Range(0f, 1f)] private float masterVolume = 100f;
-    [SerializeField][Range(0f, 1f)] private float musicVolume = 100f;
-    [SerializeField][Range(0f, 1f)] private float soundEffectsVolume = 100f;
+    [SerializeField][Range(0f, 1f)] private float masterVolume = 1f;
+    [SerializeField][Range(0f, 1f)] private float musicVolume = 1f;
+    [SerializeField][Range(0f, 1f)] private float soundEffectsVolume = 1f;
 
     public float MasterVolume
     {
@@ -86,9 +86,9 @@ public class GameSettings : ScriptableObject
 
     public void ResetToDefaults()
     {
-        masterVolume = 100f;
-        musicVolume = 100f;
-        soundEffectsVolume = 100f;
+        masterVolume = 1f;
+        musicVolume = 1f;
+        soundEffectsVolume = 1f;
         Save();
     }
 
