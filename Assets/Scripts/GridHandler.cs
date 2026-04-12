@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Piece;
-using UnityEngine.InputSystem;
 using System.Linq;
 using System.Collections;
-using Unity.VisualScripting;
 
 
 public class GridHandler : MonoBehaviour
@@ -62,6 +59,8 @@ public class GridHandler : MonoBehaviour
         inputActions.Player.Drop.performed += ctx => OnDrop();
         inputActions.Player.RotateClockwise.performed += ctx => OnRotateClockwise();
         inputActions.Player.RotateCounterClockwise.performed += ctx => OnRotateCounterClockwise();
+        inputActions.Player.Hold.performed += ctx => OnHold();
+        inputActions.Player.Pause.performed += ctx => OnPause();
 
         inputActions.Enable();
     }
@@ -96,11 +95,7 @@ public class GridHandler : MonoBehaviour
 
         if (!currentPiece)
         {
-            currentPiece = nextPieces[0];
-            nextPieces[0] = nextPieces[1];
-            nextPieces[1] = nextPieces[2];
-            nextPieces[2] = CreateNewPiece();
-            UpdateDestinationIndexes();
+            UseNextPiece();
         }
         else
         {
@@ -140,6 +135,16 @@ public class GridHandler : MonoBehaviour
             inputActions.Dispose();
         }
     }
+
+    private void UseNextPiece()
+    {
+        currentPiece = nextPieces[0];
+        nextPieces[0] = nextPieces[1];
+        nextPieces[1] = nextPieces[2];
+        nextPieces[2] = CreateNewPiece();
+        UpdateDestinationIndexes();
+    }
+
     private int GetTimeLimitMinutes(EGameTimeLimit timeLimit)
     {
         return timeLimit switch
@@ -325,6 +330,30 @@ public class GridHandler : MonoBehaviour
         pauseGameLoop = true;
         this.enabled = false;
         inGameUI.ShowGameOver();
+    }
+
+    private void OnHold()
+    {
+        if (pieceHeld == null)
+        {
+            pieceHeld = currentPiece;
+            UseNextPiece();
+        }
+        else
+        {
+            var temp = pieceHeld;
+            pieceHeld = currentPiece;
+            currentPiece = temp;
+            currentPiece.ResetPosition();
+        }
+        inGameUI.UpdateHeldPieceTexture(pieceHeld.pieceLook);
+        UpdateDestinationIndexes();
+        pieceHeld.transform.position = new Vector3(-150, -150, 0);
+    }
+
+    private void OnPause()
+    {
+
     }
 
     public static int Width => 10;

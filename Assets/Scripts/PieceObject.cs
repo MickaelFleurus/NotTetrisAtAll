@@ -15,6 +15,8 @@ public class PieceObject : MonoBehaviour
     private List<Vector2Int> pieceIndices = new List<Vector2Int>();
     static int pieceCounter = 0;
 
+    public Sprite pieceLook { get; private set; }
+
 
     private readonly Vector2Int[] kicks = {
         new Vector2Int(0,0),
@@ -45,7 +47,8 @@ public class PieceObject : MonoBehaviour
             go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
         }
         pieceCounter++;
-        return Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices, color);
+        pieceLook = Piece.PieceHelper.CreatePieceSpriteFile(pieceIndices, color);
+        return pieceLook;
     }
 
     void Awake()
@@ -54,6 +57,11 @@ public class PieceObject : MonoBehaviour
 
     void Start()
     {
+        transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
+    }
+    public void ResetPosition()
+    {
+        positionIndex = new Vector2Int(GridHandler.Width / 2, GridHandler.Height + 1);
         transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
     }
 

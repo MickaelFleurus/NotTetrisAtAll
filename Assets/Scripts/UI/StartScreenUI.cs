@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
 
 public class StartScreenUI : MonoBehaviour
 {
