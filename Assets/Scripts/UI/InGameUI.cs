@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,16 +7,18 @@ public class InGameUI : MonoBehaviour
 {
 
     [SerializeField] private UIDocument uiDocument;
-    private Label gameOverLabel;
-    private Label timesUpLabel;
     private Label scoreLabel;
     private Label lineCompletedLabel;
     private Label levelLabel;
     private Image gameRender;
     private Image heldPiece;
+    private Label timerLabel;
     private List<Image> nextPieces = new List<Image>(3);
-    // Game Over Screen
 
+
+    // Game Over Screen
+    private Label gameOverLabel;
+    private Label timesUpLabel;
     private VisualElement gameOverScreen;
     private Button restartButton;
     private Label finalScoreLabel;
@@ -23,7 +26,12 @@ public class InGameUI : MonoBehaviour
     private Label timeSurvivedLabel;
     private Label levelReachedLabel;
 
-    private Label timerLabel;
+
+    // Pause menu
+    private PauseMenu pauseMenu = null;
+    public bool isPauseMenuShown { get; private set; } = false;
+
+    private readonly string hiddenMenuClassName = "GameOverHidden";
 
     Gradient myGradient = new Gradient
     {
@@ -63,6 +71,8 @@ public class InGameUI : MonoBehaviour
         timeSurvivedLabel = uiDocument.rootVisualElement.Q<Label>("TimeSurvived");
         levelReachedLabel = uiDocument.rootVisualElement.Q<Label>("LevelReached");
 
+        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
+
         var texture = GradientToTexture(myGradient);
         element.style.backgroundImage = new StyleBackground(texture);
 
@@ -70,14 +80,11 @@ public class InGameUI : MonoBehaviour
 
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
 
-        restartButton.clicked += () =>
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-        };
-        uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton").clicked += () =>
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
-        };
+        restartButton.clicked += RestartGame;
+        uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton").clicked += BackToMainMenu;
+
+        PauseMenu.backToMainMenu += BackToMainMenu;
+        PauseMenu.restartGame += RestartGame;
     }
 
     private Texture2D GradientToTexture(Gradient gradient, int width = 16, int height = 256)
@@ -145,7 +152,7 @@ public class InGameUI : MonoBehaviour
 
     public void ShowGameOver()
     {
-        gameOverScreen.RemoveFromClassList("GameOverHidden");
+        gameOverScreen.RemoveFromClassList(hiddenMenuClassName);
         levelLabel.style.display = DisplayStyle.None;
         lineCompletedLabel.style.display = DisplayStyle.None;
         scoreLabel.style.display = DisplayStyle.None;
@@ -164,7 +171,7 @@ public class InGameUI : MonoBehaviour
 
     public void ShowGameTimerDone()
     {
-        gameOverScreen.RemoveFromClassList("GameOverHidden");
+        gameOverScreen.RemoveFromClassList(hiddenMenuClassName);
         levelLabel.style.display = DisplayStyle.None;
         lineCompletedLabel.style.display = DisplayStyle.None;
         scoreLabel.style.display = DisplayStyle.None;
@@ -186,4 +193,23 @@ public class InGameUI : MonoBehaviour
         label.text = text;
     }
 
+    public void ShowPauseMenu()
+    {
+        pauseMenu.Show();
+    }
+
+    public void HidePauseMenu()
+    {
+        pauseMenu.Hide();
+    }
+
+    private void RestartGame()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+
+    private void BackToMainMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
 }

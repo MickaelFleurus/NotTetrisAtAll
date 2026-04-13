@@ -25,6 +25,10 @@ public class AudioMixer : MonoBehaviour
 
     private const float MaxDBSfx = -10f;
 
+    [SerializeField] private AudioClip menuMoveSFX;
+    [SerializeField] private AudioClip menuApproveSFX;
+    [SerializeField] private AudioClip menuCancelSFX;
+
     private void Awake()
     {
         Instance = this;
@@ -64,7 +68,7 @@ public class AudioMixer : MonoBehaviour
         musicClips[musicName] = clip;
     }
 
-    public void PlaySFX(AudioClip clip, float volume = 1f, Vector3 position = default)
+    public void PlaySFX(AudioClip clip, Vector3 position = default)
     {
         GameObject sfxGO = new GameObject("SFX_Clip");
         sfxGO.transform.position = position;
@@ -73,7 +77,7 @@ public class AudioMixer : MonoBehaviour
         AudioSource sfxSource = sfxGO.AddComponent<AudioSource>();
         sfxSource.outputAudioMixerGroup = sfxMixerGroup;
         sfxSource.clip = clip;
-        sfxSource.volume = volume;
+        sfxSource.volume = GameSettings.Instance.SoundEffectsVolume;
 
         sfxSource.spatialBlend = position == default ? 0f : 1f; // 2D if no position, 3D otherwise
         sfxSource.Play();

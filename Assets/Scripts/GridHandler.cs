@@ -27,7 +27,7 @@ public class GridHandler : MonoBehaviour
 
 
     private int stuckCount = 0;
-    private InputSystem_Actions inputActions;
+    private InputSystem_Actions playerInputs;
 
     public bool pauseGameLoop = true;
     private List<Vector2Int> currentPieceDestinationIndexes = new List<Vector2Int>();
@@ -55,15 +55,17 @@ public class GridHandler : MonoBehaviour
         GridVisual.GetComponent<SpriteRenderer>().size = new Vector2(Width, Height);
 
         // setup input actions
-        inputActions = new InputSystem_Actions();
-        inputActions.Player.Move.performed += ctx => OnMove(ctx.ReadValue<float>());
-        inputActions.Player.Drop.performed += ctx => OnDrop();
-        inputActions.Player.RotateClockwise.performed += ctx => OnRotateClockwise();
-        inputActions.Player.RotateCounterClockwise.performed += ctx => OnRotateCounterClockwise();
-        inputActions.Player.Hold.performed += ctx => OnHold();
-        inputActions.Player.Pause.performed += ctx => OnPause();
+        playerInputs = new InputSystem_Actions();
+        playerInputs.Player.Move.performed += ctx => OnMove(ctx.ReadValue<float>());
+        playerInputs.Player.Drop.performed += ctx => OnDrop();
+        playerInputs.Player.RotateClockwise.performed += ctx => OnRotateClockwise();
+        playerInputs.Player.RotateCounterClockwise.performed += ctx => OnRotateCounterClockwise();
+        playerInputs.Player.Hold.performed += ctx => OnHold();
+        playerInputs.Player.Pause.performed += ctx => OnPause();
 
-        inputActions.Enable();
+        playerInputs.Enable();
+
+        PauseMenu.unpauseGame += OnUnpause;
     }
 
     void Start()
@@ -124,10 +126,10 @@ public class GridHandler : MonoBehaviour
 
     void OnDestroy()
     {
-        if (inputActions != null)
+        if (playerInputs != null)
         {
-            inputActions.Disable();
-            inputActions.Dispose();
+            playerInputs.Disable();
+            playerInputs.Dispose();
         }
     }
 
@@ -365,7 +367,16 @@ public class GridHandler : MonoBehaviour
 
     private void OnPause()
     {
+        pauseGameLoop = true;
+        playerInputs.Disable();
+        inGameUI.ShowPauseMenu();
+    }
 
+    private void OnUnpause()
+    {
+        inGameUI.HidePauseMenu();
+        playerInputs.Enable();
+        pauseGameLoop = false;
     }
 
     public static int Width => 10;

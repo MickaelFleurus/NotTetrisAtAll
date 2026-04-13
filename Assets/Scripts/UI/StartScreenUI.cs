@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class StartScreenUI : MonoBehaviour
 {
-
     [SerializeField] private UIDocument uiDocument;
     private List<IAnimatedElement> AnimatedElements = new List<IAnimatedElement>();
     private ScrollView mCreditsView;
@@ -24,10 +23,6 @@ public class StartScreenUI : MonoBehaviour
     private GameModePanel mGameModePanel = null;
 
     NavigationGrid mPageNavigation;
-
-    [SerializeField] private AudioClip mainMenuMusic;
-    [SerializeField] private AudioClip navigationSFX;
-    [SerializeField] private AudioClip selectSFX;
 
     [SerializeField] private UIAnimationData buttonsAnimationData;
     [SerializeField] private UIAnimationData slidersAnimationData;
@@ -66,9 +61,8 @@ public class StartScreenUI : MonoBehaviour
             }
         }
         rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
-
         rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
-        rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove);
+
         mCreditsView = rootVisualElement.Q<ScrollView>("CreditsView");
 
         mCreditsParent = rootVisualElement.Q<VisualElement>("Credits");
@@ -103,7 +97,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void Start()
     {
-        AudioMixer.Instance.PlayMusic("mainmenu", mainMenuMusic);
+        AudioMixer.Instance.PlayMusic("mainmenu", AudioData.Instance.MainMenuMusic);
     }
 
     private void Update()
@@ -128,7 +122,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
     {
-        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MainMenuMusic);
         GameData.Instance.OnGameStarted(gameMode, levelStart, blockSize, timeLimit);
 
         Invoke("LoadGameScene", 0.5f);
@@ -141,7 +135,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void ShowCredits()
     {
-        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
 
         mMainMenuButtons.style.display = DisplayStyle.None;
         mSettingsParent.style.display = DisplayStyle.None;
@@ -151,21 +145,21 @@ public class StartScreenUI : MonoBehaviour
 
     private void ShowOptions()
     {
-        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         mMainMenuButtons.style.display = DisplayStyle.None;
         mSettingsPanel.Show();
     }
 
     private void ShowGameModePanel()
     {
-        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         mMainMenuButtons.style.display = DisplayStyle.None;
         mGameModePanel.Show();
     }
 
     private void BackToTitle()
     {
-        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         mMainMenuButtons.style.display = DisplayStyle.Flex;
         mSettingsParent.style.display = DisplayStyle.None;
         mCreditsParent.style.display = DisplayStyle.None;
@@ -175,7 +169,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void CloseGame()
     {
-        AudioMixer.Instance.PlaySFX(selectSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBGL
@@ -227,7 +221,7 @@ public class StartScreenUI : MonoBehaviour
 
     void OnMove(NavigationMoveEvent evt)
     {
-        AudioMixer.Instance.PlaySFX(navigationSFX, GameSettings.Instance.SoundEffectsVolume);
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuNavigationSfx);
         bool shouldIgnoreEvent = false;
         if (mSettingsPanel.IsShown())
         {
