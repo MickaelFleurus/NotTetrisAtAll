@@ -491,37 +491,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1018009365
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1018009367}
-  m_Layer: 0
-  m_Name: GameData
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1018009367
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1018009365}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23.8279, y: -12.52032, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1609888941
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,6 +629,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1617704698}
   - component: {fileID: 1617704699}
+  - component: {fileID: 1617704701}
+  - component: {fileID: 1617704700}
+  - component: {fileID: 1617704702}
   m_Layer: 0
   m_Name: GameGrid
   m_TagString: Untagged
@@ -699,7 +671,126 @@ MonoBehaviour:
   prefabCell: {fileID: 5854518308175524040, guid: 03257169a58284fc6919f111addd6842, type: 3}
   GridVisual: {fileID: 90658232}
   inGameUI: {fileID: 782403715}
-  pauseGameLoop: 0
+  pauseGameLoop: 1
+--- !u!320 &1617704700
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617704697}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: f0b3e2614fe274a08a4f7f4776cc30f5, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -5552843623181808852, guid: f0b3e2614fe274a08a4f7f4776cc30f5, type: 2}
+    value: {fileID: 1617704702}
+  m_ExposedReferences:
+    m_References: []
+--- !u!114 &1617704701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617704697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70e324e27d8bd465db0eaa34d62de5da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  inGameUI: {fileID: 782403716}
+--- !u!114 &1617704702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617704697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.SignalReceiver
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 46f4dcdf2856d47999c301f48c7f5562, type: 2}
+    - {fileID: 11400000, guid: b192a075d139e4abab5558649990f9df, type: 2}
+    - {fileID: 11400000, guid: cc8e02a14d637438087b4755af7cf98a, type: 2}
+    - {fileID: 11400000, guid: dc23275ac074c4a608bba63bebda4b00, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1617704701}
+          m_TargetAssemblyTypeName: ReadyGoAnimation, Assembly-CSharp
+          m_MethodName: OnDisappearGo
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1617704699}
+          m_TargetAssemblyTypeName: GridHandler, Assembly-CSharp
+          m_MethodName: OnGameStart
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1617704701}
+          m_TargetAssemblyTypeName: ReadyGoAnimation, Assembly-CSharp
+          m_MethodName: OnShowGo
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1617704701}
+          m_TargetAssemblyTypeName: ReadyGoAnimation, Assembly-CSharp
+          m_MethodName: OnDisappearReady
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1617704701}
+          m_TargetAssemblyTypeName: ReadyGoAnimation, Assembly-CSharp
+          m_MethodName: OnShowReady
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -708,4 +799,3 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1617704698}
   - {fileID: 1609888945}
-  - {fileID: 1018009367}

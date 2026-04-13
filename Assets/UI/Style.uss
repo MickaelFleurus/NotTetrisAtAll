@@ -232,3 +232,29 @@ VisualElement {
     border-bottom-color: rgb(255, 211, 0);
     border-bottom-width: 2px;
 }
+
+.readyGoText {
+    -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
+    font-size: 180px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: italic;
+    -unity-text-align: middle-center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    transition-timing-function: ease-out-bounce, ease-in-elastic;
+    transition-duration: 1s, 1s;
+    transition-property: translate, scale;
+}
+
+.readyGoTextLeft {
+    transform-origin: center;
+    translate: -1100px -50%;
+}
+
+.readyGoTextDisappear {
+    flex-grow: 1;
+    align-self: center;
+    scale: 0 0;
+}

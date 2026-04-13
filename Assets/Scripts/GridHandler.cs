@@ -21,6 +21,7 @@ public class GridHandler : MonoBehaviour
     PieceObject currentPiece = null;
     PieceObject[] nextPieces = new PieceObject[3];
     PieceObject pieceHeld = null;
+    bool canHold = true;
 
     Timer timer = null;
 
@@ -28,7 +29,7 @@ public class GridHandler : MonoBehaviour
     private int stuckCount = 0;
     private InputSystem_Actions inputActions;
 
-    public bool pauseGameLoop = false;
+    public bool pauseGameLoop = true;
     private List<Vector2Int> currentPieceDestinationIndexes = new List<Vector2Int>();
 
 
@@ -79,12 +80,6 @@ public class GridHandler : MonoBehaviour
             timer = new Timer(Timer.ETimerCountDirection.Down, GetTimeLimitMinutes(gameData.timeLimit));
         }
         timer.isDone += OnTimeOver;
-        timer.Start();
-
-
-        nextPieces[0] = CreateNewPiece();
-        nextPieces[1] = CreateNewPiece();
-        nextPieces[2] = CreateNewPiece();
     }
 
     void Update()
@@ -134,6 +129,16 @@ public class GridHandler : MonoBehaviour
             inputActions.Disable();
             inputActions.Dispose();
         }
+    }
+
+    public void OnGameStart()
+    {
+        timer.Start();
+
+        nextPieces[0] = CreateNewPiece();
+        nextPieces[1] = CreateNewPiece();
+        nextPieces[2] = CreateNewPiece();
+        pauseGameLoop = false;
     }
 
     private void UseNextPiece()
@@ -263,6 +268,10 @@ public class GridHandler : MonoBehaviour
             pauseGameLoop = true;
             StartCoroutine(RemoveEmptyLines(completedLines, CellVisualLogic.BlinkDuration + 0.1f));
         }
+        else
+        {
+            canHold = true;
+        }
 
     }
 
@@ -316,6 +325,7 @@ public class GridHandler : MonoBehaviour
             inGameUI.UpdateScore(score);
         }
         pauseGameLoop = false;
+        canHold = true;
     }
 
     public bool IsFree(Vector2Int indices)
@@ -334,6 +344,7 @@ public class GridHandler : MonoBehaviour
 
     private void OnHold()
     {
+        if (!canHold) return;
         if (pieceHeld == null)
         {
             pieceHeld = currentPiece;
@@ -349,6 +360,7 @@ public class GridHandler : MonoBehaviour
         inGameUI.UpdateHeldPieceTexture(pieceHeld.pieceLook);
         UpdateDestinationIndexes();
         pieceHeld.transform.position = new Vector3(-150, -150, 0);
+        canHold = false;
     }
 
     private void OnPause()
