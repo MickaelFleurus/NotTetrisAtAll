@@ -1,10 +1,9 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="SettingsPanel" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3"/>
-    <ui:VisualElement name="Background2" style="flex-grow: 1; background-color: rgba(255, 255, 255, 0); background-image: resource(&quot;Background&quot;); position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgb(255, 255, 255); opacity: 0;"/>
-    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 157, 0); background-image: none; position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgba(255, 255, 255, 0.97);"/>
+    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: none; position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgba(255, 255, 255, 0.97);"/>
     <ui:VisualElement name="GameContainer" style="flex-grow: 1; align-content: center; justify-content: center;">
-        <ui:Image name="Game" style="position: relative; top: auto; background-image: url(&quot;project://database/Assets/UI/Game.renderTexture?fileID=8400000&amp;guid=646ff94ed0389415e8c9b7af78cd232f&amp;type=2#Game&quot;); width: 65%; aspect-ratio: 0.5387701; justify-content: flex-start; align-items: center; align-self: center; left: auto; right: auto; bottom: auto; height: auto;"/>
+        <ui:Image name="Game" style="position: relative; top: auto; background-image: none; width: 65%; aspect-ratio: 0.5387701; justify-content: flex-start; align-items: center; align-self: center; left: auto; right: auto; bottom: auto; height: auto;"/>
     </ui:VisualElement>
     <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 918px; width: 17.5%; align-self: center; align-content: center; background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement name="HeldPiece" class="CaseContainer" style="flex-grow: initial; align-self: center; align-content: auto; height: 200px; top: 25%; background-color: rgba(0, 0, 0, 0); width: 100%;">
@@ -56,10 +55,6 @@
         <AnimatedButton text="Restart" name="RestartButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton" style="width: 70%; margin-bottom: 54px;"/>
         <AnimatedButton text="Back to Main Menu" name="BackMainMenuButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton" style="width: 70%;"/>
     </ui:VisualElement>
-    <ui:VisualElement name="ReadyGoScreen" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; align-self: stretch; align-content: center; justify-content: center;">
-        <ui:Label text="Ready?" name="ReadyLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute;"/>
-        <ui:Label text="Go!" name="GoLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute; display: flex;"/>
-    </ui:VisualElement>
     <ui:VisualElement name="PauseMenu" class="GameOverHidden" style="flex-grow: 1; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.75); align-self: center; justify-content: center; transition-timing-function: ease-out; transition-duration: 1s;">
         <ui:Label text="Pause" name="PauseLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="UIText" style="font-size: 118px;"/>
         <ui:VisualElement name="NotSavedWarning" style="flex-grow: 0; display: none;">
@@ -76,5 +71,9 @@
             <AnimatedButton name="BackToMenu" text="Exit to Menu" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
         </ui:VisualElement>
         <ui:Instance template="SettingsPanel" name="SettingPanel" style="width: 90%; align-self: center; display: none;"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="ReadyGoScreen" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; align-self: stretch; align-content: center; justify-content: center;">
+        <ui:Label text="Ready?" name="ReadyLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute;"/>
+        <ui:Label text="Go!" name="GoLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute; display: flex;"/>
     </ui:VisualElement>
 </ui:UXML>

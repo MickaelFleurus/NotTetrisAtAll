@@ -12,6 +12,7 @@ public class GridHandler : MonoBehaviour
 
     [SerializeField] GameObject prefabCell;
     [SerializeField] GameObject GridVisual;
+    [SerializeField] GameObject Mask;
     [SerializeField] InGameUI inGameUI;
     [SerializeField] PlayableDirector playableDirector;
 
@@ -91,6 +92,8 @@ public class GridHandler : MonoBehaviour
         level = gameData.levelStart;
         UpdateCurrentDropDelay();
         transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
+        Mask.transform.localScale = new Vector3(Width, Height, 1f);
+
         if (gameData.gameMode != EGameMode.TimeLimit)
         {
             timer = new Timer(Timer.ETimerCountDirection.Up);

@@ -43,9 +43,9 @@ public class PieceObject : MonoBehaviour
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = sprite;
             sr.color = Color.white;
-            sr.sortingOrder = 1;
+            sr.sortingOrder = 0;
             sr.material = new Material(Shader.Find("Sprites/Default"));
-            sr.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
+            sr.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             parts.Add(go);
             go.transform.localPosition = new Vector3(pieceIndices[i].x, pieceIndices[i].y, 0f);
         }

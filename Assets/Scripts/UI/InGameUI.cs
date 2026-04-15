@@ -26,31 +26,14 @@ public class InGameUI : MonoBehaviour
     private Label timeSurvivedLabel;
     private Label levelReachedLabel;
 
-
     // Pause menu
     private PauseMenu pauseMenu = null;
     public bool isPauseMenuShown { get; private set; } = false;
 
     private readonly string hiddenMenuClassName = "GameOverHidden";
 
-    Gradient myGradient = new Gradient
-    {
-        colorKeys = new GradientColorKey[]
-        {
-            new GradientColorKey(new Color(0.02f, 0.05f, 0.20f), 0.0f),
-            new GradientColorKey(new Color(0.07f, 0.16f, 0.40f), 0.5f),
-            new GradientColorKey(new Color(0.02f, 0.05f, 0.20f), 1.0f)
-        },
-        alphaKeys = new GradientAlphaKey[]
-        {
-            new GradientAlphaKey(1.0f, 0.0f),
-            new GradientAlphaKey(1.0f, 1.0f)
-        }
-    };
-
     void Start()
     {
-        var element = uiDocument.rootVisualElement.Q<VisualElement>("Background");
         gameRender = uiDocument.rootVisualElement.Q<Image>("Game");
         scoreLabel = uiDocument.rootVisualElement.Q<Label>("ScoreValue");
         lineCompletedLabel = uiDocument.rootVisualElement.Q<Label>("LinesValue");
@@ -73,9 +56,6 @@ public class InGameUI : MonoBehaviour
 
         pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
 
-        var texture = GradientToTexture(myGradient);
-        element.style.backgroundImage = new StyleBackground(texture);
-
         gameRender.style.aspectRatio = GridHandler.Width / (float)GridHandler.Height;
 
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
@@ -85,34 +65,6 @@ public class InGameUI : MonoBehaviour
 
         PauseMenu.backToMainMenu += BackToMainMenu;
         PauseMenu.restartGame += RestartGame;
-    }
-
-
-    private Texture2D GradientToTexture(Gradient gradient, int width = 16, int height = 256)
-    {
-        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
-        tex.wrapMode = TextureWrapMode.Clamp;
-
-        Vector2 center = new Vector2(width / 2f, height / 2f);
-        float maxDist = Mathf.Max(width, height) / 2f;
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                Vector2 pos = new Vector2(x, y);
-                float dist = Vector2.Distance(pos, center);
-                float vignette = 1f - Mathf.Clamp01(dist / maxDist);
-                vignette = Mathf.Pow(vignette, 0.5f); // smooth falloff curve
-
-                Color color = gradient.Evaluate(0.5f);
-                color = Color.Lerp(Color.black, color, vignette);  // ← blend to black
-                tex.SetPixel(x, y, color);
-            }
-        }
-
-        tex.Apply();
-        return tex;
     }
 
     public void UpdateScore(int score)
