@@ -14,45 +14,46 @@ public class AudioData : ScriptableObject
         {
             if (instance == null)
             {
-                instance = CreateInstance<AudioData>();
-                instance.Load();
+                instance = Resources.Load<AudioData>("Audio/AudioData");
             }
             return instance;
         }
     }
 
-    public AudioClip MenuNavigationSfx { get => menuNavigationSfx; }
-    public AudioClip MenuApproveSfx { get => menuApproveSfx; }
-    public AudioClip MenuCancelSfx { get => menuCancelSfx; }
-    public AudioClip MainMenuMusic { get => mainMenuMusic; }
-    private AudioClip InGameMusic { get => inGameMusic; }
+    public AudioClip GameMoveSfx { get => gameMoveSfx; }
+    public AudioClip GameTurnSfx { get => gameTurnSfx; }
+    public AudioClip GamePlacedSfx { get => gamePlacedSfx; }
+    public AudioClip GameDestroySfx { get => gameDestroySfx; }
 
-    [Header("Audio clips")]
+    [Header("UI SFX")]
     [SerializeField] private AudioClip menuNavigationSfx;
     [SerializeField] private AudioClip menuApproveSfx;
     [SerializeField] private AudioClip menuCancelSfx;
+    public AudioClip MenuNavigationSfx { get => menuNavigationSfx; }
+    public AudioClip MenuApproveSfx { get => menuApproveSfx; }
+    public AudioClip MenuCancelSfx { get => menuCancelSfx; }
+
+
+    [Header("Main menu music")]
     [SerializeField] private AudioClip mainMenuMusic;
+    public AudioClip MainMenuMusic { get => mainMenuMusic; }
 
+
+    [Header("InGame musics")]
     [SerializeField] private AudioClip inGameMusic;
+    public AudioClip InGameMusic { get => inGameMusic; }
+    [SerializeField] private AudioClip inGameMusic2;
+    public AudioClip InGameMusic2 { get => inGameMusic2; }
+    [SerializeField] private AudioClip inGameMusicFaster;
+    public AudioClip InGameMusicFaster { get => inGameMusicFaster; }
+    [SerializeField] private AudioClip inGameMusicFastest;
+    public AudioClip InGameMusicFastest { get => inGameMusicFastest; }
 
-    public void Load()
-    {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        // WebGL: load from PlayerPrefs (LocalStorage)
-        if (PlayerPrefs.HasKey(WebGLPrefsKey))
-        {
-            string json = PlayerPrefs.GetString(WebGLPrefsKey);
-            JsonUtility.FromJsonOverwrite(json, this);
-        }
-#else
-        // Standalone/Editor: load from JSON file
-        string loadPath = Path.Combine(Application.persistentDataPath, "AudioData.json");
-        if (File.Exists(loadPath))
-        {
-            string json = File.ReadAllText(loadPath);
-            JsonUtility.FromJsonOverwrite(json, this);
-        }
-#endif
-    }
+    [Header("InGame SFX")]
+    [SerializeField] private AudioClip gameMoveSfx;
+    [SerializeField] private AudioClip gameTurnSfx;
+    [SerializeField] private AudioClip gamePlacedSfx;
+    [SerializeField] private AudioClip gameDestroySfx;
+
 
 }

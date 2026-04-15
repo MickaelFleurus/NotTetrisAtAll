@@ -87,6 +87,7 @@ public class InGameUI : MonoBehaviour
         PauseMenu.restartGame += RestartGame;
     }
 
+
     private Texture2D GradientToTexture(Gradient gradient, int width = 16, int height = 256)
     {
         Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
@@ -184,6 +185,7 @@ public class InGameUI : MonoBehaviour
         UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
         UpdateLabel(timeSurvivedLabel, lineCompletedLabel.text);
         UpdateLabel(levelReachedLabel, levelLabel.text);
+        restartButton.Focus();
     }
 
     private void UpdateLabel(Label label, string value)

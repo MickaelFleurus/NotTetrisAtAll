@@ -17,6 +17,9 @@ public class PieceObject : MonoBehaviour
 
     public Sprite pieceLook { get; private set; }
 
+    public enum EState { Inactive, Held, Falling, Stuck };
+    public EState currentState = EState.Inactive;
+
 
     private readonly Vector2Int[] kicks = {
         new Vector2Int(0,0),
@@ -65,20 +68,29 @@ public class PieceObject : MonoBehaviour
         transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
     }
 
-    public bool TryDrop()
+    public void Drop()
     {
+        positionIndex.y -= 1;
+        transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
+        CheckState();
+    }
+
+    public void CheckState()
+    {
+        if (currentState == EState.Inactive || currentState == EState.Held)
+            return;
+
         foreach (var piece in pieceIndices)
         {
             Vector2Int index = piece + positionIndex;
             index.y--;
             if (!grid.IsFree(index))
             {
-                return false;
+                currentState = EState.Stuck;
+                return;
             }
         }
-        positionIndex.y -= 1;
-        transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
-        return true;
+        currentState = EState.Falling;
     }
 
     public List<Vector2Int> GetDestinationIndexes()
@@ -95,12 +107,11 @@ public class PieceObject : MonoBehaviour
         return indices;
     }
 
-    public bool DropToLowest()
+    public void DropToLowest()
     {
         positionIndex.y = FigureLowestPossibleHeight();
         transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
-
-        return true;
+        currentState = EState.Stuck;
     }
 
     public bool TryMove(int dx)

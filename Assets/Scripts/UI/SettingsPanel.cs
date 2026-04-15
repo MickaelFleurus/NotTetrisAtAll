@@ -23,7 +23,12 @@ public class SettingsPanel
         mMusicVolume = mSettingsPanel.Q<AnimatedSlider>("MusicVolume");
         mSoundEffectsVolume = mSettingsPanel.Q<AnimatedSlider>("SFXVolume");
         mBackButton = mSettingsPanel.Q<AnimatedButton>("SettingsBackButton");
-        mBackButton.clicked += Hide;
+        mBackButton.clicked += () =>
+        {
+            AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
+            Hide();
+        };
+
 
         mMasterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
         mMusicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
@@ -75,8 +80,11 @@ public class SettingsPanel
 
     public void Hide()
     {
-        mSettingsPanel.style.display = DisplayStyle.None;
-        OnClosed.Invoke();
+        if (mSettingsPanel.style.display == DisplayStyle.Flex)
+        {
+            mSettingsPanel.style.display = DisplayStyle.None;
+            OnClosed.Invoke();
+        }
     }
 
     public bool OnMove(NavigationMoveEvent evt)

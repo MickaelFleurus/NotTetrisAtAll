@@ -2,20 +2,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Collections;
+using UnityEngine.Playables;
+using System;
 
 
 public class GridHandler : MonoBehaviour
 {
     private List<List<CellVisualLogic>> cell = new List<List<CellVisualLogic>>();
 
-    [SerializeField] float DropInitialDelayMs = 0.15f;
     [SerializeField] GameObject prefabCell;
     [SerializeField] GameObject GridVisual;
     [SerializeField] InGameUI inGameUI;
+    [SerializeField] PlayableDirector playableDirector;
 
+    private bool introFinishedPlaying = false;
+
+    private int level = 0;
+    private readonly int MaxLevel = 20;
     private int score = 0;
     private int lineCompleted = 0;
-    private float delayNextDropMs = 0.15f;
+    [SerializeField] float DropInitialDelayMs;
+    private float currentDropDelayMs;
+    private readonly float MinimumDelayMs = 0.02f;
+    private float delayNextDropMs;
     static int pieceCounter = 0;
 
     PieceObject currentPiece = null;
@@ -26,11 +35,16 @@ public class GridHandler : MonoBehaviour
     Timer timer = null;
 
 
-    private int stuckCount = 0;
+    private float stuckTimer = 0.0f;
+    private readonly float StuckTimerThreshold = 1f;
     private InputSystem_Actions playerInputs;
 
     public bool pauseGameLoop = true;
     private List<Vector2Int> currentPieceDestinationIndexes = new List<Vector2Int>();
+
+    private InputRepeatHandler moveRepeatHandler;
+
+    private AudioClip currentMusic = null;
 
 
     void Awake()
@@ -54,24 +68,28 @@ public class GridHandler : MonoBehaviour
         delayNextDropMs = DropInitialDelayMs;
         GridVisual.GetComponent<SpriteRenderer>().size = new Vector2(Width, Height);
 
-        // setup input actions
         playerInputs = new InputSystem_Actions();
-        playerInputs.Player.Move.performed += ctx => OnMove(ctx.ReadValue<float>());
-        playerInputs.Player.Drop.performed += ctx => OnDrop();
-        playerInputs.Player.RotateClockwise.performed += ctx => OnRotateClockwise();
-        playerInputs.Player.RotateCounterClockwise.performed += ctx => OnRotateCounterClockwise();
-        playerInputs.Player.Hold.performed += ctx => OnHold();
-        playerInputs.Player.Pause.performed += ctx => OnPause();
+        playerInputs.Player.Drop.started += ctx => OnDrop();
+        playerInputs.Player.RotateClockwise.started += ctx => OnRotateClockwise();
+        playerInputs.Player.RotateCounterClockwise.started += ctx => OnRotateCounterClockwise();
+        playerInputs.Player.Hold.started += ctx => OnHold();
+        playerInputs.Player.Pause.started += ctx => OnPause();
 
         playerInputs.Enable();
 
         PauseMenu.unpauseGame += OnUnpause;
+
+        playableDirector.stopped += SetIntroDone;
+
+        moveRepeatHandler = new InputRepeatHandler(0.20f);
     }
 
     void Start()
     {
         var gameData = GameData.Instance;
         inGameUI.UpdateLevel(gameData.levelStart);
+        level = gameData.levelStart;
+        UpdateCurrentDropDelay();
         transform.localPosition = new Vector3(-Width / 2.0f, -Height / 2.0f, 0.0f);
         if (gameData.gameMode != EGameMode.TimeLimit)
         {
@@ -87,41 +105,50 @@ public class GridHandler : MonoBehaviour
     void Update()
     {
         if (pauseGameLoop) return;
+
         timer.Update(Time.deltaTime);
         inGameUI.UpdateTimer(timer.GetTime());
 
         if (!currentPiece)
         {
             UseNextPiece();
+            return;
         }
-        else
+
+        float moveInput = playerInputs.Player.Move.ReadValue<float>();
+        if (moveRepeatHandler.ShouldRepeat(moveInput, Time.deltaTime))
+        {
+            OnMove(moveInput);
+        }
+
+        if (currentPiece.currentState == PieceObject.EState.Falling)
         {
             delayNextDropMs -= Time.deltaTime;
             if (delayNextDropMs <= 0.0f)
             {
-                if (!currentPiece.TryDrop())
-                {
-                    if (currentPiece.IsInGrid())
-                    {
-                        stuckCount++;
-                    }
-                    else
-                    {
-                        this.enabled = false;
-                        inGameUI.ShowGameOver();
-                        pauseGameLoop = true;
-                        return;
-                    }
-                }
-                if (stuckCount >= 3)
-                {
-                    PlaceCurrentPiece();
-                    stuckCount = 0;
-                }
-                delayNextDropMs = DropInitialDelayMs;
+                currentPiece.Drop();
+                delayNextDropMs = currentDropDelayMs;
             }
-
         }
+        else if (currentPiece.currentState == PieceObject.EState.Stuck)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer >= StuckTimerThreshold)
+            {
+                if (!currentPiece.IsInGrid())
+                {
+                    this.enabled = false;
+                    inGameUI.ShowGameOver();
+                    pauseGameLoop = true;
+                    return;
+                }
+
+                PlaceCurrentPiece();
+                stuckTimer = 0f;
+            }
+        }
+
+
     }
 
     void OnDestroy()
@@ -131,10 +158,18 @@ public class GridHandler : MonoBehaviour
             playerInputs.Disable();
             playerInputs.Dispose();
         }
+        playableDirector.stopped -= SetIntroDone;
+    }
+
+
+    private void SetIntroDone(PlayableDirector ctx)
+    {
+        introFinishedPlaying = true;
     }
 
     public void OnGameStart()
     {
+        TryMusicChange();
         timer.Start();
 
         nextPieces[0] = CreateNewPiece();
@@ -150,6 +185,7 @@ public class GridHandler : MonoBehaviour
         nextPieces[1] = nextPieces[2];
         nextPieces[2] = CreateNewPiece();
         UpdateDestinationIndexes();
+        currentPiece.currentState = PieceObject.EState.Falling;
     }
 
     private int GetTimeLimitMinutes(EGameTimeLimit timeLimit)
@@ -195,6 +231,12 @@ public class GridHandler : MonoBehaviour
         }
     }
 
+    private void UpdatePieceStateAndResetStuckTimer()
+    {
+        stuckTimer = 0f;
+        currentPiece.CheckState();
+    }
+
     private void OnMove(float v)
     {
         if (pauseGameLoop || currentPiece == null) return;
@@ -203,7 +245,9 @@ public class GridHandler : MonoBehaviour
             int dx = v > 0 ? 1 : -1;
             if (currentPiece.TryMove(dx))
             {
+                AudioMixer.Instance.PlaySFX(AudioData.Instance.GameMoveSfx);
                 UpdateDestinationIndexes();
+                UpdatePieceStateAndResetStuckTimer();
             }
         }
     }
@@ -212,7 +256,7 @@ public class GridHandler : MonoBehaviour
     {
         if (pauseGameLoop || currentPiece == null) return;
         currentPiece.DropToLowest();
-        stuckCount = 1000;
+        stuckTimer = 1000f;
         delayNextDropMs = 0.0f;
     }
 
@@ -221,9 +265,10 @@ public class GridHandler : MonoBehaviour
         if (pauseGameLoop || currentPiece == null) return;
         if (currentPiece.TryRotateClockwise())
         {
+            AudioMixer.Instance.PlaySFX(AudioData.Instance.GameTurnSfx);
             UpdateDestinationIndexes();
         }
-        stuckCount = 0;
+        UpdatePieceStateAndResetStuckTimer();
     }
 
     private void OnRotateCounterClockwise()
@@ -231,14 +276,16 @@ public class GridHandler : MonoBehaviour
         if (pauseGameLoop || currentPiece == null) return;
         if (currentPiece.TryRotateCounterClockwise())
         {
+            AudioMixer.Instance.PlaySFX(AudioData.Instance.GameTurnSfx);
             UpdateDestinationIndexes();
         }
-        stuckCount = 0;
+        UpdatePieceStateAndResetStuckTimer();
     }
 
 
     private void PlaceCurrentPiece()
     {
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.GamePlacedSfx);
         Sprite pieceSprite = Piece.PieceHelper.GetSpriteForColor(currentPiece.color);
 
         foreach (var index in currentPiece.GetIndexes())
@@ -318,11 +365,22 @@ public class GridHandler : MonoBehaviour
             for (int x = 0; x < Width; x++)
                 cell[y][x].Clear();
 
-
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.GameDestroySfx);
         if (completedLines.Count > 0)
         {
             lineCompleted += completedLines.Count;
             score += completedLines.Count * 100;
+
+            int newLevel = GameData.Instance.levelStart + (int)Math.Floor(lineCompleted / 10f);
+            if (newLevel > level)
+            {
+                level = newLevel;
+                inGameUI.UpdateLevel(level);
+                UpdateCurrentDropDelay();
+                TryMusicChange();
+            }
+
+
             inGameUI.UpdateLines(lineCompleted);
             inGameUI.UpdateScore(score);
         }
@@ -358,15 +416,21 @@ public class GridHandler : MonoBehaviour
             pieceHeld = currentPiece;
             currentPiece = temp;
             currentPiece.ResetPosition();
+            currentPiece.currentState = PieceObject.EState.Falling;
         }
         inGameUI.UpdateHeldPieceTexture(pieceHeld.pieceLook);
         UpdateDestinationIndexes();
         pieceHeld.transform.position = new Vector3(-150, -150, 0);
+        pieceHeld.currentState = PieceObject.EState.Held;
         canHold = false;
     }
 
     private void OnPause()
     {
+        if (playableDirector.state == PlayState.Playing)
+        {
+            playableDirector.Pause();
+        }
         pauseGameLoop = true;
         playerInputs.Disable();
         inGameUI.ShowPauseMenu();
@@ -376,7 +440,40 @@ public class GridHandler : MonoBehaviour
     {
         inGameUI.HidePauseMenu();
         playerInputs.Enable();
-        pauseGameLoop = false;
+        if (!introFinishedPlaying)
+        {
+            playableDirector.Resume();
+        }
+        else
+        {
+            pauseGameLoop = false;
+        }
+    }
+
+    private void UpdateCurrentDropDelay()
+    {
+        currentDropDelayMs = DropInitialDelayMs - ((DropInitialDelayMs - MinimumDelayMs) / MaxLevel) * Math.Min(level, MaxLevel);
+    }
+
+    private void TryMusicChange()
+    {
+        if (level < 10 && currentMusic == null)
+        {
+            int randomChoice = UnityEngine.Random.Range(0, 2);
+            currentMusic = randomChoice == 0 ? AudioData.Instance.InGameMusic : AudioData.Instance.InGameMusic2;
+            AudioMixer.Instance.PlayMusic(currentMusic);
+        }
+        else if (level >= 10 && level < 20 && currentMusic != AudioData.Instance.InGameMusicFaster)
+        {
+            currentMusic = AudioData.Instance.InGameMusicFaster;
+            AudioMixer.Instance.PlayMusic(currentMusic);
+        }
+        else if (level == 20)
+        {
+            currentMusic = AudioData.Instance.InGameMusicFastest;
+            AudioMixer.Instance.PlayMusic(currentMusic);
+        }
+
     }
 
     public static int Width => 10;

@@ -12,8 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d55d485e1e347ffb55347cb7c52527, type: 3}
   m_Name: AudioData
   m_EditorClassIdentifier: Assembly-CSharp::AudioData
-  menuNavigationSfx: {fileID: 0}
-  menuApproveSfx: {fileID: 0}
-  menuCancelSfx: {fileID: 0}
-  mainMenuMusic: {fileID: 0}
-  inGameMusic: {fileID: 0}
+  menuNavigationSfx: {fileID: 8300000, guid: 5e9390fe7877d4b5c81cd04f8117148d, type: 3}
+  menuApproveSfx: {fileID: 8300000, guid: 4aba36a84f2bd45bebe74c2c51a0544f, type: 3}
+  menuCancelSfx: {fileID: 8300000, guid: 3c857615bfcf147198c1cbff02db1cdf, type: 3}
+  mainMenuMusic: {fileID: 8300000, guid: 042e3d64119a547088c6827e5c0952b0, type: 3}
+  inGameMusic: {fileID: 8300000, guid: 5f614d803f338493e89cd8a275470ae4, type: 3}
+  inGameMusic2: {fileID: 8300000, guid: 503aa1158aad341089e2d4ab6ed68944, type: 3}
+  inGameMusicFaster: {fileID: 8300000, guid: b7455378478ac47edad52415f8600b7b, type: 3}
+  inGameMusicFastest: {fileID: 8300000, guid: 14f0042c849d74c6c8e8df9b1a7d9362, type: 3}
+  gameMoveSfx: {fileID: 8300000, guid: ce7445a457f9c4905b6e8fa50998e550, type: 3}
+  gameTurnSfx: {fileID: 8300000, guid: 0d6279e5c8b2546619845aabc7b3bf04, type: 3}
+  gamePlacedSfx: {fileID: 8300000, guid: 2a53d4ad2079f432f8b458778b98dd42, type: 3}
+  gameDestroySfx: {fileID: 8300000, guid: df4d13003b45543989c1aa0270e97849, type: 3}

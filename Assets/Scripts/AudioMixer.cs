@@ -25,12 +25,14 @@ public class AudioMixer : MonoBehaviour
 
     private const float MaxDBSfx = -10f;
 
-    [SerializeField] private AudioClip menuMoveSFX;
-    [SerializeField] private AudioClip menuApproveSFX;
-    [SerializeField] private AudioClip menuCancelSFX;
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(this);
+            return;
+        }
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -52,8 +54,10 @@ public class AudioMixer : MonoBehaviour
         GameSettings.OnSoundEffectsVolumeChanged -= OnSoundEffectsVolumeChanged;
     }
 
-    public void PlayMusic(string musicName, AudioClip clip, float fadeDuration = 0.5f)
+    public void PlayMusic(AudioClip clip, float fadeDuration = 0.5f)
     {
+        if (musicAudioSource.clip?.name == clip.name) return;
+
         if (musicAudioSource.isPlaying)
         {
             StartCoroutine(FadeMusicAndSwitch(clip, fadeDuration));
@@ -65,11 +69,13 @@ public class AudioMixer : MonoBehaviour
             musicAudioSource.loop = true;
         }
 
-        musicClips[musicName] = clip;
+
+        musicClips[clip.name] = clip;
     }
 
     public void PlaySFX(AudioClip clip, Vector3 position = default)
     {
+        Debug.Log("Playing SFX " + clip);
         GameObject sfxGO = new GameObject("SFX_Clip");
         sfxGO.transform.position = position;
         sfxGO.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;

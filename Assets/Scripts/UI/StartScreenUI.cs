@@ -97,7 +97,7 @@ public class StartScreenUI : MonoBehaviour
 
     private void Start()
     {
-        AudioMixer.Instance.PlayMusic("mainmenu", AudioData.Instance.MainMenuMusic);
+        AudioMixer.Instance.PlayMusic(AudioData.Instance.MainMenuMusic);
     }
 
     private void Update()
@@ -221,7 +221,6 @@ public class StartScreenUI : MonoBehaviour
 
     void OnMove(NavigationMoveEvent evt)
     {
-        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuNavigationSfx);
         bool shouldIgnoreEvent = false;
         if (mSettingsPanel.IsShown())
         {

@@ -31,54 +31,37 @@ public class PauseMenu
     public static Action backToMainMenu;
     public static Action restartGame;
 
+    bool skipNextCancelEvent = false;
+
     public PauseMenu(VisualElement root)
     {
         this.root = root;
-        if (root == null) { Debug.LogError("PauseMenu root is null!"); return; }
 
         rootMain = root.Q<VisualElement>("PauseMain");
-        if (rootMain == null) Debug.LogError("PauseMain not found!");
-
         continueButton = root.Q<AnimatedButton>("Continue");
-        if (continueButton == null) Debug.LogError("Continue button not found!");
-
         settingsButton = root.Q<AnimatedButton>("Settings");
-        if (settingsButton == null) Debug.LogError("Settings button not found!");
 
         restartButton = root.Q<AnimatedButton>("Restart");
-        if (restartButton == null) Debug.LogError("Restart button not found!");
 
         backToMenuButton = root.Q<AnimatedButton>("BackToMenu");
-        if (backToMenuButton == null) Debug.LogError("BackToMenu button not found!");
 
-        if (continueButton != null) continueButton.clicked += unpauseGame;
-        if (restartButton != null) restartButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Restart; ShowChoiceConfirmation(); };
-        if (backToMenuButton != null) backToMenuButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Exit; ShowChoiceConfirmation(); };
-        if (settingsButton != null) settingsButton.clicked += ShowSettings;
+        continueButton.clicked += unpauseGame;
+        restartButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Restart; ShowChoiceConfirmation(); };
+        backToMenuButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Exit; ShowChoiceConfirmation(); };
+        settingsButton.clicked += ShowSettings;
 
         choiceConfirmationParent = root.Q<VisualElement>("NotSavedWarning");
-        if (choiceConfirmationParent == null) Debug.LogError("NotSavedWarning not found!");
+        confirmQuitButton = choiceConfirmationParent.Q<AnimatedButton>("ExitButton");
+        cancelChoiceButton = choiceConfirmationParent.Q<AnimatedButton>("BackButton");
 
-        if (choiceConfirmationParent != null)
-        {
-            confirmQuitButton = choiceConfirmationParent.Q<AnimatedButton>("ExitButton");
-            if (confirmQuitButton == null) Debug.LogError("ExitButton not found!");
-
-            cancelChoiceButton = choiceConfirmationParent.Q<AnimatedButton>("BackButton");
-            if (cancelChoiceButton == null) Debug.LogError("BackButton not found!");
-
-            if (confirmQuitButton != null) confirmQuitButton.clicked += OnChoiceConfirmed;
-            if (cancelChoiceButton != null) cancelChoiceButton.clicked += BackToPauseMenu;
-        }
+        confirmQuitButton.clicked += OnChoiceConfirmed;
+        cancelChoiceButton.clicked += BackToPauseMenu;
 
         settingsParent = root.Q<VisualElement>("SettingPanel");
-        if (settingsParent == null) Debug.LogError("SettingPanel not found!");
 
-        if (settingsParent != null)
-        {
-            settingsPanel = new SettingsPanel(settingsParent);
-            if (settingsPanel != null) settingsPanel.OnClosed += BackToPauseMenu;
-        }
+        settingsPanel = new SettingsPanel(settingsParent);
+        settingsPanel.OnClosed += BackToPauseMenu;
+
 
         List<NavigationRow> mainNav = new List<NavigationRow>() {
             new NavigationRow(new NavigationCell(continueButton)),
@@ -87,17 +70,17 @@ public class PauseMenu
             new NavigationRow(new NavigationCell(backToMenuButton)),
         };
         pageNavigation = new NavigationGrid(mainNav);
-        List<NavigationRow> confirmNav = new List<NavigationRow>() { new NavigationRow(new List<VisualElement>() { confirmQuitButton, cancelChoiceButton }) };
+        List<NavigationRow> confirmNav = new List<NavigationRow>() { new NavigationRow(new List<VisualElement>() { cancelChoiceButton, confirmQuitButton }) };
         confirmationNavigation = new NavigationGrid(confirmNav);
     }
 
     public void Show()
     {
-        if (root == null) { Debug.LogError("PauseMenu root is null in Show()!"); return; }
+        BackToPauseMenu();
         root.RemoveFromClassList(hiddenMenuClassName);
         root.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
         root.RegisterCallback<NavigationCancelEvent>(OnCancel);
-        BackToPauseMenu();
+        skipNextCancelEvent = true;
     }
 
     public void Hide()
@@ -109,15 +92,21 @@ public class PauseMenu
 
     private void BackToPauseMenu()
     {
-        if (rootMain != null) rootMain.style.display = DisplayStyle.Flex;
-        if (choiceConfirmationParent != null) choiceConfirmationParent.style.display = DisplayStyle.None;
+        rootMain.style.display = DisplayStyle.Flex;
+        choiceConfirmationParent.style.display = DisplayStyle.None;
         choiceConfirmationUse = EChoiceConfirmationUse.None;
-        if (settingsPanel != null) settingsPanel.Hide();
-        if (continueButton != null) continueButton.Focus();
+        settingsPanel.Hide();
+        pageNavigation.RestoreFocus();
     }
 
     private void OnCancel(NavigationCancelEvent evt)
     {
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuCancelSfx);
+        if (skipNextCancelEvent)
+        {
+            skipNextCancelEvent = false;
+            return;
+        }
         if (settingsPanel.IsShown() || choiceConfirmationParent.style.display == DisplayStyle.Flex)
         {
             BackToPauseMenu();
@@ -130,19 +119,23 @@ public class PauseMenu
 
     private void ShowSettings()
     {
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         settingsPanel.Show();
         rootMain.style.display = DisplayStyle.None;
     }
 
     private void ShowChoiceConfirmation()
     {
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         rootMain.style.display = DisplayStyle.None;
+        confirmQuitButton.text = choiceConfirmationUse == EChoiceConfirmationUse.Restart ? "Restart" : "Quit";
         choiceConfirmationParent.style.display = DisplayStyle.Flex;
-        cancelChoiceButton.Focus();
+        confirmationNavigation.RestoreFocus();
     }
 
     private void OnChoiceConfirmed()
     {
+        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         if (choiceConfirmationUse == EChoiceConfirmationUse.Restart) restartGame?.Invoke();
         else backToMainMenu?.Invoke();
     }
@@ -150,7 +143,6 @@ public class PauseMenu
 
     private void OnMove(NavigationMoveEvent evt)
     {
-        AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuNavigationSfx);
         bool shouldIgnoreEvent = false;
         if (settingsPanel.IsShown())
         {
@@ -164,8 +156,10 @@ public class PauseMenu
         {
             shouldIgnoreEvent = confirmationNavigation.OnNavigationEvent(evt);
         }
+
         if (shouldIgnoreEvent)
             root.focusController.IgnoreEvent(evt);
+
     }
 
 }

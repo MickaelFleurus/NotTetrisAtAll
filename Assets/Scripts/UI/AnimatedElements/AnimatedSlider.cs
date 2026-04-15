@@ -66,6 +66,10 @@ public partial class AnimatedSlider : Slider, IAnimatedElement
     {
         RegisterCallback<FocusInEvent>(OnFocusIn);
         RegisterCallback<FocusOutEvent>(OnFocusOut);
+        RegisterCallback<NavigationSubmitEvent>(evt =>
+        {
+            evt.StopImmediatePropagation();
+        });
         data = ScriptableObject.CreateInstance<UIAnimationData>();
         logic = new UIAnimationLogic(ref data, this);
 

@@ -87,6 +87,7 @@ class NavigationGrid
     public bool OnNavigationEvent(NavigationMoveEvent evt)
     {
         bool shouldStopPropagation = true;
+        bool hasMoved = false;
 
         // Vertical move
         if (evt.direction == NavigationMoveEvent.Direction.Up)
@@ -96,6 +97,7 @@ class NavigationGrid
                 int newRow = rows.FindLastIndex(currentRow - 1, currentRow, (row) => row.GetFirstEnabled() != -1);
                 if (newRow != -1)
                 {
+                    hasMoved = true;
                     SelectRow(newRow);
                 }
             }
@@ -107,6 +109,7 @@ class NavigationGrid
                 int newRow = rows.FindIndex(currentRow + 1, (row) => row.GetFirstEnabled() != -1);
                 if (newRow != -1)
                 {
+                    hasMoved = true;
                     SelectRow(newRow);
                 }
             }
@@ -125,6 +128,7 @@ class NavigationGrid
                 int newColumn = rows[currentRow].cells.FindLastIndex(currentCol - 1, currentCol, (cell) => cell.enabled);
                 if (newColumn != -1)
                 {
+                    hasMoved = true;
                     SelectColumn(newColumn);
                 }
             }
@@ -140,9 +144,15 @@ class NavigationGrid
                 int newColumn = rows[currentRow].cells.FindIndex(currentCol + 1, (cell) => cell.enabled);
                 if (newColumn != -1)
                 {
+                    hasMoved = true;
                     SelectColumn(newColumn);
                 }
             }
+        }
+
+        if (hasMoved)
+        {
+            AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuNavigationSfx);
         }
 
         if (shouldStopPropagation)
