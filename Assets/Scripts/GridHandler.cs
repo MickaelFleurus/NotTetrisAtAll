@@ -438,6 +438,7 @@ public class GridHandler : MonoBehaviour
         if (playableDirector.state == PlayState.Playing)
         {
             playableDirector.Pause();
+            inGameUI.HideIntro();
         }
         pauseGameLoop = true;
         playerInputs.Disable();
@@ -451,6 +452,7 @@ public class GridHandler : MonoBehaviour
         if (!introFinishedPlaying)
         {
             playableDirector.Resume();
+            inGameUI.ShowIntro();
         }
         else
         {

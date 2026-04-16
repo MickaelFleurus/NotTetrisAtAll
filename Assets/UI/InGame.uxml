@@ -1,8 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="SettingsPanel" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3"/>
-    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: none; position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgba(255, 255, 255, 0.97);"/>
-    <ui:VisualElement name="GameContainer" style="flex-grow: 1; align-content: center; justify-content: center;"/>
+    <ui:VisualElement name="Background" picking-mode="Ignore" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: none; position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgba(255, 255, 255, 0.97);"/>
     <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 918px; width: 17.5%; align-self: center; align-content: center; background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement name="HeldPiece" class="CaseContainer" style="flex-grow: initial; align-self: center; align-content: auto; height: 200px; top: 25%; background-color: rgba(0, 0, 0, 0); width: 100%;">
             <ui:Label text="HOLD" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" parse-escape-sequences="false" name="HoldLabel" class="UIText" style="align-self: auto; width: 100%;"/>
@@ -70,7 +69,7 @@
         </ui:VisualElement>
         <ui:Instance template="SettingsPanel" name="SettingPanel" style="width: 90%; align-self: center; display: none;"/>
     </ui:VisualElement>
-    <ui:VisualElement name="ReadyGoScreen" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; align-self: stretch; align-content: center; justify-content: center;">
+    <ui:VisualElement name="ReadyGoScreen" picking-mode="Ignore" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; align-self: stretch; align-content: center; justify-content: center;">
         <ui:Label text="Ready?" name="ReadyLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute;"/>
         <ui:Label text="Go!" name="GoLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute; display: flex;"/>
     </ui:VisualElement>

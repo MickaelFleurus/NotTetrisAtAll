@@ -71,23 +71,21 @@ VisualElement {
     -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
 }
 
-.StartScreenButton:active {
+.StartScreenButton:hover {
     font-size: 72px;
-    color: rgb(255, 211, 0);
-    border-bottom-color: rgb(255, 211, 0);
-    border-bottom-width: 2px;
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(0, 0, 0);
 }
 
 .StartScreenButton:focus {
     font-size: 72px;
     color: rgb(255, 211, 0);
-    border-bottom-color: rgb(255, 211, 0);
-    border-bottom-width: 2px;
 }
 
 .settingsSliders {
     font-size: 55px;
-    color: rgb(255, 255, 255);
+    color: rgba(255, 255, 255, 0.47);
     margin-bottom: 22px;
     -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
     flex-grow: 1;
@@ -197,8 +195,6 @@ VisualElement {
 
 .GameModeButton:focus {
     color: rgb(255, 211, 0);
-    border-bottom-color: rgb(255, 211, 0);
-    border-bottom-width: 2px;
 }
 
 .GameModeLevelButton {
@@ -206,7 +202,7 @@ VisualElement {
     width: 80px;
     margin-top: 0;
     background-color: rgba(188, 188, 188, 0);
-    color: rgb(255, 255, 255);
+    color: rgba(255, 255, 255, 0.48);
     border-top-width: 0;
     border-right-width: 0;
     border-bottom-width: 0;
@@ -229,8 +225,6 @@ VisualElement {
 
 .GameModeLevelButton:focus {
     color: rgb(255, 211, 0);
-    border-bottom-color: rgb(255, 211, 0);
-    border-bottom-width: 2px;
 }
 
 .readyGoText {
@@ -257,4 +251,27 @@ VisualElement {
     flex-grow: 1;
     align-self: center;
     scale: 0 0;
+}
+
+.GameModeButton:hover {
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(0, 0, 0);
+}
+
+.GameModeLevelButton:hover {
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
+    font-size: 50px;
+    -unity-text-outline-color: rgb(0, 0, 0);
+    -unity-text-outline-width: 1px;
+}
+
+.settingsSliders:hover {
+    font-size: 55px;
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
+    -unity-text-outline-color: rgb(0, 0, 0);
+    -unity-text-outline-width: 1px;
 }

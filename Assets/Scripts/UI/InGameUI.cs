@@ -5,12 +5,10 @@ using UnityEngine.UIElements;
 
 public class InGameUI : MonoBehaviour
 {
-
     [SerializeField] private UIDocument uiDocument;
     private Label scoreLabel;
     private Label lineCompletedLabel;
     private Label levelLabel;
-    private Image gameRender;
     private Image heldPiece;
     private Label timerLabel;
     private List<Image> nextPieces = new List<Image>(3);
@@ -20,6 +18,7 @@ public class InGameUI : MonoBehaviour
     private Label gameOverLabel;
     private Label timesUpLabel;
     private VisualElement gameOverScreen;
+    private VisualElement introScreen;
     private Button restartButton;
     private Label finalScoreLabel;
     private Label linesCompletedLabel;
@@ -34,7 +33,6 @@ public class InGameUI : MonoBehaviour
 
     void Start()
     {
-        gameRender = uiDocument.rootVisualElement.Q<Image>("Game");
         scoreLabel = uiDocument.rootVisualElement.Q<Label>("ScoreValue");
         lineCompletedLabel = uiDocument.rootVisualElement.Q<Label>("LinesValue");
         levelLabel = uiDocument.rootVisualElement.Q<Label>("LevelValue");
@@ -54,9 +52,9 @@ public class InGameUI : MonoBehaviour
         timeSurvivedLabel = uiDocument.rootVisualElement.Q<Label>("TimeSurvived");
         levelReachedLabel = uiDocument.rootVisualElement.Q<Label>("LevelReached");
 
-        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
+        introScreen = uiDocument.rootVisualElement.Q<VisualElement>("ReadyGoScreen");
 
-        gameRender.style.aspectRatio = GridHandler.Width / (float)GridHandler.Height;
+        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
 
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
 
@@ -165,5 +163,17 @@ public class InGameUI : MonoBehaviour
     private void BackToMainMenu()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
+
+    public void HideIntro()
+    {
+        introScreen.style.display = DisplayStyle.None;
+
+    }
+
+    public void ShowIntro()
+    {
+        introScreen.style.display = DisplayStyle.Flex;
+
     }
 }

@@ -5694,7 +5694,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 637877e499a6147d3a5d6f891b80ac93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ParticuleHandler
-  particlePrefab: {fileID: 435687559870018981, guid: a65f024187264454aa4f9ba3e1674df6, type: 3}
+  dropParticles: {fileID: 435687559870018981, guid: a65f024187264454aa4f9ba3e1674df6, type: 3}
+  lineParticles: {fileID: 435687559870018981, guid: f2fb9d88a279f40e39ca10a95868265f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
