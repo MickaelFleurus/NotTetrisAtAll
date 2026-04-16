@@ -237,4 +237,20 @@ public class PieceObject : MonoBehaviour
         return lowestY + 1;
 
     }
+
+
+    public float GetContactSurface()
+    {
+        float surface = 0f;
+        foreach (var piece in pieceIndices)
+        {
+            Vector2Int index = piece + positionIndex;
+            index.y--;
+            if (!grid.IsFree(index))
+            {
+                surface++;
+            }
+        }
+        return surface;
+    }
 }

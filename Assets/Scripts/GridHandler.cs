@@ -15,6 +15,7 @@ public class GridHandler : MonoBehaviour
     [SerializeField] GameObject Mask;
     [SerializeField] InGameUI inGameUI;
     [SerializeField] PlayableDirector playableDirector;
+    [SerializeField] ParticuleHandler particuleHandler;
 
     private bool introFinishedPlaying = false;
 
@@ -290,6 +291,7 @@ public class GridHandler : MonoBehaviour
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.GamePlacedSfx);
         Sprite pieceSprite = Piece.PieceHelper.GetSpriteForColor(currentPiece.color);
+        particuleHandler.EmitOnDrop(currentPiece);
 
         foreach (var index in currentPiece.GetIndexes())
         {
@@ -331,6 +333,13 @@ public class GridHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
+        // Emit particles for each completed line at its center
+        foreach (var lineY in completedLines)
+        {
+            Vector3 lineCenterPosition = new Vector3(0f, lineY - 10f, 0);
+            particuleHandler.EmitOnLineDestroyed(lineCenterPosition);
+        }
+
         var remainingRows = new List<Sprite[]>();
         for (int y = 0; y < Height; y++)
         {
@@ -369,26 +378,22 @@ public class GridHandler : MonoBehaviour
                 cell[y][x].Clear();
 
         AudioMixer.Instance.PlaySFX(AudioData.Instance.GameDestroySfx);
-        if (completedLines.Count > 0)
+        lineCompleted += completedLines.Count;
+        score += completedLines.Count * 100;
+
+        int newLevel = GameData.Instance.levelStart + (int)Math.Floor(lineCompleted / 10f);
+        if (newLevel > level)
         {
-            lineCompleted += completedLines.Count;
-            score += completedLines.Count * 100;
-
-            int newLevel = GameData.Instance.levelStart + (int)Math.Floor(lineCompleted / 10f);
-            if (newLevel > level)
-            {
-                level = newLevel;
-                inGameUI.UpdateLevel(level);
-                UpdateCurrentDropDelay();
-                TryMusicChange();
-            }
-
-
-            inGameUI.UpdateLines(lineCompleted);
-            inGameUI.UpdateScore(score);
+            level = newLevel;
+            inGameUI.UpdateLevel(level);
+            UpdateCurrentDropDelay();
+            TryMusicChange();
         }
+
+        inGameUI.UpdateLines(lineCompleted);
+        inGameUI.UpdateScore(score);
+
         pauseGameLoop = false;
-        canHold = true;
     }
 
     public bool IsFree(Vector2Int indices)
