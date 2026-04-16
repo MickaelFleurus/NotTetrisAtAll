@@ -163,6 +163,13 @@ public class GridHandler : MonoBehaviour
             playerInputs.Dispose();
         }
         playableDirector.stopped -= SetIntroDone;
+
+        // Unsubscribe from static PauseMenu event to prevent memory leaks
+        PauseMenu.unpauseGame -= OnUnpause;
+
+        // Unsubscribe from timer event
+        if (timer != null)
+            timer.isDone -= OnTimeOver;
     }
 
 

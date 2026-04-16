@@ -250,6 +250,43 @@ public class StartScreenUI : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        // Unsubscribe from UI panel events to prevent memory leaks
+        if (mSettingsPanel != null)
+            mSettingsPanel.OnClosed -= BackToTitle;
+
+        if (mGameModePanel != null)
+        {
+            mGameModePanel.OnClosed -= BackToTitle;
+            mGameModePanel.OnStarted -= StartGame;
+        }
+
+        // Unsubscribe from button clicks
+        if (mStartButton != null)
+            mStartButton.clicked -= ShowGameModePanel;
+
+        if (mSettingsButton != null)
+            mSettingsButton.clicked -= ShowOptions;
+
+        if (mCreditButton != null)
+            mCreditButton.clicked -= ShowCredits;
+
+        if (mCreditsFocusedButton != null)
+            mCreditsFocusedButton.clicked -= BackToTitle;
+
+        if (mQuitButton != null)
+            mQuitButton.clicked -= CloseGame;
+
+        // Unregister navigation callbacks
+        var rootVisualElement = uiDocument.rootVisualElement;
+        if (rootVisualElement != null)
+        {
+            rootVisualElement.UnregisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
+            rootVisualElement.UnregisterCallback<NavigationCancelEvent>(OnCancel);
+        }
+    }
+
 
 
 }

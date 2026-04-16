@@ -20,10 +20,12 @@ public class InGameUI : MonoBehaviour
     private VisualElement gameOverScreen;
     private VisualElement introScreen;
     private Button restartButton;
+    private Button backToMenuButton;
     private Label finalScoreLabel;
     private Label linesCompletedLabel;
     private Label timeSurvivedLabel;
     private Label levelReachedLabel;
+    NavigationGrid gameOverNav;
 
     // Pause menu
     private PauseMenu pauseMenu = null;
@@ -57,9 +59,16 @@ public class InGameUI : MonoBehaviour
         pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
 
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
+        backToMenuButton = uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton");
 
         restartButton.clicked += RestartGame;
-        uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton").clicked += BackToMainMenu;
+        backToMenuButton.clicked += BackToMainMenu;
+
+        List<NavigationRow> mainNav = new List<NavigationRow>() {
+            new NavigationRow(new NavigationCell(restartButton)),
+            new NavigationRow(new NavigationCell(backToMenuButton))
+        };
+        gameOverNav = new NavigationGrid(mainNav);
 
         PauseMenu.backToMainMenu += BackToMainMenu;
         PauseMenu.restartGame += RestartGame;
@@ -104,6 +113,7 @@ public class InGameUI : MonoBehaviour
     public void ShowGameOver()
     {
         gameOverScreen.RemoveFromClassList(hiddenMenuClassName);
+        gameOverScreen.RegisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
         levelLabel.style.display = DisplayStyle.None;
         lineCompletedLabel.style.display = DisplayStyle.None;
         scoreLabel.style.display = DisplayStyle.None;
@@ -117,12 +127,13 @@ public class InGameUI : MonoBehaviour
         UpdateLabel(timeSurvivedLabel, timerLabel.text);
         UpdateLabel(levelReachedLabel, levelLabel.text);
 
-        restartButton.Focus();
+        gameOverNav.RestoreFocus();
     }
 
     public void ShowGameTimerDone()
     {
         gameOverScreen.RemoveFromClassList(hiddenMenuClassName);
+        gameOverScreen.RegisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
         levelLabel.style.display = DisplayStyle.None;
         lineCompletedLabel.style.display = DisplayStyle.None;
         scoreLabel.style.display = DisplayStyle.None;
@@ -135,7 +146,13 @@ public class InGameUI : MonoBehaviour
         UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
         UpdateLabel(timeSurvivedLabel, lineCompletedLabel.text);
         UpdateLabel(levelReachedLabel, levelLabel.text);
-        restartButton.Focus();
+        gameOverNav.RestoreFocus();
+    }
+
+    private void OnGameOverMove(NavigationMoveEvent evt)
+    {
+        gameOverNav.OnNavigationEvent(evt);
+        gameOverScreen.focusController.IgnoreEvent(evt);
     }
 
     private void UpdateLabel(Label label, string value)
@@ -175,5 +192,15 @@ public class InGameUI : MonoBehaviour
     {
         introScreen.style.display = DisplayStyle.Flex;
 
+    }
+
+    void OnDestroy()
+    {
+        gameOverScreen.UnregisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
+        PauseMenu.backToMainMenu -= BackToMainMenu;
+        PauseMenu.restartGame -= RestartGame;
+        PauseMenu.CleanupAllSubscribers();
+        restartButton.clicked -= RestartGame;
+        backToMenuButton.clicked -= BackToMainMenu;
     }
 }

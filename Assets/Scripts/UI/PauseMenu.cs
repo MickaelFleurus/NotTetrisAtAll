@@ -90,6 +90,13 @@ public class PauseMenu
         root.AddToClassList(hiddenMenuClassName);
     }
 
+    public static void CleanupAllSubscribers()
+    {
+        unpauseGame = null;
+        backToMainMenu = null;
+        restartGame = null;
+    }
+
     private void BackToPauseMenu()
     {
         rootMain.style.display = DisplayStyle.Flex;
