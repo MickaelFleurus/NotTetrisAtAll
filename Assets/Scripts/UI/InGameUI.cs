@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class InGameUI : MonoBehaviour
 {
+    public enum EGameOverReason { Lost, TimeUp };
     [SerializeField] private UIDocument uiDocument;
     private Label scoreLabel;
     private Label lineCompletedLabel;
@@ -61,9 +62,6 @@ public class InGameUI : MonoBehaviour
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
         backToMenuButton = uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton");
 
-        restartButton.clicked += RestartGame;
-        backToMenuButton.clicked += BackToMainMenu;
-
         List<NavigationRow> mainNav = new List<NavigationRow>() {
             new NavigationRow(new NavigationCell(restartButton)),
             new NavigationRow(new NavigationCell(backToMenuButton))
@@ -110,49 +108,49 @@ public class InGameUI : MonoBehaviour
         return popedSprite;
     }
 
-    public void ShowGameOver()
+    public void ShowGameOver(EGameOverReason reason)
     {
         gameOverScreen.RemoveFromClassList(hiddenMenuClassName);
-        gameOverScreen.RegisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
         levelLabel.style.display = DisplayStyle.None;
         lineCompletedLabel.style.display = DisplayStyle.None;
         scoreLabel.style.display = DisplayStyle.None;
-        timeSurvivedLabel.style.display = DisplayStyle.Flex;
-
-        gameOverLabel.style.display = DisplayStyle.Flex;
-        timesUpLabel.style.display = DisplayStyle.None;
+        if (reason == EGameOverReason.Lost)
+        {
+            gameOverLabel.style.display = DisplayStyle.Flex;
+            timesUpLabel.style.display = DisplayStyle.None;
+            timeSurvivedLabel.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            gameOverLabel.style.display = DisplayStyle.None;
+            timesUpLabel.style.display = DisplayStyle.Flex;
+            timeSurvivedLabel.style.display = DisplayStyle.None;
+        }
 
         UpdateLabel(finalScoreLabel, scoreLabel.text);
         UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
         UpdateLabel(timeSurvivedLabel, timerLabel.text);
         UpdateLabel(levelReachedLabel, levelLabel.text);
 
+        Invoke(nameof(RegisterMenuInputs), 1f);
         gameOverNav.RestoreFocus();
     }
 
-    public void ShowGameTimerDone()
+    private void RegisterMenuInputs()
     {
-        gameOverScreen.RemoveFromClassList(hiddenMenuClassName);
+        restartButton.clicked += RestartGame;
+        backToMenuButton.clicked += BackToMainMenu;
         gameOverScreen.RegisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
-        levelLabel.style.display = DisplayStyle.None;
-        lineCompletedLabel.style.display = DisplayStyle.None;
-        scoreLabel.style.display = DisplayStyle.None;
-        timeSurvivedLabel.style.display = DisplayStyle.None;
-
-        gameOverLabel.style.display = DisplayStyle.None;
-        timesUpLabel.style.display = DisplayStyle.Flex;
-
-        UpdateLabel(finalScoreLabel, scoreLabel.text);
-        UpdateLabel(linesCompletedLabel, lineCompletedLabel.text);
-        UpdateLabel(timeSurvivedLabel, lineCompletedLabel.text);
-        UpdateLabel(levelReachedLabel, levelLabel.text);
-        gameOverNav.RestoreFocus();
     }
+
 
     private void OnGameOverMove(NavigationMoveEvent evt)
     {
-        gameOverNav.OnNavigationEvent(evt);
-        gameOverScreen.focusController.IgnoreEvent(evt);
+        if (gameOverScreen.style.display == DisplayStyle.Flex)
+        {
+            gameOverNav.OnNavigationEvent(evt);
+            gameOverScreen.focusController.IgnoreEvent(evt);
+        }
     }
 
     private void UpdateLabel(Label label, string value)
@@ -185,7 +183,6 @@ public class InGameUI : MonoBehaviour
     public void HideIntro()
     {
         introScreen.style.display = DisplayStyle.None;
-
     }
 
     public void ShowIntro()

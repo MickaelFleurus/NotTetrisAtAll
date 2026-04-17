@@ -48,19 +48,16 @@ public class PauseMenu
         continueButton.clicked += unpauseGame;
         restartButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Restart; ShowChoiceConfirmation(); };
         backToMenuButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Exit; ShowChoiceConfirmation(); };
-        settingsButton.clicked += ShowSettings;
+
 
         choiceConfirmationParent = root.Q<VisualElement>("NotSavedWarning");
         confirmQuitButton = choiceConfirmationParent.Q<AnimatedButton>("ExitButton");
         cancelChoiceButton = choiceConfirmationParent.Q<AnimatedButton>("BackButton");
 
-        confirmQuitButton.clicked += OnChoiceConfirmed;
-        cancelChoiceButton.clicked += BackToPauseMenu;
 
         settingsParent = root.Q<VisualElement>("SettingPanel");
 
         settingsPanel = new SettingsPanel(settingsParent);
-        settingsPanel.OnClosed += BackToPauseMenu;
 
 
         List<NavigationRow> mainNav = new List<NavigationRow>() {
@@ -74,12 +71,19 @@ public class PauseMenu
         confirmationNavigation = new NavigationGrid(confirmNav);
     }
 
+    private void RegisterMenuInputs()
+    {
+        root.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
+        root.RegisterCallback<NavigationCancelEvent>(OnCancel);
+        confirmQuitButton.clicked += OnChoiceConfirmed;
+        cancelChoiceButton.clicked += BackToPauseMenu;
+        settingsPanel.OnClosed += BackToPauseMenu;
+    }
+
     public void Show()
     {
         BackToPauseMenu();
         root.RemoveFromClassList(hiddenMenuClassName);
-        root.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
-        root.RegisterCallback<NavigationCancelEvent>(OnCancel);
         skipNextCancelEvent = true;
     }
 

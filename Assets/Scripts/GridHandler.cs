@@ -142,7 +142,7 @@ public class GridHandler : MonoBehaviour
                 if (!currentPiece.IsInGrid())
                 {
                     this.enabled = false;
-                    inGameUI.ShowGameOver();
+                    inGameUI.ShowGameOver(InGameUI.EGameOverReason.Lost);
                     pauseGameLoop = true;
                     return;
                 }
@@ -414,7 +414,7 @@ public class GridHandler : MonoBehaviour
     {
         pauseGameLoop = true;
         this.enabled = false;
-        inGameUI.ShowGameOver();
+        inGameUI.ShowGameOver(InGameUI.EGameOverReason.TimeUp);
     }
 
     private void OnHold()
