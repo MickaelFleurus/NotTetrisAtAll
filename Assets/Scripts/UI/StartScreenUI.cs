@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System;
 
 public class StartScreenUI : MonoBehaviour
 {
@@ -60,8 +61,24 @@ public class StartScreenUI : MonoBehaviour
                     break;
             }
         }
-        rootVisualElement.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
-        rootVisualElement.RegisterCallback<NavigationCancelEvent>(OnCancel);
+        rootVisualElement.RegisterCallback<NavigationMoveEvent>(evt =>
+        {
+            uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+            evt.StopPropagation();
+        }, TrickleDown.TrickleDown); // TrickleDown captures it before children
+
+        rootVisualElement.RegisterCallback<NavigationSubmitEvent>(evt =>
+        {
+            uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+            evt.StopPropagation();
+        }, TrickleDown.TrickleDown);
+
+
+        rootVisualElement.RegisterCallback<NavigationCancelEvent>(evt =>
+       {
+           uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+           evt.StopPropagation();
+       }, TrickleDown.TrickleDown);
 
         mCreditsView = rootVisualElement.Q<ScrollView>("CreditsView");
 
@@ -70,29 +87,33 @@ public class StartScreenUI : MonoBehaviour
         mMainMenuButtons = rootVisualElement.Q<VisualElement>("MainMenuButtons");
 
         mStartButton = rootVisualElement.Q<Button>("StartButton");
-        mStartButton.clicked += ShowGameModePanel;
 
         mQuitButton = rootVisualElement.Q<Button>("ExitButton");
-        mQuitButton.clicked += CloseGame;
 
         mSettingsButton = rootVisualElement.Q<Button>("SettingsButton");
-        mSettingsButton.clicked += ShowOptions;
 
         mCreditButton = rootVisualElement.Q<Button>("CreditsButton");
-        mCreditButton.clicked += ShowCredits;
 
         mCreditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
         mCreditsFocusedButton.clicked += BackToTitle;
 
-        mSettingsPanel = new SettingsPanel(mSettingsParent);
+        mSettingsPanel = new SettingsPanel(mSettingsParent, this);
         mSettingsPanel.OnClosed += BackToTitle;
 
-        mGameModePanel = new GameModePanel(rootVisualElement.Q<VisualElement>("GameModePanel"));
+        mGameModePanel = new GameModePanel(rootVisualElement.Q<VisualElement>("GameModePanel"), this);
         mGameModePanel.OnClosed += BackToTitle;
         mGameModePanel.OnStarted += StartGame;
 
+        Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action>
+        {
+            { mStartButton, ShowGameModePanel },
+            { mQuitButton, CloseGame },
+            { mSettingsButton, ShowOptions },
+            { mCreditButton, ShowCredits }
+        };
+
         LoadCredits();
-        SetupNavigation();
+        SetupNavigation(submitActions, this);
     }
 
     private void Start()
@@ -108,7 +129,7 @@ public class StartScreenUI : MonoBehaviour
         }
     }
 
-    private void SetupNavigation()
+    private void SetupNavigation(Dictionary<VisualElement, Action> submitActions, MonoBehaviour coroutineRunner)
     {
         List<NavigationRow> rows = new List<NavigationRow>() {
             new NavigationRow(new NavigationCell(mStartButton)),
@@ -116,14 +137,16 @@ public class StartScreenUI : MonoBehaviour
             new NavigationRow(new NavigationCell(mCreditButton)),
             new NavigationRow(new NavigationCell(mQuitButton)),
         };
-        mPageNavigation = new NavigationGrid(rows);
-
+        mPageNavigation = new NavigationGrid(rows, coroutineRunner);
+        mPageNavigation.SetupSubmitEvent(submitActions);
+        mPageNavigation.Enable();
     }
 
     private void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MainMenuMusic);
         GameData.Instance.OnGameStarted(gameMode, levelStart, blockSize, timeLimit);
+        NavigationGrid.ResetInputAction();
 
         Invoke("LoadGameScene", 0.5f);
     }
@@ -141,6 +164,7 @@ public class StartScreenUI : MonoBehaviour
         mSettingsParent.style.display = DisplayStyle.None;
         mCreditsParent.style.display = DisplayStyle.Flex;
         mCreditsFocusedButton.Focus();
+        mPageNavigation.Disable();
     }
 
     private void ShowOptions()
@@ -148,6 +172,7 @@ public class StartScreenUI : MonoBehaviour
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         mMainMenuButtons.style.display = DisplayStyle.None;
         mSettingsPanel.Show();
+        mPageNavigation.Disable();
     }
 
     private void ShowGameModePanel()
@@ -155,6 +180,7 @@ public class StartScreenUI : MonoBehaviour
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         mMainMenuButtons.style.display = DisplayStyle.None;
         mGameModePanel.Show();
+        mPageNavigation.Disable();
     }
 
     private void BackToTitle()
@@ -165,6 +191,7 @@ public class StartScreenUI : MonoBehaviour
         mCreditsParent.style.display = DisplayStyle.None;
 
         mPageNavigation.RestoreFocus();
+        mPageNavigation.Enable();
     }
 
     private void CloseGame()
@@ -219,25 +246,6 @@ public class StartScreenUI : MonoBehaviour
         }
     }
 
-    void OnMove(NavigationMoveEvent evt)
-    {
-        bool shouldIgnoreEvent = false;
-        if (mSettingsPanel.IsShown())
-        {
-            shouldIgnoreEvent = mSettingsPanel.OnMove(evt);
-        }
-        else if (mGameModePanel.IsShown())
-        {
-            shouldIgnoreEvent = mGameModePanel.OnMove(evt);
-        }
-        else if (mCreditsParent.style.display != DisplayStyle.Flex)
-        {
-            shouldIgnoreEvent = mPageNavigation.OnNavigationEvent(evt);
-        }
-        if (shouldIgnoreEvent)
-            uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
-    }
-
     void OnCancel(NavigationCancelEvent evt)
     {
         if (mSettingsParent.style.display == DisplayStyle.Flex)
@@ -260,30 +268,6 @@ public class StartScreenUI : MonoBehaviour
         {
             mGameModePanel.OnClosed -= BackToTitle;
             mGameModePanel.OnStarted -= StartGame;
-        }
-
-        // Unsubscribe from button clicks
-        if (mStartButton != null)
-            mStartButton.clicked -= ShowGameModePanel;
-
-        if (mSettingsButton != null)
-            mSettingsButton.clicked -= ShowOptions;
-
-        if (mCreditButton != null)
-            mCreditButton.clicked -= ShowCredits;
-
-        if (mCreditsFocusedButton != null)
-            mCreditsFocusedButton.clicked -= BackToTitle;
-
-        if (mQuitButton != null)
-            mQuitButton.clicked -= CloseGame;
-
-        // Unregister navigation callbacks
-        var rootVisualElement = uiDocument.rootVisualElement;
-        if (rootVisualElement != null)
-        {
-            rootVisualElement.UnregisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
-            rootVisualElement.UnregisterCallback<NavigationCancelEvent>(OnCancel);
         }
     }
 

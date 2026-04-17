@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -36,6 +37,25 @@ public class InGameUI : MonoBehaviour
 
     void Start()
     {
+        uiDocument.rootVisualElement.RegisterCallback<NavigationMoveEvent>(evt =>
+       {
+           uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+           evt.StopPropagation();
+       }, TrickleDown.TrickleDown); // TrickleDown captures it before children
+
+        uiDocument.rootVisualElement.RegisterCallback<NavigationSubmitEvent>(evt =>
+       {
+           uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+           evt.StopPropagation();
+       }, TrickleDown.TrickleDown);
+
+
+        uiDocument.rootVisualElement.RegisterCallback<NavigationCancelEvent>(evt =>
+       {
+           uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+           evt.StopPropagation();
+       }, TrickleDown.TrickleDown);
+
         scoreLabel = uiDocument.rootVisualElement.Q<Label>("ScoreValue");
         lineCompletedLabel = uiDocument.rootVisualElement.Q<Label>("LinesValue");
         levelLabel = uiDocument.rootVisualElement.Q<Label>("LevelValue");
@@ -57,7 +77,7 @@ public class InGameUI : MonoBehaviour
 
         introScreen = uiDocument.rootVisualElement.Q<VisualElement>("ReadyGoScreen");
 
-        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
+        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"), this);
 
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
         backToMenuButton = uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton");
@@ -66,7 +86,10 @@ public class InGameUI : MonoBehaviour
             new NavigationRow(new NavigationCell(restartButton)),
             new NavigationRow(new NavigationCell(backToMenuButton))
         };
-        gameOverNav = new NavigationGrid(mainNav);
+        gameOverNav = new NavigationGrid(mainNav, this);
+        Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action> { { restartButton, RestartGame }, { backToMenuButton, BackToMainMenu } };
+        gameOverNav.SetupSubmitEvent(submitActions);
+        gameOverNav.Disable();
 
         PauseMenu.backToMainMenu += BackToMainMenu;
         PauseMenu.restartGame += RestartGame;
@@ -138,19 +161,7 @@ public class InGameUI : MonoBehaviour
 
     private void RegisterMenuInputs()
     {
-        restartButton.clicked += RestartGame;
-        backToMenuButton.clicked += BackToMainMenu;
-        gameOverScreen.RegisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
-    }
-
-
-    private void OnGameOverMove(NavigationMoveEvent evt)
-    {
-        if (gameOverScreen.style.display == DisplayStyle.Flex)
-        {
-            gameOverNav.OnNavigationEvent(evt);
-            gameOverScreen.focusController.IgnoreEvent(evt);
-        }
+        gameOverNav.Enable();
     }
 
     private void UpdateLabel(Label label, string value)
@@ -193,11 +204,8 @@ public class InGameUI : MonoBehaviour
 
     void OnDestroy()
     {
-        gameOverScreen.UnregisterCallback<NavigationMoveEvent>(OnGameOverMove, TrickleDown.TrickleDown);
         PauseMenu.backToMainMenu -= BackToMainMenu;
         PauseMenu.restartGame -= RestartGame;
         PauseMenu.CleanupAllSubscribers();
-        restartButton.clicked -= RestartGame;
-        backToMenuButton.clicked -= BackToMainMenu;
     }
 }

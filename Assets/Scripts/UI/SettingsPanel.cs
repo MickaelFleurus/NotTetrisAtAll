@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public class SettingsPanel
@@ -15,7 +15,7 @@ public class SettingsPanel
 
 
 
-    public SettingsPanel(VisualElement settingsPanel)
+    public SettingsPanel(VisualElement settingsPanel, MonoBehaviour coroutineRunner)
     {
         mSettingsPanel = settingsPanel;
 
@@ -23,20 +23,14 @@ public class SettingsPanel
         mMusicVolume = mSettingsPanel.Q<AnimatedSlider>("MusicVolume");
         mSoundEffectsVolume = mSettingsPanel.Q<AnimatedSlider>("SFXVolume");
         mBackButton = mSettingsPanel.Q<AnimatedButton>("SettingsBackButton");
-        mBackButton.clicked += () =>
-        {
-            AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
-            Hide();
-        };
-
 
         mMasterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
         mMusicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
         mSoundEffectsVolume.RegisterValueChangedCallback(OnSoundEffectsVolumeChanged);
-        SetupNavigation();
+        SetupNavigation(coroutineRunner);
     }
 
-    private void SetupNavigation()
+    private void SetupNavigation(MonoBehaviour coroutineRunner)
     {
         List<NavigationRow> rows = new List<NavigationRow>() {
             new NavigationRow(new NavigationCell(mBackButton)),
@@ -44,8 +38,11 @@ public class SettingsPanel
             new NavigationRow(new NavigationCell(mMusicVolume)),
             new NavigationRow(new NavigationCell(mSoundEffectsVolume)),
         };
-        mPageNavigation = new NavigationGrid(rows, 0, 1);
+        Dictionary<VisualElement, Action> actionDictionary = new Dictionary<VisualElement, Action> { { mBackButton, Hide } };
 
+        mPageNavigation = new NavigationGrid(rows, coroutineRunner, 0, 1);
+        mPageNavigation.SetupSubmitEvent(actionDictionary);
+        mPageNavigation.cancelPressed += Hide;
     }
 
     public bool IsShown()
@@ -75,6 +72,7 @@ public class SettingsPanel
         mMusicVolume.value = GameSettings.Instance.MusicVolume * 100f;
         mSoundEffectsVolume.value = GameSettings.Instance.SoundEffectsVolume * 100f;
 
+        mPageNavigation.Enable();
         mPageNavigation.RestoreFocus();
     }
 
@@ -83,13 +81,8 @@ public class SettingsPanel
         if (mSettingsPanel.style.display == DisplayStyle.Flex)
         {
             mSettingsPanel.style.display = DisplayStyle.None;
+            mPageNavigation.Disable();
             OnClosed.Invoke();
         }
     }
-
-    public bool OnMove(NavigationMoveEvent evt)
-    {
-        return mPageNavigation.OnNavigationEvent(evt);
-    }
-
 }

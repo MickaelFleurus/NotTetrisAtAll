@@ -33,7 +33,7 @@ public class PauseMenu
 
     bool skipNextCancelEvent = false;
 
-    public PauseMenu(VisualElement root)
+    public PauseMenu(VisualElement root, MonoBehaviour coroutineRunner)
     {
         this.root = root;
 
@@ -45,11 +45,6 @@ public class PauseMenu
 
         backToMenuButton = root.Q<AnimatedButton>("BackToMenu");
 
-        continueButton.clicked += unpauseGame;
-        restartButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Restart; ShowChoiceConfirmation(); };
-        backToMenuButton.clicked += () => { choiceConfirmationUse = EChoiceConfirmationUse.Exit; ShowChoiceConfirmation(); };
-
-
         choiceConfirmationParent = root.Q<VisualElement>("NotSavedWarning");
         confirmQuitButton = choiceConfirmationParent.Q<AnimatedButton>("ExitButton");
         cancelChoiceButton = choiceConfirmationParent.Q<AnimatedButton>("BackButton");
@@ -57,7 +52,16 @@ public class PauseMenu
 
         settingsParent = root.Q<VisualElement>("SettingPanel");
 
-        settingsPanel = new SettingsPanel(settingsParent);
+        settingsPanel = new SettingsPanel(settingsParent, coroutineRunner);
+        settingsPanel.OnClosed += BackToPauseMenu;
+
+        Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action> {
+             { continueButton, unpauseGame },
+              { restartButton, () => { choiceConfirmationUse = EChoiceConfirmationUse.Restart; ShowChoiceConfirmation(); } },
+              {settingsButton, ShowSettings},
+              {backToMenuButton, () => { choiceConfirmationUse = EChoiceConfirmationUse.Exit; ShowChoiceConfirmation(); }}
+               };
+
 
 
         List<NavigationRow> mainNav = new List<NavigationRow>() {
@@ -66,18 +70,21 @@ public class PauseMenu
             new NavigationRow(new NavigationCell(settingsButton)),
             new NavigationRow(new NavigationCell(backToMenuButton)),
         };
-        pageNavigation = new NavigationGrid(mainNav);
-        List<NavigationRow> confirmNav = new List<NavigationRow>() { new NavigationRow(new List<VisualElement>() { cancelChoiceButton, confirmQuitButton }) };
-        confirmationNavigation = new NavigationGrid(confirmNav);
-    }
+        pageNavigation = new NavigationGrid(mainNav, coroutineRunner);
+        pageNavigation.SetupSubmitEvent(submitActions);
+        pageNavigation.Disable();
+        pageNavigation.cancelPressed += unpauseGame;
 
-    private void RegisterMenuInputs()
-    {
-        root.RegisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
-        root.RegisterCallback<NavigationCancelEvent>(OnCancel);
-        confirmQuitButton.clicked += OnChoiceConfirmed;
-        cancelChoiceButton.clicked += BackToPauseMenu;
-        settingsPanel.OnClosed += BackToPauseMenu;
+
+        List<NavigationRow> confirmNav = new List<NavigationRow>() { new NavigationRow(new List<VisualElement>() { cancelChoiceButton, confirmQuitButton }) };
+        Dictionary<VisualElement, Action> submitActionsConfirm = new Dictionary<VisualElement, Action> {
+             { confirmQuitButton, OnChoiceConfirmed },
+              { cancelChoiceButton, BackToPauseMenu}
+               };
+        confirmationNavigation = new NavigationGrid(confirmNav, coroutineRunner);
+        confirmationNavigation.SetupSubmitEvent(submitActionsConfirm);
+        confirmationNavigation.Disable();
+        confirmationNavigation.cancelPressed += BackToPauseMenu;
     }
 
     public void Show()
@@ -89,8 +96,7 @@ public class PauseMenu
 
     public void Hide()
     {
-        root.UnregisterCallback<NavigationMoveEvent>(OnMove, TrickleDown.TrickleDown);
-        root.UnregisterCallback<NavigationCancelEvent>(OnCancel);
+        pageNavigation.Disable();
         root.AddToClassList(hiddenMenuClassName);
     }
 
@@ -108,6 +114,8 @@ public class PauseMenu
         choiceConfirmationUse = EChoiceConfirmationUse.None;
         settingsPanel.Hide();
         pageNavigation.RestoreFocus();
+        pageNavigation.Enable();
+        confirmationNavigation.Disable();
     }
 
     private void OnCancel(NavigationCancelEvent evt)
@@ -132,6 +140,7 @@ public class PauseMenu
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
         settingsPanel.Show();
+        pageNavigation.Disable();
         rootMain.style.display = DisplayStyle.None;
     }
 
@@ -142,6 +151,8 @@ public class PauseMenu
         confirmQuitButton.text = choiceConfirmationUse == EChoiceConfirmationUse.Restart ? "Restart" : "Quit";
         choiceConfirmationParent.style.display = DisplayStyle.Flex;
         confirmationNavigation.RestoreFocus();
+        confirmationNavigation.Enable();
+        pageNavigation.Disable();
     }
 
     private void OnChoiceConfirmed()
@@ -152,25 +163,5 @@ public class PauseMenu
     }
 
 
-    private void OnMove(NavigationMoveEvent evt)
-    {
-        bool shouldIgnoreEvent = false;
-        if (settingsPanel.IsShown())
-        {
-            shouldIgnoreEvent = settingsPanel.OnMove(evt);
-        }
-        else if (choiceConfirmationUse == EChoiceConfirmationUse.None)
-        {
-            shouldIgnoreEvent = pageNavigation.OnNavigationEvent(evt);
-        }
-        else
-        {
-            shouldIgnoreEvent = confirmationNavigation.OnNavigationEvent(evt);
-        }
-
-        if (shouldIgnoreEvent)
-            root.focusController.IgnoreEvent(evt);
-
-    }
 
 }

@@ -151,8 +151,6 @@ public class GridHandler : MonoBehaviour
                 stuckTimer = 0f;
             }
         }
-
-
     }
 
     void OnDestroy()
@@ -170,6 +168,8 @@ public class GridHandler : MonoBehaviour
         // Unsubscribe from timer event
         if (timer != null)
             timer.isDone -= OnTimeOver;
+
+        NavigationGrid.ResetInputAction();
     }
 
 
