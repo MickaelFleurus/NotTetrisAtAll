@@ -1,33 +1,45 @@
+using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class InputRepeatHandler
 {
     private float repeatDelay;
-    private float timeSinceLastInput = 0f;
+    private Coroutine coroutine = null;
+    private MonoBehaviour coroutineRunner = null;
 
-    public InputRepeatHandler(float repeatDelay)
+    public Action Repeat;
+
+    public InputRepeatHandler(MonoBehaviour coroutineRunner, float repeatDelay)
     {
+        this.coroutineRunner = coroutineRunner;
         this.repeatDelay = repeatDelay;
-        timeSinceLastInput = repeatDelay;
     }
 
-    public bool ShouldRepeat(float value, float deltaTime)
+
+    public void Start()
     {
-        if (Mathf.Abs(value) > 0.5f)
+        if (coroutine != null)
+            coroutineRunner.StopCoroutine(coroutine);
+        coroutine = coroutineRunner.StartCoroutine(RepeatFunc());
+    }
+
+    public void Stop()
+    {
+        if (coroutine != null)
         {
-            timeSinceLastInput += deltaTime;
-            if (timeSinceLastInput >= repeatDelay)
-            {
-                timeSinceLastInput = 0f;
-                return true;
-            }
-            return false;
-        }
-        else
-        {
-            timeSinceLastInput = repeatDelay;
-            return false;
+            coroutineRunner.StopCoroutine(coroutine);
+            coroutine = null;
         }
     }
+
+    private IEnumerator RepeatFunc()
+    {
+        while (true)
+        {
+            Repeat?.Invoke();
+            yield return new WaitForSeconds(repeatDelay);
+        }
+    }
+
 }

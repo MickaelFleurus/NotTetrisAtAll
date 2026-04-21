@@ -2,127 +2,122 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 public class GameModePanel
 {
-    private VisualElement mGameModePanel;
+    private VisualElement gameModePanel;
 
-    private AnimatedButton mBackButton;
+    private AnimatedButton backButton;
+    private List<AnimatedButton> gameModes = new List<AnimatedButton>();
 
-    // Game Modes
-    private List<AnimatedButton> mGameModes = new List<AnimatedButton>();
-
-    // Level Select
-    private List<AnimatedButton> mLevels;
+    private List<AnimatedButton> levels = new List<AnimatedButton>();
 
     // Block size
-    private List<AnimatedButton> mBlockSize;
-    private Label mBlockSizeWarning;
+    private List<AnimatedButton> blockSize = new List<AnimatedButton>();
+    private Label blockSizeWarning;
 
 
     // Time Limit
-    private Label mTimeLimitLabel;
-    private VisualElement mTimeLimitParent;
-    private List<AnimatedButton> mTimeLimit;
+    private Label timeLimitLabel;
+    private VisualElement timeLimitParent;
+    private List<AnimatedButton> timeLimit;
 
-    private AnimatedButton mStartButton;
+    private AnimatedButton startButton;
 
     public event Action OnClosed;
     public event Action<EGameMode, int, int, EGameTimeLimit> OnStarted;
 
-    private EGameMode mSelectedGameMode = EGameMode.Marathon;
-    private int mSelectedStartLevel = 1;
-    private int mSelectedBlockSize = 4;
-    private EGameTimeLimit mSelectedTimeLimit = EGameTimeLimit.One;
-    NavigationGrid mPageNavigation;
-    int mTimeLimitRowIndex = 6;
+    private EGameMode selectedGameMode = EGameMode.Marathon;
+    private int selectedStartLevel = 1;
+    private int selectedBlockSize = 4;
+    private EGameTimeLimit selectedTimeLimit = EGameTimeLimit.One;
+    NavigationGrid pageNavigation;
+    int timeLimitRowIndex = 6;
 
 
-    public GameModePanel(VisualElement settingsPanel, MonoBehaviour coroutineRunner)
+    public GameModePanel(VisualElement settingsPanel)
     {
-        mGameModePanel = settingsPanel;
-        mBackButton = mGameModePanel.Q<AnimatedButton>("BackButton");
+        gameModePanel = settingsPanel;
+        backButton = gameModePanel.Q<AnimatedButton>("BackButton");
 
-        mGameModes.Add(mGameModePanel.Q<AnimatedButton>("Marathon"));
-        mGameModes.Add(mGameModePanel.Q<AnimatedButton>("TimeLimit"));
-        mGameModes.Add(mGameModePanel.Q<AnimatedButton>("Infinite"));
+        gameModes.Add(gameModePanel.Q<AnimatedButton>("Marathon"));
+        gameModes.Add(gameModePanel.Q<AnimatedButton>("TimeLimit"));
 
-        mLevels = mGameModePanel.Q<VisualElement>("LevelStartParent").Children().OfType<AnimatedButton>().ToList();
-        mBlockSize = mGameModePanel.Q<VisualElement>("BlockSizeParent").Children().OfType<AnimatedButton>().ToList();
-        mBlockSizeWarning = mGameModePanel.Q<Label>("BlockSizeWarning");
-        mTimeLimitLabel = mGameModePanel.Q<Label>("TimeLimitLabel");
-        mTimeLimitParent = mGameModePanel.Q<VisualElement>("TimeLimitParent");
-        mTimeLimit = mTimeLimitParent.Children().OfType<AnimatedButton>().ToList();
-        mStartButton = mGameModePanel.Q<AnimatedButton>("StartButton");
+        levels = gameModePanel.Q<VisualElement>("LevelStartParent").Children().OfType<AnimatedButton>().ToList();
+        blockSize = gameModePanel.Q<VisualElement>("BlockSizeParent").Children().OfType<AnimatedButton>().ToList();
+        blockSizeWarning = gameModePanel.Q<Label>("BlockSizeWarning");
+        timeLimitLabel = gameModePanel.Q<Label>("TimeLimitLabel");
+        timeLimitParent = gameModePanel.Q<VisualElement>("TimeLimitParent");
+        timeLimit = timeLimitParent.Children().OfType<AnimatedButton>().ToList();
+        startButton = gameModePanel.Q<AnimatedButton>("StartButton");
 
 
         Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action>
         {
-            { mBackButton, Hide },
-            { mStartButton, OnStartPressed }
+            { backButton, Hide },
+            { startButton, OnStartPressed }
         };
 
-        foreach (var elem in mGameModes)
+        foreach (var elem in gameModes)
         {
             submitActions.Add(elem, () =>
              {
-                 mSelectedGameMode = Enum.Parse<EGameMode>(elem.name);
-                 SetChoiceAsSelected(mGameModes, elem);
-                 if (mSelectedGameMode == EGameMode.TimeLimit)
+                 selectedGameMode = Enum.Parse<EGameMode>(elem.name);
+                 SetChoiceAsSelected(gameModes, elem);
+                 if (selectedGameMode == EGameMode.TimeLimit)
                  {
-                     mTimeLimitLabel.style.display = DisplayStyle.Flex;
-                     mTimeLimitParent.style.display = DisplayStyle.Flex;
-                     mPageNavigation.EnableRow(mTimeLimitRowIndex);
+                     timeLimitLabel.style.display = DisplayStyle.Flex;
+                     timeLimitParent.style.display = DisplayStyle.Flex;
+                     pageNavigation.EnableRow(timeLimitRowIndex);
                  }
                  else
                  {
-                     mTimeLimitLabel.style.display = DisplayStyle.None;
-                     mTimeLimitParent.style.display = DisplayStyle.None;
-                     mPageNavigation.DisableRow(mTimeLimitRowIndex);
+                     timeLimitLabel.style.display = DisplayStyle.None;
+                     timeLimitParent.style.display = DisplayStyle.None;
+                     pageNavigation.DisableRow(timeLimitRowIndex);
                  }
              });
         }
 
-        foreach (var elem in mLevels)
+        foreach (var elem in levels)
         {
             submitActions.Add(elem, () =>
             {
-                mSelectedStartLevel = int.Parse(elem.name);
-                SetChoiceAsSelected(mLevels, elem, true);
-                mPageNavigation.SelectColumnAsDefault();
+                selectedStartLevel = int.Parse(elem.name);
+                SetChoiceAsSelected(levels, elem, true);
+                pageNavigation.SelectColumnAsDefault();
             });
         }
-        foreach (var elem in mBlockSize)
+        foreach (var elem in blockSize)
         {
             submitActions.Add(elem, () =>
             {
-                SetChoiceAsSelected(mBlockSize, elem, true);
-                mSelectedBlockSize = int.Parse(elem.text);
-                if (mSelectedBlockSize < 3 || mSelectedBlockSize > 5)
+                SetChoiceAsSelected(blockSize, elem, true);
+                selectedBlockSize = int.Parse(elem.text);
+                if (selectedBlockSize < 3 || selectedBlockSize > 5)
                 {
-                    mBlockSizeWarning.style.display = DisplayStyle.Flex;
+                    blockSizeWarning.style.display = DisplayStyle.Flex;
                 }
                 else
                 {
-                    mBlockSizeWarning.style.display = DisplayStyle.None;
+                    blockSizeWarning.style.display = DisplayStyle.None;
                 }
-                mPageNavigation.SelectColumnAsDefault();
+                pageNavigation.SelectColumnAsDefault();
             });
         }
-        foreach (var elem in mTimeLimit)
+        foreach (var elem in timeLimit)
         {
             submitActions.Add(elem, () =>
             {
-                int timeLimit = int.Parse(elem.text);
-                mSelectedTimeLimit = IntToGameTimeLimit(timeLimit);
-                SetChoiceAsSelected(mTimeLimit, elem, true);
-                mPageNavigation.SelectColumnAsDefault();
+                int timeLimitVal = int.Parse(elem.text);
+                selectedTimeLimit = IntToGameTimeLimit(timeLimitVal);
+                SetChoiceAsSelected(timeLimit, elem, true);
+                pageNavigation.SelectColumnAsDefault();
             });
         }
 
-        SetupNavigation(submitActions, coroutineRunner);
+        SetupNavigation(submitActions);
     }
     private EGameTimeLimit IntToGameTimeLimit(int value)
     {
@@ -137,28 +132,26 @@ public class GameModePanel
         };
     }
 
-    private void SetupNavigation(Dictionary<VisualElement, Action> onSubmit, MonoBehaviour coroutineRunner)
+    private void SetupNavigation(Dictionary<VisualElement, Action> onSubmit)
     {
         List<NavigationRow> rows = new List<NavigationRow>() {
-            new NavigationRow(new NavigationCell(mBackButton)),
-            new NavigationRow(new NavigationCell(mGameModes[0])),
-            new NavigationRow(new NavigationCell(mGameModes[1])),
-            new NavigationRow(new NavigationCell(mGameModes[2])),
-            new NavigationRow(mLevels.Cast<VisualElement>().ToList(), 3),
-            new NavigationRow(mBlockSize.Cast<VisualElement>().ToList(), 3),
-            new NavigationRow(mTimeLimit.Cast<VisualElement>().ToList(), 0, false),
-            new NavigationRow(new NavigationCell(mStartButton)),
+            new NavigationRow(new NavigationCell(backButton)),
+            new NavigationRow(new NavigationCell(gameModes[0])),
+            new NavigationRow(new NavigationCell(gameModes[1])),
+            new NavigationRow(levels.Cast<VisualElement>().ToList(), 3),
+            new NavigationRow(blockSize.Cast<VisualElement>().ToList(), 3),
+            new NavigationRow(timeLimit.Cast<VisualElement>().ToList(), 0, false),
+            new NavigationRow(new NavigationCell(startButton)),
         };
-        mPageNavigation = new NavigationGrid(rows, coroutineRunner, 0, 1);
-        mPageNavigation.SetupSubmitEvent(onSubmit);
-        mTimeLimitRowIndex = 6;
-        mPageNavigation.RestoreFocus();
-        mPageNavigation.cancelPressed += Hide;
+        pageNavigation = new NavigationGrid(rows, onSubmit, 0, 1);
+        timeLimitRowIndex = 6;
+        pageNavigation.RestoreFocus();
+        pageNavigation.cancelPressed += Hide;
     }
 
     public bool IsShown()
     {
-        return mGameModePanel.style.display == DisplayStyle.Flex;
+        return gameModePanel.style.display == DisplayStyle.Flex;
     }
 
 
@@ -177,21 +170,21 @@ public class GameModePanel
 
     public void Show()
     {
-        mGameModePanel.style.display = DisplayStyle.Flex;
-        mPageNavigation.RestoreFocus();
-        mPageNavigation.Enable();
+        gameModePanel.style.display = DisplayStyle.Flex;
+        pageNavigation.RestoreFocus();
+        pageNavigation.Enable();
     }
 
     public void Hide()
     {
-        mGameModePanel.style.display = DisplayStyle.None;
+        gameModePanel.style.display = DisplayStyle.None;
         OnClosed.Invoke();
-        mPageNavigation.Disable();
+        pageNavigation.Disable();
     }
 
     private void OnStartPressed()
     {
-        OnStarted.Invoke(mSelectedGameMode, mSelectedStartLevel, mSelectedBlockSize, mSelectedTimeLimit);
+        OnStarted.Invoke(selectedGameMode, selectedStartLevel, selectedBlockSize, selectedTimeLimit);
     }
 
 }

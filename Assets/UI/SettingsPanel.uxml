@@ -1,13 +1,22 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
-    <ui:VisualElement name="Settings" style="flex-grow: 0; position: relative; top: auto; align-self: center; width: 100%; height: 100%; display: flex; left: auto; justify-content: center; align-content: auto; align-items: flex-end; flex-shrink: 1;">
-        <AnimatedButton text="Back" name="SettingsBackButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="project://database/Assets/Resources/Sprites/arrow.png?fileID=2800000&amp;guid=e6a6a3fa59a8f4940b891087b5dd3f3b&amp;type=3#arrow" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: 163px;"/>
-        <ui:Label text="Audio" name="AudioCategoryLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" style="font-size: 70px; color: rgb(255, 255, 255); height: 350px; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&amp;guid=64b567f78eb144a20b4d5b5a10fc7395&amp;type=3#Super Starfish&quot;); align-self: flex-start; width: 100%;">
-            <ui:VisualElement name="AudioCategory" style="flex-grow: 0; top: 100px; left: auto; align-self: stretch; justify-content: space-evenly; padding-left: 50px;">
-                <AnimatedSlider label="Master Volume" value="100" high-value="100" name="MasterAudio" class="settingsSliders" style="margin-top: 0; margin-left: 0; width: 100%;"/>
-                <AnimatedSlider label="Music Volume" value="100" high-value="100" name="MusicVolume" class="settingsSliders" style="height: 56px;"/>
-                <AnimatedSlider label="SFX Volume" value="100" high-value="100" name="SFXVolume" class="settingsSliders"/>
-            </ui:VisualElement>
-        </ui:Label>
+    <ui:VisualElement name="Settings" style="flex-grow: 0; align-self: center; width: 100%; height: auto; display: flex; justify-content: center; align-content: auto; align-items: flex-end; flex-shrink: 1;">
+        <ui:ScrollView name="ScrollView" horizontal-scroller-visibility="Hidden" style="width: 100%;">
+            <ui:Label text="Audio" name="AudioCategoryLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel">
+                <ui:VisualElement name="AudioCategory" class="SettingsCategoryParent">
+                    <AnimatedSlider label="Master Volume" value="100" high-value="100" name="MasterAudio" class="settingsSliders" style="margin-top: 0; margin-left: 0; width: 100%;"/>
+                    <AnimatedSlider label="Music Volume" value="100" high-value="100" name="MusicVolume" class="settingsSliders" style="height: 56px;"/>
+                    <AnimatedSlider label="SFX Volume" value="100" high-value="100" name="SFXVolume" class="settingsSliders"/>
+                </ui:VisualElement>
+            </ui:Label>
+            <ui:Label text="Controls" name="ControlLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel" style="height: auto;"/>
+        </ui:ScrollView>
+    </ui:VisualElement>
+    <ui:VisualElement name="ValidationButtons" style="flex-grow: 1; width: 100%; align-items: center; align-self: center; flex-direction: row; align-content: center; justify-content: space-around;">
+        <AnimatedButton text="Cancel" name="SettingsCancelButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: auto;"/>
+        <AnimatedButton text="Apply" name="SettingsApplyButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: auto;"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="ButtonChangeModal" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none;">
+        <ui:Label text="Press the button you want to use for {action}" name="ButtonChangeInstructions" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&amp;guid=64b567f78eb144a20b4d5b5a10fc7395&amp;type=3#Super Starfish&quot;); font-size: 80px; color: rgb(255, 255, 255); -unity-text-align: middle-center; height: 100%; white-space: normal;"/>
     </ui:VisualElement>
 </ui:UXML>

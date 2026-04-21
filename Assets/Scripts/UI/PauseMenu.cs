@@ -33,7 +33,7 @@ public class PauseMenu
 
     bool skipNextCancelEvent = false;
 
-    public PauseMenu(VisualElement root, MonoBehaviour coroutineRunner)
+    public PauseMenu(VisualElement root)
     {
         this.root = root;
 
@@ -52,7 +52,7 @@ public class PauseMenu
 
         settingsParent = root.Q<VisualElement>("SettingPanel");
 
-        settingsPanel = new SettingsPanel(settingsParent, coroutineRunner);
+        settingsPanel = new SettingsPanel(settingsParent);
         settingsPanel.OnClosed += BackToPauseMenu;
 
         Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action> {
@@ -70,8 +70,8 @@ public class PauseMenu
             new NavigationRow(new NavigationCell(settingsButton)),
             new NavigationRow(new NavigationCell(backToMenuButton)),
         };
-        pageNavigation = new NavigationGrid(mainNav, coroutineRunner);
-        pageNavigation.SetupSubmitEvent(submitActions);
+        pageNavigation = new NavigationGrid(mainNav, submitActions);
+
         pageNavigation.Disable();
         pageNavigation.cancelPressed += unpauseGame;
 
@@ -81,8 +81,8 @@ public class PauseMenu
              { confirmQuitButton, OnChoiceConfirmed },
               { cancelChoiceButton, BackToPauseMenu}
                };
-        confirmationNavigation = new NavigationGrid(confirmNav, coroutineRunner);
-        confirmationNavigation.SetupSubmitEvent(submitActionsConfirm);
+        confirmationNavigation = new NavigationGrid(confirmNav, submitActionsConfirm);
+
         confirmationNavigation.Disable();
         confirmationNavigation.cancelPressed += BackToPauseMenu;
     }

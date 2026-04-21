@@ -8,22 +8,22 @@ public class StartScreenUI : MonoBehaviour
 {
     [SerializeField] private UIDocument uiDocument;
     private List<IAnimatedElement> AnimatedElements = new List<IAnimatedElement>();
-    private ScrollView mCreditsView;
-    private VisualElement mMainMenuButtons;
+    private ScrollView creditsView;
+    private VisualElement mainMenuButtons;
 
-    private VisualElement mCreditsParent;
-    private VisualElement mSettingsParent;
+    private VisualElement creditsParent;
+    private VisualElement settingsParent;
 
-    private Button mStartButton;
+    private Button startButton;
     private Button mSettingsButton;
-    private Button mCreditButton;
-    private Button mQuitButton;
-    private Button mCreditsFocusedButton;
+    private Button creditButton;
+    private Button quitButton;
+    private Button creditsFocusedButton;
 
-    private SettingsPanel mSettingsPanel = null;
-    private GameModePanel mGameModePanel = null;
+    private SettingsPanel settingsPanel = null;
+    private GameModePanel gameModePanel = null;
 
-    NavigationGrid mPageNavigation;
+    NavigationGrid pageNavigation;
 
     [SerializeField] private UIAnimationData buttonsAnimationData;
     [SerializeField] private UIAnimationData slidersAnimationData;
@@ -80,40 +80,41 @@ public class StartScreenUI : MonoBehaviour
            evt.StopPropagation();
        }, TrickleDown.TrickleDown);
 
-        mCreditsView = rootVisualElement.Q<ScrollView>("CreditsView");
+        creditsView = rootVisualElement.Q<ScrollView>("CreditsView");
 
-        mCreditsParent = rootVisualElement.Q<VisualElement>("Credits");
-        mSettingsParent = rootVisualElement.Q<VisualElement>("SettingsPanel");
-        mMainMenuButtons = rootVisualElement.Q<VisualElement>("MainMenuButtons");
+        creditsParent = rootVisualElement.Q<VisualElement>("Credits");
+        settingsParent = rootVisualElement.Q<VisualElement>("SettingsPanel");
+        mainMenuButtons = rootVisualElement.Q<VisualElement>("MainMenuButtons");
 
-        mStartButton = rootVisualElement.Q<Button>("StartButton");
+        startButton = rootVisualElement.Q<Button>("StartButton");
 
-        mQuitButton = rootVisualElement.Q<Button>("ExitButton");
+        quitButton = rootVisualElement.Q<Button>("ExitButton");
 
         mSettingsButton = rootVisualElement.Q<Button>("SettingsButton");
 
-        mCreditButton = rootVisualElement.Q<Button>("CreditsButton");
+        creditButton = rootVisualElement.Q<Button>("CreditsButton");
 
-        mCreditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
-        mCreditsFocusedButton.clicked += BackToTitle;
+        creditsFocusedButton = rootVisualElement.Q<Button>("CreditsBackButton");
+        creditsFocusedButton.clicked += BackToTitle;
 
-        mSettingsPanel = new SettingsPanel(mSettingsParent, this);
-        mSettingsPanel.OnClosed += BackToTitle;
+        settingsPanel = new SettingsPanel(settingsParent);
+        settingsPanel.OnClosed += BackToTitle;
 
-        mGameModePanel = new GameModePanel(rootVisualElement.Q<VisualElement>("GameModePanel"), this);
-        mGameModePanel.OnClosed += BackToTitle;
-        mGameModePanel.OnStarted += StartGame;
+        gameModePanel = new GameModePanel(rootVisualElement.Q<VisualElement>("GameModePanel"));
+        gameModePanel.OnClosed += BackToTitle;
+        gameModePanel.OnStarted += StartGame;
 
         Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action>
         {
-            { mStartButton, ShowGameModePanel },
-            { mQuitButton, CloseGame },
+            { startButton, ShowGameModePanel },
+            { quitButton, CloseGame },
             { mSettingsButton, ShowOptions },
-            { mCreditButton, ShowCredits }
+            { creditButton, ShowCredits }
         };
 
         LoadCredits();
-        SetupNavigation(submitActions, this);
+        SetupNavigation(submitActions);
+        PlayerInputs.Instance.uiActions.Enable();
     }
 
     private void Start()
@@ -129,17 +130,17 @@ public class StartScreenUI : MonoBehaviour
         }
     }
 
-    private void SetupNavigation(Dictionary<VisualElement, Action> submitActions, MonoBehaviour coroutineRunner)
+    private void SetupNavigation(Dictionary<VisualElement, Action> submitActions)
     {
         List<NavigationRow> rows = new List<NavigationRow>() {
-            new NavigationRow(new NavigationCell(mStartButton)),
+            new NavigationRow(new NavigationCell(startButton)),
             new NavigationRow(new NavigationCell(mSettingsButton)),
-            new NavigationRow(new NavigationCell(mCreditButton)),
-            new NavigationRow(new NavigationCell(mQuitButton)),
+            new NavigationRow(new NavigationCell(creditButton)),
+            new NavigationRow(new NavigationCell(quitButton)),
         };
-        mPageNavigation = new NavigationGrid(rows, coroutineRunner);
-        mPageNavigation.SetupSubmitEvent(submitActions);
-        mPageNavigation.Enable();
+        pageNavigation = new NavigationGrid(rows, submitActions);
+
+        pageNavigation.Enable();
     }
 
     private void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
@@ -160,38 +161,38 @@ public class StartScreenUI : MonoBehaviour
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
 
-        mMainMenuButtons.style.display = DisplayStyle.None;
-        mSettingsParent.style.display = DisplayStyle.None;
-        mCreditsParent.style.display = DisplayStyle.Flex;
-        mCreditsFocusedButton.Focus();
-        mPageNavigation.Disable();
+        mainMenuButtons.style.display = DisplayStyle.None;
+        settingsParent.style.display = DisplayStyle.None;
+        creditsParent.style.display = DisplayStyle.Flex;
+        creditsFocusedButton.Focus();
+        pageNavigation.Disable();
     }
 
     private void ShowOptions()
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
-        mMainMenuButtons.style.display = DisplayStyle.None;
-        mSettingsPanel.Show();
-        mPageNavigation.Disable();
+        mainMenuButtons.style.display = DisplayStyle.None;
+        settingsPanel.Show();
+        pageNavigation.Disable();
     }
 
     private void ShowGameModePanel()
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
-        mMainMenuButtons.style.display = DisplayStyle.None;
-        mGameModePanel.Show();
-        mPageNavigation.Disable();
+        mainMenuButtons.style.display = DisplayStyle.None;
+        gameModePanel.Show();
+        pageNavigation.Disable();
     }
 
     private void BackToTitle()
     {
         AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuApproveSfx);
-        mMainMenuButtons.style.display = DisplayStyle.Flex;
-        mSettingsParent.style.display = DisplayStyle.None;
-        mCreditsParent.style.display = DisplayStyle.None;
+        mainMenuButtons.style.display = DisplayStyle.Flex;
+        settingsParent.style.display = DisplayStyle.None;
+        creditsParent.style.display = DisplayStyle.None;
 
-        mPageNavigation.RestoreFocus();
-        mPageNavigation.Enable();
+        pageNavigation.RestoreFocus();
+        pageNavigation.Enable();
     }
 
     private void CloseGame()
@@ -224,19 +225,19 @@ public class StartScreenUI : MonoBehaviour
                 {
                     Label titleLabel = new Label(line.Substring(2));
                     titleLabel.AddToClassList("credit_title");
-                    mCreditsView.Add(titleLabel);
+                    creditsView.Add(titleLabel);
                 }
                 else if (line.StartsWith("@"))
                 {
                     Label sectionLabel = new Label(line.Substring(2));
                     sectionLabel.AddToClassList("credit_subtitle");
-                    mCreditsView.Add(sectionLabel);
+                    creditsView.Add(sectionLabel);
                 }
                 else
                 {
                     Label creditLabel = new Label(line);
                     creditLabel.AddToClassList("credit_text");
-                    mCreditsView.Add(creditLabel);
+                    creditsView.Add(creditLabel);
                 }
             }
         }
@@ -248,11 +249,11 @@ public class StartScreenUI : MonoBehaviour
 
     void OnCancel(NavigationCancelEvent evt)
     {
-        if (mSettingsParent.style.display == DisplayStyle.Flex)
+        if (settingsParent.style.display == DisplayStyle.Flex)
         {
             BackToTitle();
         }
-        else if (mCreditsParent.style.display == DisplayStyle.Flex)
+        else if (creditsParent.style.display == DisplayStyle.Flex)
         {
             BackToTitle();
         }
@@ -261,13 +262,13 @@ public class StartScreenUI : MonoBehaviour
     void OnDestroy()
     {
         // Unsubscribe from UI panel events to prevent memory leaks
-        if (mSettingsPanel != null)
-            mSettingsPanel.OnClosed -= BackToTitle;
+        if (settingsPanel != null)
+            settingsPanel.OnClosed -= BackToTitle;
 
-        if (mGameModePanel != null)
+        if (gameModePanel != null)
         {
-            mGameModePanel.OnClosed -= BackToTitle;
-            mGameModePanel.OnStarted -= StartGame;
+            gameModePanel.OnClosed -= BackToTitle;
+            gameModePanel.OnStarted -= StartGame;
         }
     }
 

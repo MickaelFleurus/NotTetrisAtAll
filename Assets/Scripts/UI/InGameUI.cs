@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -77,7 +76,7 @@ public class InGameUI : MonoBehaviour
 
         introScreen = uiDocument.rootVisualElement.Q<VisualElement>("ReadyGoScreen");
 
-        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"), this);
+        pauseMenu = new PauseMenu(uiDocument.rootVisualElement.Q<VisualElement>("PauseMenu"));
 
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
         backToMenuButton = uiDocument.rootVisualElement.Q<Button>("BackMainMenuButton");
@@ -86,9 +85,9 @@ public class InGameUI : MonoBehaviour
             new NavigationRow(new NavigationCell(restartButton)),
             new NavigationRow(new NavigationCell(backToMenuButton))
         };
-        gameOverNav = new NavigationGrid(mainNav, this);
         Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action> { { restartButton, RestartGame }, { backToMenuButton, BackToMainMenu } };
-        gameOverNav.SetupSubmitEvent(submitActions);
+
+        gameOverNav = new NavigationGrid(mainNav, submitActions);
         gameOverNav.Disable();
 
         PauseMenu.backToMainMenu += BackToMainMenu;

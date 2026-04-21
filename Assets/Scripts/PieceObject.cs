@@ -43,7 +43,8 @@ public class PieceObject : MonoBehaviour
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = sprite;
             sr.color = Color.white;
-            sr.sortingOrder = 0;
+            sr.sortingOrder = 1;
+            sr.sortingLayerName = "Game";
             sr.material = new Material(Shader.Find("Sprites/Default"));
             sr.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             parts.Add(go);

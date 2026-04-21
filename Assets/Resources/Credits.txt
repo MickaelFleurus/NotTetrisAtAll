@@ -2,7 +2,6 @@ Made with <b>Unity</b> by <b>Mickaël Fleurus</b>.
 Music by <b>chajamakesmusic</b> and <b>JDSherbert</b> 
 Sound Effects by <b>JDSherbert</b>
 Blocks design created by <b>pixelharbor</b>
-<a href="https://www.flaticon.com/free-icons/arrow-white" title="arrow white icons">Arrow white icons created by ariefstudio - Flaticon</a>
 
 Special thanks to my wife Léa and to my kids for their support <3.
 

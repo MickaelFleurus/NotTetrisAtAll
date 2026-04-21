@@ -75,7 +75,6 @@ public class AudioMixer : MonoBehaviour
 
     public void PlaySFX(AudioClip clip, Vector3 position = default)
     {
-        Debug.Log("Playing SFX " + clip);
         GameObject sfxGO = new GameObject("SFX_Clip");
         sfxGO.transform.position = position;
         sfxGO.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;

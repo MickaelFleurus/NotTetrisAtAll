@@ -39,12 +39,9 @@ public class GridHandler : MonoBehaviour
 
     private float stuckTimer = 0.0f;
     private readonly float StuckTimerThreshold = 1f;
-    private InputSystem_Actions playerInputs;
 
     public bool pauseGameLoop = true;
     private List<Vector2Int> currentPieceDestinationIndexes = new List<Vector2Int>();
-
-    private InputRepeatHandler moveRepeatHandler;
 
     private AudioClip currentMusic = null;
 
@@ -70,20 +67,17 @@ public class GridHandler : MonoBehaviour
         delayNextDropMs = DropInitialDelayMs;
         GridVisual.GetComponent<SpriteRenderer>().size = new Vector2(Width, Height);
 
-        playerInputs = new InputSystem_Actions();
-        playerInputs.Player.Drop.started += ctx => OnDrop();
-        playerInputs.Player.RotateClockwise.started += ctx => OnRotateClockwise();
-        playerInputs.Player.RotateCounterClockwise.started += ctx => OnRotateCounterClockwise();
-        playerInputs.Player.Hold.started += ctx => OnHold();
-        playerInputs.Player.Pause.started += ctx => OnPause();
-
-        playerInputs.Enable();
+        PlayerInputs.Instance.inGameActions.Drop += OnDrop;
+        PlayerInputs.Instance.inGameActions.RotateClockwise += OnRotateClockwise;
+        PlayerInputs.Instance.inGameActions.RotateCounterClockwise += OnRotateCounterClockwise;
+        PlayerInputs.Instance.inGameActions.Hold += OnHold;
+        PlayerInputs.Instance.inGameActions.Move += OnMove;
+        PlayerInputs.Instance.inGameActions.Pause += OnPause;
+        PlayerInputs.Instance.inGameActions.Enable();
 
         PauseMenu.unpauseGame += OnUnpause;
 
         playableDirector.stopped += SetIntroDone;
-
-        moveRepeatHandler = new InputRepeatHandler(0.20f);
     }
 
     void Start()
@@ -119,12 +113,6 @@ public class GridHandler : MonoBehaviour
             return;
         }
 
-        float moveInput = playerInputs.Player.Move.ReadValue<float>();
-        if (moveRepeatHandler.ShouldRepeat(moveInput, Time.deltaTime))
-        {
-            OnMove(moveInput);
-        }
-
         if (currentPiece.currentState == PieceObject.EState.Falling)
         {
             delayNextDropMs -= Time.deltaTime;
@@ -155,11 +143,6 @@ public class GridHandler : MonoBehaviour
 
     void OnDestroy()
     {
-        if (playerInputs != null)
-        {
-            playerInputs.Disable();
-            playerInputs.Dispose();
-        }
         playableDirector.stopped -= SetIntroDone;
 
         // Unsubscribe from static PauseMenu event to prevent memory leaks
@@ -448,14 +431,14 @@ public class GridHandler : MonoBehaviour
             inGameUI.HideIntro();
         }
         pauseGameLoop = true;
-        playerInputs.Disable();
+        PlayerInputs.Instance.inGameActions.Disable();
         inGameUI.ShowPauseMenu();
     }
 
     private void OnUnpause()
     {
         inGameUI.HidePauseMenu();
-        playerInputs.Enable();
+        PlayerInputs.Instance.inGameActions.Enable();
         if (!introFinishedPlaying)
         {
             playableDirector.Resume();

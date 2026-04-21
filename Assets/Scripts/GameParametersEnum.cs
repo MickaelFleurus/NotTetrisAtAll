@@ -5,5 +5,5 @@ public enum EGameTimeLimit
 
 public enum EGameMode
 {
-    Marathon, TimeLimit, Infinite
+    Marathon, TimeLimit
 }

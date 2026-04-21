@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "GameSettings", menuName = "ScriptableObjects/GameSettings")]
 public class GameSettings : ScriptableObject
@@ -30,6 +31,7 @@ public class GameSettings : ScriptableObject
     public static void InvokeMasterVolumeChanged(float volume) => OnMasterVolumeChanged?.Invoke(volume);
     public static void InvokeMusicVolumeChanged(float volume) => OnMusicVolumeChanged?.Invoke(volume);
     public static void InvokeSoundEffectsVolumeChanged(float volume) => OnSoundEffectsVolumeChanged?.Invoke(volume);
+
 
 
     [Header("Audio Settings")]
@@ -119,6 +121,7 @@ public class GameSettings : ScriptableObject
             JsonUtility.FromJsonOverwrite(json, this);
         }
 #else
+
         // Standalone/Editor: load from JSON file
         string loadPath = Path.Combine(Application.persistentDataPath, "GameSettings.json");
         if (File.Exists(loadPath))

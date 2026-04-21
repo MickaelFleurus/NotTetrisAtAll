@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Numerics;
-using UnityEngine;
-using UnityEngine.InputSystem;
+
 using UnityEngine.UIElements;
 
 class NavigationCell
@@ -74,51 +70,38 @@ class NavigationRow
 
 class NavigationGrid
 {
-
     Dictionary<VisualElement, Action> onSubmitFuncs;
     List<NavigationRow> rows;
     int currentCol = 0;
     int currentRow = 0;
 
     bool enabled = false;
-    static InputSystem_Actions uiActions = null;
+    static bool hasCreatedCallbacks = false;
     static List<NavigationGrid> registeredInstances = new List<NavigationGrid>();
-
-    private MonoBehaviour coroutineRunner;
-    private Coroutine navigationCoroutine = null;
-    private float repeatDelaySeconds = 0.3f;
-    private float repeatRateSeconds = 0.1f;
 
     public Action cancelPressed;
 
-    public NavigationGrid(List<NavigationRow> rows, MonoBehaviour coroutineRunner, int startCol = 0, int startRow = 0)
+    public NavigationGrid(List<NavigationRow> rows, Dictionary<VisualElement, Action> submitFuncs, int startCol = 0, int startRow = 0)
     {
-        this.coroutineRunner = coroutineRunner;
-        if (uiActions == null)
+        if (!hasCreatedCallbacks)
         {
-            uiActions = new InputSystem_Actions();
-            uiActions.UI.Enable();
+            PlayerInputs.Instance.uiActions.Enable();
 
             // Register static event handlers once
-            uiActions.UI.Submit.started += OnSubmitStartedStatic;
-            uiActions.UI.Cancel.started += OnCancelStartedStatic;
-            uiActions.UI.Navigate.started += OnNavigateStartedStatic;
-            uiActions.UI.Navigate.canceled += OnNavigateCanceledStatic;
+            PlayerInputs.Instance.uiActions.Approve += OnSubmitStatic;
+            PlayerInputs.Instance.uiActions.Cancel += OnCancelStatic;
+            PlayerInputs.Instance.uiActions.Navigate += OnNavigateStatic;
+            hasCreatedCallbacks = true;
         }
 
-        // Register this instance
         registeredInstances.Add(this);
 
         this.rows = rows;
         currentCol = startCol;
         currentRow = startRow;
+        onSubmitFuncs = submitFuncs;
 
         RestoreFocus();
-    }
-
-    public void SetupSubmitEvent(Dictionary<VisualElement, Action> submitFuncs)
-    {
-        onSubmitFuncs = submitFuncs;
     }
 
     ~NavigationGrid()
@@ -128,19 +111,19 @@ class NavigationGrid
     }
 
     // Static event handlers that dispatch to enabled instances
-    private static void OnSubmitStartedStatic(InputAction.CallbackContext ctx)
+    private static void OnSubmitStatic()
     {
         foreach (var instance in registeredInstances)
         {
             if (instance.enabled)
             {
-                instance.OnSubmit(ctx);
+                instance.OnSubmit();
                 break;
             }
         }
     }
 
-    private static void OnCancelStartedStatic(InputAction.CallbackContext ctx)
+    private static void OnCancelStatic()
     {
         foreach (var instance in registeredInstances)
         {
@@ -152,31 +135,19 @@ class NavigationGrid
         }
     }
 
-    private static void OnNavigateStartedStatic(InputAction.CallbackContext ctx)
+    private static void OnNavigateStatic(UnityEngine.Vector2 nav)
     {
         foreach (var instance in registeredInstances)
         {
             if (instance.enabled)
             {
-                instance.OnNavigateStarted(ctx);
+                instance.OnNavigate(nav);
                 break;
             }
         }
     }
 
-    private static void OnNavigateCanceledStatic(InputAction.CallbackContext ctx)
-    {
-        foreach (var instance in registeredInstances)
-        {
-            if (instance.enabled)
-            {
-                instance.OnNavigateCanceled(ctx);
-                break;
-            }
-        }
-    }
-
-    private void OnSubmit(InputAction.CallbackContext ctx)
+    private void OnSubmit()
     {
         if (onSubmitFuncs.Count == 0) return;
         var element = rows[currentRow].cells[currentCol].element;
@@ -184,43 +155,6 @@ class NavigationGrid
         {
             AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuNavigationSfx);
             onSubmitFuncs[element]();
-        }
-    }
-
-    private void OnNavigateStarted(InputAction.CallbackContext ctx)
-    {
-        // Stop any existing repeat
-        if (navigationCoroutine != null)
-            coroutineRunner.StopCoroutine(navigationCoroutine);
-
-        var movementVal = ctx.ReadValue<UnityEngine.Vector2>();
-
-        // Process immediately
-        ProcessNavigation(movementVal);
-
-        // Start repeat
-        navigationCoroutine = coroutineRunner.StartCoroutine(RepeatNavigation(movementVal));
-    }
-
-    private IEnumerator RepeatNavigation(UnityEngine.Vector2 movementVal)
-    {
-        // Wait before repeating
-        yield return new WaitForSeconds(repeatDelaySeconds);
-
-        // Repeat while held
-        while (true)
-        {
-            ProcessNavigation(movementVal);
-            yield return new WaitForSeconds(repeatRateSeconds);
-        }
-    }
-
-    private void OnNavigateCanceled(InputAction.CallbackContext ctx)
-    {
-        if (navigationCoroutine != null)
-        {
-            coroutineRunner.StopCoroutine(navigationCoroutine);
-            navigationCoroutine = null;
         }
     }
 
@@ -234,9 +168,7 @@ class NavigationGrid
         enabled = false;
     }
 
-
-
-    public void ProcessNavigation(UnityEngine.Vector2 movementVal)
+    private void OnNavigate(UnityEngine.Vector2 movementVal)
     {
         if (!enabled) return;
         bool hasMoved = false;
@@ -364,9 +296,6 @@ class NavigationGrid
 
     public static void ResetInputAction()
     {
-        uiActions.Disable();
-        uiActions.Dispose();
-        uiActions = null;
         registeredInstances.Clear();
     }
 
