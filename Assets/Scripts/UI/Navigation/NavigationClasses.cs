@@ -79,6 +79,9 @@ class NavigationGrid
     static bool hasCreatedCallbacks = false;
     static List<NavigationGrid> registeredInstances = new List<NavigationGrid>();
 
+    private float repeatDelaySeconds = 0.3f;
+    private float repeatRateSeconds = 0.1f;
+
     public Action cancelPressed;
 
     public NavigationGrid(List<NavigationRow> rows, Dictionary<VisualElement, Action> submitFuncs, int startCol = 0, int startRow = 0)
@@ -91,6 +94,7 @@ class NavigationGrid
             PlayerInputs.Instance.uiActions.Approve += OnSubmitStatic;
             PlayerInputs.Instance.uiActions.Cancel += OnCancelStatic;
             PlayerInputs.Instance.uiActions.Navigate += OnNavigateStatic;
+            PlayerInputs.Instance.uiActions.Pressed += OnPressedStatic;
             hasCreatedCallbacks = true;
         }
 
@@ -147,6 +151,18 @@ class NavigationGrid
         }
     }
 
+    private static void OnPressedStatic(VisualElement elem)
+    {
+        foreach (var instance in registeredInstances)
+        {
+            if (instance.enabled)
+            {
+                instance.OnPressed(elem);
+                break;
+            }
+        }
+    }
+
     private void OnSubmit()
     {
         if (onSubmitFuncs.Count == 0) return;
@@ -155,6 +171,14 @@ class NavigationGrid
         {
             AudioMixer.Instance.PlaySFX(AudioData.Instance.MenuNavigationSfx);
             onSubmitFuncs[element]();
+        }
+    }
+
+    private void OnPressed(VisualElement elem)
+    {
+        if (onSubmitFuncs.ContainsKey(elem))
+        {
+            onSubmitFuncs[elem]();
         }
     }
 

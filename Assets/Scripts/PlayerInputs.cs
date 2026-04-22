@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Dynamic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 
 class InGameActions
@@ -82,6 +84,7 @@ class UIActions
     public Action<Vector2> Navigate;
     public Action Approve;
     public Action Cancel;
+    public Action<VisualElement> Pressed;
 
     public void OnNavigate(Vector2 nav)
     {
@@ -97,6 +100,12 @@ class UIActions
     {
         if (!enabled) return;
         Cancel?.Invoke();
+    }
+
+    public void OnPressed(VisualElement elem)
+    {
+        if (!enabled) return;
+        Pressed?.Invoke(elem);
     }
 }
 
@@ -162,13 +171,11 @@ class PlayerInputs : MonoBehaviour
         defaultInputs.UI.Navigate.started += ctx => uiNavigateRepeat.Start();
         defaultInputs.UI.Navigate.canceled += ctx => uiNavigateRepeat.Stop();
         uiNavigateRepeat.Repeat += TriggerNav;
+
+
+        RegisterMouseClickHandler();
     }
 
-    private void TriggerMoveWithValue(InputAction.CallbackContext ctx)
-    {
-        float moveValue = ctx.ReadValue<float>();
-        inGameActions.OnMove(moveValue);
-    }
 
     public CustomControls GetCustomControls()
     {
@@ -197,4 +204,25 @@ class PlayerInputs : MonoBehaviour
 
         uiActions.OnNavigate(moveValue);
     }
+
+    private void RegisterMouseClickHandler()
+    {
+        UIDocument uiDoc = FindFirstObjectByType<UIDocument>();
+        if (uiDoc == null) return;
+
+        var root = uiDoc.rootVisualElement;
+
+        // Listen for pointer clicks
+        root.RegisterCallback<PointerDownEvent>(OnPointerClick, TrickleDown.TrickleDown);
+    }
+
+    private void OnPointerClick(PointerDownEvent evt)
+    {
+        // Get the element that was clicked
+        VisualElement clickedElement = evt.target as VisualElement;
+        if (clickedElement == null) return;
+
+        uiActions.OnPressed(clickedElement);
+    }
+
 }
