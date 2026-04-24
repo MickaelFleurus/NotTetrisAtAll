@@ -6,7 +6,7 @@ using UnityEngine.Playables;
 using System;
 
 
-public class GridHandler : MonoBehaviour
+public class InGameController : MonoBehaviour
 {
     private List<List<CellVisualLogic>> cell = new List<List<CellVisualLogic>>();
 
@@ -330,9 +330,22 @@ public class GridHandler : MonoBehaviour
         }
         else
         {
+            score += 10;
             canHold = true;
         }
 
+    }
+
+    private int LineCompletedToScore(int lineCompleted)
+    {
+        return lineCompleted switch
+        {
+            1 => 100,
+            2 => 200,
+            3 => 600,
+            4 => 1000,
+            _ => 10
+        };
     }
 
     private IEnumerator RemoveEmptyLines(List<int> completedLines, float delay)
@@ -385,7 +398,7 @@ public class GridHandler : MonoBehaviour
 
         AudioMixer.Instance.PlaySFX(AudioData.Instance.GameDestroySfx);
         lineCompleted += completedLines.Count;
-        score += completedLines.Count * 100;
+        score += LineCompletedToScore(completedLines.Count);
 
         int newLevel = GameData.Instance.levelStart + (int)Math.Floor(lineCompleted / 10f);
         if (newLevel > level)

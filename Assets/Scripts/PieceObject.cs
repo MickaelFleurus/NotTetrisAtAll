@@ -9,9 +9,9 @@ public class PieceObject : MonoBehaviour
     public List<GameObject> parts = new List<GameObject>();
     public Piece.PieceColor color { get; private set; }
 
-    public GridHandler grid { get; private set; }
+    public InGameController grid { get; private set; }
 
-    private Vector2Int positionIndex = new Vector2Int(GridHandler.Width / 2, GridHandler.Height + 1);
+    private Vector2Int positionIndex = new Vector2Int(InGameController.Width / 2, InGameController.Height + 1);
     private List<Vector2Int> pieceIndices = new List<Vector2Int>();
     static int pieceCounter = 0;
 
@@ -30,7 +30,7 @@ public class PieceObject : MonoBehaviour
     };
 
 
-    public Sprite Initialize(GridHandler g)
+    public Sprite Initialize(InGameController g)
     {
         grid = g;
         color = Piece.PieceHelper.GetRandomColor();
@@ -65,7 +65,7 @@ public class PieceObject : MonoBehaviour
     }
     public void ResetPosition()
     {
-        positionIndex = new Vector2Int(GridHandler.Width / 2, GridHandler.Height + 1);
+        positionIndex = new Vector2Int(InGameController.Width / 2, InGameController.Height + 1);
         transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
     }
 
@@ -204,7 +204,7 @@ public class PieceObject : MonoBehaviour
         foreach (var piece in pieceIndices)
         {
             Vector2Int index = piece + positionIndex;
-            if (index.x < 0 || index.y < 0 || index.x >= GridHandler.Width || index.y >= GridHandler.Height)
+            if (index.x < 0 || index.y < 0 || index.x >= InGameController.Width || index.y >= InGameController.Height)
             {
                 return false;
             }
@@ -214,7 +214,7 @@ public class PieceObject : MonoBehaviour
 
     private int FigureLowestPossibleHeight()
     {
-        int lowestY = Math.Min(positionIndex.y, GridHandler.Height - 1);
+        int lowestY = Math.Min(positionIndex.y, InGameController.Height - 1);
         List<Vector2Int> validPositions = new List<Vector2Int>();
         var lowestPosition = positionIndex;
         lowestPosition.y = lowestY;

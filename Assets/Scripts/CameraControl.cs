@@ -9,7 +9,7 @@ public class CameraControl : MonoBehaviour
 
     void Start()
     {
-        float verticalSize = (GridHandler.Height / 2.0f) * 1.5f;
+        float verticalSize = (InGameController.Height / 2.0f) * 1.5f;
         mainCamera.orthographicSize = verticalSize;
         mainCamera.transform.position = new Vector3(0.0f, 0.0f, -1.0f);
 
