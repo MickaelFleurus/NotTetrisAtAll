@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 
-public class GameModePanel
+public class GameModePanel : IScreen
 {
-    private VisualElement gameModePanel;
+    private VisualElement root;
 
     private AnimatedButton backButton;
     private List<AnimatedButton> gameModes = new List<AnimatedButton>();
@@ -25,37 +25,36 @@ public class GameModePanel
 
     private AnimatedButton startButton;
 
-    public event Action OnClosed;
-    public event Action<EGameMode, int, int, EGameTimeLimit> OnStarted;
-
     private EGameMode selectedGameMode = EGameMode.Marathon;
     private int selectedStartLevel = 1;
     private int selectedBlockSize = 4;
     private EGameTimeLimit selectedTimeLimit = EGameTimeLimit.One;
-    NavigationGrid pageNavigation;
+    NavigationGrid nav;
     int timeLimitRowIndex = 6;
+    ScreenHandler screenHandler;
 
 
-    public GameModePanel(VisualElement settingsPanel)
+    public GameModePanel(VisualElement root, ScreenHandler screenHandler)
     {
-        gameModePanel = settingsPanel;
-        backButton = gameModePanel.Q<AnimatedButton>("BackButton");
+        this.screenHandler = screenHandler;
+        this.root = root;
+        backButton = root.Q<AnimatedButton>("BackButton");
 
-        gameModes.Add(gameModePanel.Q<AnimatedButton>("Marathon"));
-        gameModes.Add(gameModePanel.Q<AnimatedButton>("TimeLimit"));
+        gameModes.Add(root.Q<AnimatedButton>("Marathon"));
+        gameModes.Add(root.Q<AnimatedButton>("TimeLimit"));
 
-        levels = gameModePanel.Q<VisualElement>("LevelStartParent").Children().OfType<AnimatedButton>().ToList();
-        blockSize = gameModePanel.Q<VisualElement>("BlockSizeParent").Children().OfType<AnimatedButton>().ToList();
-        blockSizeWarning = gameModePanel.Q<Label>("BlockSizeWarning");
-        timeLimitLabel = gameModePanel.Q<Label>("TimeLimitLabel");
-        timeLimitParent = gameModePanel.Q<VisualElement>("TimeLimitParent");
+        levels = root.Q<VisualElement>("LevelStartParent").Children().OfType<AnimatedButton>().ToList();
+        blockSize = root.Q<VisualElement>("BlockSizeParent").Children().OfType<AnimatedButton>().ToList();
+        blockSizeWarning = root.Q<Label>("BlockSizeWarning");
+        timeLimitLabel = root.Q<Label>("TimeLimitLabel");
+        timeLimitParent = root.Q<VisualElement>("TimeLimitParent");
         timeLimit = timeLimitParent.Children().OfType<AnimatedButton>().ToList();
-        startButton = gameModePanel.Q<AnimatedButton>("StartButton");
+        startButton = root.Q<AnimatedButton>("StartButton");
 
 
         Dictionary<VisualElement, Action> submitActions = new Dictionary<VisualElement, Action>
         {
-            { backButton, Hide },
+            { backButton, screenHandler.RequestPop },
             { startButton, OnStartPressed }
         };
 
@@ -69,13 +68,13 @@ public class GameModePanel
                  {
                      timeLimitLabel.style.display = DisplayStyle.Flex;
                      timeLimitParent.style.display = DisplayStyle.Flex;
-                     pageNavigation.EnableRow(timeLimitRowIndex);
+                     nav.EnableRow(timeLimitRowIndex);
                  }
                  else
                  {
                      timeLimitLabel.style.display = DisplayStyle.None;
                      timeLimitParent.style.display = DisplayStyle.None;
-                     pageNavigation.DisableRow(timeLimitRowIndex);
+                     nav.DisableRow(timeLimitRowIndex);
                  }
              });
         }
@@ -86,7 +85,7 @@ public class GameModePanel
             {
                 selectedStartLevel = int.Parse(elem.name);
                 SetChoiceAsSelected(levels, elem, true);
-                pageNavigation.SelectColumnAsDefault();
+                nav.SelectColumnAsDefault();
             });
         }
         foreach (var elem in blockSize)
@@ -103,7 +102,7 @@ public class GameModePanel
                 {
                     blockSizeWarning.style.display = DisplayStyle.None;
                 }
-                pageNavigation.SelectColumnAsDefault();
+                nav.SelectColumnAsDefault();
             });
         }
         foreach (var elem in timeLimit)
@@ -113,7 +112,7 @@ public class GameModePanel
                 int timeLimitVal = int.Parse(elem.text);
                 selectedTimeLimit = IntToGameTimeLimit(timeLimitVal);
                 SetChoiceAsSelected(timeLimit, elem, true);
-                pageNavigation.SelectColumnAsDefault();
+                nav.SelectColumnAsDefault();
             });
         }
 
@@ -134,26 +133,22 @@ public class GameModePanel
 
     private void SetupNavigation(Dictionary<VisualElement, Action> onSubmit)
     {
+
         List<NavigationRow> rows = new List<NavigationRow>() {
             new NavigationRow(new NavigationCell(backButton)),
             new NavigationRow(new NavigationCell(gameModes[0])),
             new NavigationRow(new NavigationCell(gameModes[1])),
-            new NavigationRow(levels.Cast<VisualElement>().ToList(), 3),
-            new NavigationRow(blockSize.Cast<VisualElement>().ToList(), 3),
+            new NavigationRow(levels.GetRange(0, 5).Cast<VisualElement>().ToList(), 0),
+            new NavigationRow(levels.GetRange(5, 5).Cast<VisualElement>().ToList()),
+            new NavigationRow(blockSize.GetRange(0, 5).Cast<VisualElement>().ToList(), 0),
+            new NavigationRow(blockSize.GetRange(5, 5).Cast<VisualElement>().ToList()),
             new NavigationRow(timeLimit.Cast<VisualElement>().ToList(), 0, false),
             new NavigationRow(new NavigationCell(startButton)),
         };
-        pageNavigation = new NavigationGrid(rows, onSubmit, 0, 1);
+        nav = new NavigationGrid(rows, onSubmit, 0, 1);
         timeLimitRowIndex = 6;
-        pageNavigation.RestoreFocus();
-        pageNavigation.cancelPressed += Hide;
-    }
 
-    public bool IsShown()
-    {
-        return gameModePanel.style.display == DisplayStyle.Flex;
     }
-
 
     private void SetChoiceAsSelected(List<AnimatedButton> group, VisualElement element, bool isSmall = false)
     {
@@ -170,21 +165,26 @@ public class GameModePanel
 
     public void Show()
     {
-        gameModePanel.style.display = DisplayStyle.Flex;
-        pageNavigation.RestoreFocus();
-        pageNavigation.Enable();
+        root.style.display = DisplayStyle.Flex;
     }
 
     public void Hide()
     {
-        gameModePanel.style.display = DisplayStyle.None;
-        OnClosed.Invoke();
-        pageNavigation.Disable();
+        root.style.display = DisplayStyle.None;
     }
 
     private void OnStartPressed()
     {
-        OnStarted.Invoke(selectedGameMode, selectedStartLevel, selectedBlockSize, selectedTimeLimit);
+        GameEvents.StartGame(selectedGameMode, selectedStartLevel, selectedBlockSize, selectedTimeLimit);
     }
 
+    public NavigationGrid GetNavigationGrid()
+    {
+        return nav;
+    }
+
+    public void OnCancel()
+    {
+        screenHandler.RequestPop();
+    }
 }

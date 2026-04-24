@@ -9,12 +9,11 @@
                     <AnimatedSlider label="SFX Volume" value="100" high-value="100" name="SFXVolume" class="settingsSliders"/>
                 </ui:VisualElement>
             </ui:Label>
-            <ui:Label text="Controls" name="ControlLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel" style="height: auto;"/>
+            <ui:Label text="Controls" name="ControlLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel" style="height: auto; display: none;"/>
         </ui:ScrollView>
     </ui:VisualElement>
     <ui:VisualElement name="ValidationButtons" style="flex-grow: 1; width: 100%; align-items: center; align-self: center; flex-direction: row; align-content: center; justify-content: space-around;">
-        <AnimatedButton text="Cancel" name="SettingsCancelButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: auto;"/>
-        <AnimatedButton text="Apply" name="SettingsApplyButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: auto;"/>
+        <AnimatedButton text="Back&#10;" name="BackButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: auto;"/>
     </ui:VisualElement>
     <ui:VisualElement name="ButtonChangeModal" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none;">
         <ui:Label text="Press the button you want to use for {action}" name="ButtonChangeInstructions" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&amp;guid=64b567f78eb144a20b4d5b5a10fc7395&amp;type=3#Super Starfish&quot;); font-size: 80px; color: rgb(255, 255, 255); -unity-text-align: middle-center; height: 100%; white-space: normal;"/>

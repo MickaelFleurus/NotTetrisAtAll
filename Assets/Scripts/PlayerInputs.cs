@@ -126,6 +126,12 @@ class PlayerInputs : MonoBehaviour
     InputRepeatHandler inGameMoveRepeat;
     InputRepeatHandler uiNavigateRepeat;
 
+    private bool isUpdatingMove = false;
+    private bool isDropActive = false;
+    private bool isRotateClockwiseActive = false;
+    private bool isRotateCounterClockwiseActive = false;
+    private bool isHoldActive = false;
+
     void Awake()
     {
         if (instance != null)
@@ -144,27 +150,35 @@ class PlayerInputs : MonoBehaviour
         inGameActions = new InGameActions();
         uiActions = new UIActions();
 
-        inGameMoveRepeat = new InputRepeatHandler(this, 0.5f);
+        inGameMoveRepeat = new InputRepeatHandler(this, 0.2f);
         uiNavigateRepeat = new InputRepeatHandler(this, 0.4f);
         customControls.Enable();
         defaultInputs.Enable();
 
-        customControls.Player.Drop.started += ctx => inGameActions.OnDrop();
-        customControls.Player.RotateClockwise.started += ctx => inGameActions.OnRotateClockwise();
-        customControls.Player.RotateCounterClockwise.started += ctx => inGameActions.OnRotateCounterClockwise();
-        customControls.Player.Hold.started += ctx => inGameActions.OnHold();
-        customControls.Player.Move.started += ctx => inGameMoveRepeat.Start();
+        customControls.Player.Drop.started += ctx => TriggerIfNotActive(ref isDropActive, inGameActions.OnDrop);
+        customControls.Player.Drop.canceled += ctx => isDropActive = false;
+        customControls.Player.RotateClockwise.started += ctx => TriggerIfNotActive(ref isRotateClockwiseActive, inGameActions.OnRotateClockwise);
+        customControls.Player.RotateClockwise.canceled += ctx => isRotateClockwiseActive = false;
+        customControls.Player.RotateCounterClockwise.started += ctx => TriggerIfNotActive(ref isRotateCounterClockwiseActive, inGameActions.OnRotateCounterClockwise);
+        customControls.Player.RotateCounterClockwise.canceled += ctx => isRotateCounterClockwiseActive = false;
+        customControls.Player.Hold.started += ctx => TriggerIfNotActive(ref isHoldActive, inGameActions.OnHold);
+        customControls.Player.Hold.canceled += ctx => isHoldActive = false;
+        customControls.Player.Move.performed += ctx => HandleMoveValueChanged();
         customControls.Player.Move.canceled += ctx => inGameMoveRepeat.Stop();
 
-        defaultInputs.Player.Drop.started += ctx => inGameActions.OnDrop();
-        defaultInputs.Player.RotateClockwise.started += ctx => inGameActions.OnRotateClockwise();
-        defaultInputs.Player.RotateCounterClockwise.started += ctx => inGameActions.OnRotateCounterClockwise();
-        defaultInputs.Player.Hold.started += ctx => inGameActions.OnHold();
+        defaultInputs.Player.Drop.started += ctx => TriggerIfNotActive(ref isDropActive, inGameActions.OnDrop);
+        defaultInputs.Player.Drop.canceled += ctx => isDropActive = false;
+        defaultInputs.Player.RotateClockwise.started += ctx => TriggerIfNotActive(ref isRotateClockwiseActive, inGameActions.OnRotateClockwise);
+        defaultInputs.Player.RotateClockwise.canceled += ctx => isRotateClockwiseActive = false;
+        defaultInputs.Player.RotateCounterClockwise.started += ctx => TriggerIfNotActive(ref isRotateCounterClockwiseActive, inGameActions.OnRotateCounterClockwise);
+        defaultInputs.Player.RotateCounterClockwise.canceled += ctx => isRotateCounterClockwiseActive = false;
+        defaultInputs.Player.Hold.started += ctx => TriggerIfNotActive(ref isHoldActive, inGameActions.OnHold);
+        defaultInputs.Player.Hold.canceled += ctx => isHoldActive = false;
         defaultInputs.Player.Pause.started += ctx => inGameActions.OnPause();
-        defaultInputs.Player.Move.started += ctx => inGameMoveRepeat.Start();
+        defaultInputs.Player.Move.performed += ctx => HandleMoveValueChanged();
         defaultInputs.Player.Move.canceled += ctx => inGameMoveRepeat.Stop();
 
-        inGameMoveRepeat.Repeat += TriggerMove;
+        inGameMoveRepeat.Repeat += TriggerMoveAction;
 
         defaultInputs.UI.Submit.started += ctx => uiActions.OnApprove();
         defaultInputs.UI.Cancel.started += ctx => uiActions.OnCancel();
@@ -187,14 +201,52 @@ class PlayerInputs : MonoBehaviour
         return defaultInputs;
     }
 
-    private void TriggerMove()
+    private void TriggerIfNotActive(ref bool isActive, Action action)
+    {
+        if (isActive) return;
+        isActive = true;
+        action?.Invoke();
+    }
+
+    private void HandleMoveValueChanged()
+    {
+        if (isUpdatingMove) return;
+
+        isUpdatingMove = true;
+        try
+        {
+            float moveValue = customControls.Player.Move.IsPressed()
+                ? customControls.Player.Move.ReadValue<float>()
+                : defaultInputs.Player.Move.ReadValue<float>();
+
+            if (Math.Abs(moveValue) >= 0.5f)
+            {
+                if (!inGameMoveRepeat.IsRunning())
+                {
+                    inGameMoveRepeat.Start();
+                }
+            }
+            else if (inGameMoveRepeat.IsRunning())
+            {
+                inGameMoveRepeat.Stop();
+            }
+        }
+        finally
+        {
+            isUpdatingMove = false;
+        }
+    }
+
+    private void TriggerMoveAction()
     {
         float moveValue = customControls.Player.Move.IsPressed()
             ? customControls.Player.Move.ReadValue<float>()
             : defaultInputs.Player.Move.ReadValue<float>();
 
-
-        inGameActions.OnMove(moveValue);
+        if (Math.Abs(moveValue) >= 0.5f)
+        {
+            inGameActions.OnMove(moveValue);
+        }
     }
 
     private void TriggerNav()
@@ -223,6 +275,17 @@ class PlayerInputs : MonoBehaviour
         if (clickedElement == null) return;
 
         uiActions.OnPressed(clickedElement);
+    }
+
+    public void EnableUiInputNextFrame()
+    {
+        StartCoroutine(DelayUiInputEnabling());
+    }
+
+    private IEnumerator DelayUiInputEnabling()
+    {
+        yield return null;
+        uiActions.Enable();
     }
 
 }

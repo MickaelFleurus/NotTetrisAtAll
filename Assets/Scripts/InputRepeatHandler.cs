@@ -42,4 +42,9 @@ public class InputRepeatHandler
         }
     }
 
+    public bool IsRunning()
+    {
+        return coroutine != null;
+    }
+
 }

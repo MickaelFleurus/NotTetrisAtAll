@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine.UIElements;
 
-class NavigationCell
+public class NavigationCell
 {
     public bool enabled = true;
     public VisualElement element = null;
@@ -15,7 +15,7 @@ class NavigationCell
     }
 }
 
-class NavigationRow
+public class NavigationRow
 {
     public int activeCellColumn = 0;
     public List<NavigationCell> cells;
@@ -68,38 +68,15 @@ class NavigationRow
     }
 }
 
-class NavigationGrid
+public class NavigationGrid
 {
     Dictionary<VisualElement, Action> onSubmitFuncs;
     List<NavigationRow> rows;
     int currentCol = 0;
     int currentRow = 0;
 
-    bool enabled = false;
-    static bool hasCreatedCallbacks = false;
-    static List<NavigationGrid> registeredInstances = new List<NavigationGrid>();
-
-    private float repeatDelaySeconds = 0.3f;
-    private float repeatRateSeconds = 0.1f;
-
-    public Action cancelPressed;
-
     public NavigationGrid(List<NavigationRow> rows, Dictionary<VisualElement, Action> submitFuncs, int startCol = 0, int startRow = 0)
     {
-        if (!hasCreatedCallbacks)
-        {
-            PlayerInputs.Instance.uiActions.Enable();
-
-            // Register static event handlers once
-            PlayerInputs.Instance.uiActions.Approve += OnSubmitStatic;
-            PlayerInputs.Instance.uiActions.Cancel += OnCancelStatic;
-            PlayerInputs.Instance.uiActions.Navigate += OnNavigateStatic;
-            PlayerInputs.Instance.uiActions.Pressed += OnPressedStatic;
-            hasCreatedCallbacks = true;
-        }
-
-        registeredInstances.Add(this);
-
         this.rows = rows;
         currentCol = startCol;
         currentRow = startRow;
@@ -108,62 +85,7 @@ class NavigationGrid
         RestoreFocus();
     }
 
-    ~NavigationGrid()
-    {
-        cancelPressed = null;
-        registeredInstances.Remove(this);
-    }
-
-    // Static event handlers that dispatch to enabled instances
-    private static void OnSubmitStatic()
-    {
-        foreach (var instance in registeredInstances)
-        {
-            if (instance.enabled)
-            {
-                instance.OnSubmit();
-                break;
-            }
-        }
-    }
-
-    private static void OnCancelStatic()
-    {
-        foreach (var instance in registeredInstances)
-        {
-            if (instance.enabled)
-            {
-                instance.cancelPressed?.Invoke();
-                break;
-            }
-        }
-    }
-
-    private static void OnNavigateStatic(UnityEngine.Vector2 nav)
-    {
-        foreach (var instance in registeredInstances)
-        {
-            if (instance.enabled)
-            {
-                instance.OnNavigate(nav);
-                break;
-            }
-        }
-    }
-
-    private static void OnPressedStatic(VisualElement elem)
-    {
-        foreach (var instance in registeredInstances)
-        {
-            if (instance.enabled)
-            {
-                instance.OnPressed(elem);
-                break;
-            }
-        }
-    }
-
-    private void OnSubmit()
+    public void OnApprove()
     {
         if (onSubmitFuncs.Count == 0) return;
         var element = rows[currentRow].cells[currentCol].element;
@@ -174,7 +96,7 @@ class NavigationGrid
         }
     }
 
-    private void OnPressed(VisualElement elem)
+    public void OnPressed(VisualElement elem)
     {
         if (onSubmitFuncs.ContainsKey(elem))
         {
@@ -182,19 +104,8 @@ class NavigationGrid
         }
     }
 
-    public void Enable()
+    public void OnNavigate(UnityEngine.Vector2 movementVal)
     {
-        enabled = true;
-    }
-
-    public void Disable()
-    {
-        enabled = false;
-    }
-
-    private void OnNavigate(UnityEngine.Vector2 movementVal)
-    {
-        if (!enabled) return;
         bool hasMoved = false;
 
         NavigationMoveEvent.Direction direction = NavigationMoveEvent.Direction.None;
@@ -316,11 +227,6 @@ class NavigationGrid
     public void DisableRow(int index)
     {
         rows[index].Disable();
-    }
-
-    public static void ResetInputAction()
-    {
-        registeredInstances.Clear();
     }
 
 }

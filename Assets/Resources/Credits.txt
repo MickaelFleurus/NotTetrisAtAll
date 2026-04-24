@@ -8,4 +8,6 @@ Special thanks to my wife Léa and to my kids for their support <3.
 Inspired by Tetris® (© The Tetris Company). 
 It is not affiliated with nor endorsed by The Tetris Company.
 
- <a href="https://chajamakesmusic.itch.io">https://chajamakesmusic.itch.io</a> <a href="https://jdsherbert.itch.io">https://jdsherbert.itch.io</a> <a href="https://pixelharbor.itch.io">https://pixelharbor.itch.io</a>
+<a href="https://chajamakesmusic.itch.io">https://chajamakesmusic.itch.io</a>
+<a href="https://jdsherbert.itch.io">https://jdsherbert.itch.io</a>
+<a href="https://pixelharbor.itch.io">https://pixelharbor.itch.io</a>

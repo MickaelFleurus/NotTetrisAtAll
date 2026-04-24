@@ -4,28 +4,30 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-public class SettingsPanel
+public class SettingsMenu : IScreen
 {
-    private VisualElement settingsPanel;
+    private VisualElement root;
     private AnimatedSlider masterVolume;
     private AnimatedSlider musicVolume;
     private AnimatedSlider soundEffectsVolume;
     private AnimatedButton backButton;
 
     private VisualElement controlChangeParent;
-    public event Action OnClosed;
-    NavigationGrid pageNavigation;
+
+    NavigationGrid nav;
     private string currentPreferredInputGroup;
+    ScreenHandler screenHandler;
 
-    public SettingsPanel(VisualElement settingsPanel)
+    public SettingsMenu(VisualElement root, ScreenHandler screenHandler)
     {
-        this.settingsPanel = settingsPanel;
+        this.root = root;
+        this.screenHandler = screenHandler;
 
-        masterVolume = settingsPanel.Q<AnimatedSlider>("MasterAudio");
-        musicVolume = settingsPanel.Q<AnimatedSlider>("MusicVolume");
-        soundEffectsVolume = settingsPanel.Q<AnimatedSlider>("SFXVolume");
-        backButton = settingsPanel.Q<AnimatedButton>("SettingsCancelButton");
-        controlChangeParent = settingsPanel.Q<VisualElement>("ControlLabel");
+        masterVolume = root.Q<AnimatedSlider>("MasterAudio");
+        musicVolume = root.Q<AnimatedSlider>("MusicVolume");
+        soundEffectsVolume = root.Q<AnimatedSlider>("SFXVolume");
+        backButton = root.Q<AnimatedButton>("BackButton");
+        controlChangeParent = root.Q<VisualElement>("ControlLabel");
 
         masterVolume.RegisterValueChangedCallback(OnMasterVolumeChanged);
         musicVolume.RegisterValueChangedCallback(OnMusicVolumeChanged);
@@ -33,14 +35,14 @@ public class SettingsPanel
         SetupNavigation();
 
         // Get initial input group and build UI
-        currentPreferredInputGroup = GetPreferredInputGroup();
-        BuildUI();
+        // currentPreferredInputGroup = GetPreferredInputGroup();
+        // BuildUI();
 
-        // Listen for device changes
-        InputSystem.onDeviceChange += OnInputDeviceChanged;
+        // // Listen for device changes
+        // InputSystem.onDeviceChange += OnInputDeviceChanged;
     }
 
-    ~SettingsPanel()
+    ~SettingsMenu()
     {
         InputSystem.onDeviceChange -= OnInputDeviceChanged;
     }
@@ -142,7 +144,7 @@ public class SettingsPanel
             }
             controlChangeParent.Add(sectionLabel);
         }
-        Debug.Log("[SettingsPanel] BuildUI() completed");
+        Debug.Log("[SettingsMenu] BuildUI() completed");
 
     }
 
@@ -243,21 +245,14 @@ public class SettingsPanel
     private void SetupNavigation()
     {
         List<NavigationRow> rows = new List<NavigationRow>() {
-            new NavigationRow(new NavigationCell(backButton)),
             new NavigationRow(new NavigationCell(masterVolume)),
             new NavigationRow(new NavigationCell(musicVolume)),
             new NavigationRow(new NavigationCell(soundEffectsVolume)),
+            new NavigationRow(new NavigationCell(backButton)),
         };
-        Dictionary<VisualElement, Action> actionDictionary = new Dictionary<VisualElement, Action> { { backButton, Hide } };
+        Dictionary<VisualElement, Action> actionDictionary = new Dictionary<VisualElement, Action> { { backButton, OnCancel } };
 
-        pageNavigation = new NavigationGrid(rows, actionDictionary, 0, 1);
-
-        pageNavigation.cancelPressed += Hide;
-    }
-
-    public bool IsShown()
-    {
-        return settingsPanel.style.display == DisplayStyle.Flex;
+        nav = new NavigationGrid(rows, actionDictionary, 0, 1);
     }
 
     private void OnMasterVolumeChanged(ChangeEvent<float> evt)
@@ -277,22 +272,24 @@ public class SettingsPanel
 
     public void Show()
     {
-        settingsPanel.style.display = DisplayStyle.Flex;
+        root.style.display = DisplayStyle.Flex;
         masterVolume.value = GameSettings.Instance.MasterVolume * 100f;
         musicVolume.value = GameSettings.Instance.MusicVolume * 100f;
         soundEffectsVolume.value = GameSettings.Instance.SoundEffectsVolume * 100f;
-
-        pageNavigation.Enable();
-        pageNavigation.RestoreFocus();
     }
 
     public void Hide()
     {
-        if (settingsPanel.style.display == DisplayStyle.Flex)
-        {
-            settingsPanel.style.display = DisplayStyle.None;
-            pageNavigation.Disable();
-            OnClosed.Invoke();
-        }
+        root.style.display = DisplayStyle.None;
+    }
+
+    public NavigationGrid GetNavigationGrid()
+    {
+        return nav;
+    }
+
+    public void OnCancel()
+    {
+        screenHandler.RequestPop();
     }
 }

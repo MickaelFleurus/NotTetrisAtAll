@@ -1,6 +1,6 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="SettingsPanel" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
-    <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3"/>
+    <ui:Template name="SettingsMenu" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
+    <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
     <ui:VisualElement name="Background" picking-mode="Ignore" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); background-image: none; position: absolute; width: 100%; height: 100%; -unity-background-image-tint-color: rgba(255, 255, 255, 0.97);"/>
     <ui:VisualElement name="LeftColumn" style="flex-grow: 1; left: 0; position: absolute; top: 0; bottom: 0; right: 918px; width: 17.5%; align-self: center; align-content: center; background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement name="HeldPiece" class="CaseContainer" style="flex-grow: initial; align-self: center; align-content: auto; height: 200px; top: 25%; background-color: rgba(0, 0, 0, 0); width: 100%;">
@@ -54,20 +54,13 @@
     </ui:VisualElement>
     <ui:VisualElement name="PauseMenu" class="GameOverHidden" style="flex-grow: 1; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.75); align-self: center; justify-content: center; transition-timing-function: ease-out; transition-duration: 1s;">
         <ui:Label text="Pause" name="PauseLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="UIText" style="font-size: 118px;"/>
-        <ui:VisualElement name="NotSavedWarning" style="flex-grow: 0; display: none;">
-            <ui:Label text="Are you sure? Current progress will be lost." name="Question" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="UIText" style="font-size: 64px; white-space: normal;"/>
-            <ui:VisualElement name="Buttons" style="flex-grow: 0; flex-direction: row; justify-content: space-around;">
-                <AnimatedButton text="Continue" name="BackButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
-                <AnimatedButton text="Quit" name="ExitButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
-            </ui:VisualElement>
-        </ui:VisualElement>
         <ui:VisualElement name="PauseMain" style="flex-grow: 0; display: flex;">
             <AnimatedButton name="Continue" text="Continue" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
             <AnimatedButton name="Restart" text="Restart" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
             <AnimatedButton name="Settings" text="Settings" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
             <AnimatedButton name="BackToMenu" text="Exit to Menu" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="StartScreenButton"/>
         </ui:VisualElement>
-        <ui:Instance template="SettingsPanel" name="SettingPanel" style="width: 90%; align-self: center; display: none;"/>
+        <ui:Instance template="SettingsMenu" name="SettingsMenu" style="width: 90%; align-self: center; display: none;"/>
     </ui:VisualElement>
     <ui:VisualElement name="ReadyGoScreen" picking-mode="Ignore" style="flex-grow: 1; position: absolute; top: 0; bottom: 0; left: 0; right: 0; align-self: stretch; align-content: center; justify-content: center;">
         <ui:Label text="Ready?" name="ReadyLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="readyGoText readyGoTextLeft" style="position: absolute;"/>

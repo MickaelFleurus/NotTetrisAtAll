@@ -1,11 +1,11 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="GameModeSelection" src="project://database/Assets/UI/GameModeSelection.uxml?fileID=9197481963319205126&amp;guid=9f63a47a5df054358a5bc0d2d04539e2&amp;type=3#GameModeSelection"/>
-    <ui:Template name="SettingsPanel" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
+    <ui:Template name="SettingsMenu" src="project://database/Assets/UI/SettingsPanel.uxml?fileID=9197481963319205126&amp;guid=e75a798b2534545c6bb382b05dc63f95&amp;type=3#SettingsPanel"/>
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
     <ui:VisualElement focusable="true" style="flex-grow: 1; position: absolute; width: 100%; height: 100%;"/>
     <AnimatedLabel text="Too Many&#10;Cubes" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="Title" animate-rotation="false" min-rotation="-11" max-rotation="11" rotation-duration="1" rotation-mode="Oscillate" animate-scale="true" min-scale="0.9" max-scale="1.1" scale-duration="0.8" scale-mode="Oscillate" rotation-activation="Always" scale-activation="Always" class="tiltLeft" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; top: auto; font-size: 135px; margin-top: 10%; margin-bottom: 10%; -unity-font-definition: url(&quot;project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&amp;guid=64b567f78eb144a20b4d5b5a10fc7395&amp;type=3#Super Starfish&quot;);"/>
     <ui:VisualElement name="ActionZone" style="flex-grow: 1;">
-        <ui:VisualElement name="MainMenuButtons" style="flex-grow: initial; width: 60%; height: 50%; left: auto; top: auto; justify-content: center; position: relative; display: flex; align-self: center; margin-top: 25%;">
+        <ui:VisualElement name="MainMenuButtons" style="flex-grow: initial; width: 60%; height: 50%; left: auto; top: auto; justify-content: center; position: relative; display: none; align-self: center; margin-top: 25%;">
             <AnimatedButton text="Start" name="StartButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" animate-on-focus="true" min-rotation="-4" max-rotation="4" min-scale="0.95" max-scale="1.05" scale-mode="Oscillate" scale-duration="0.9" rotation-activation="OnFocusIn" scale-activation="OnFocusIn" class="StartScreenButton" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; width: 24%;"/>
             <ui:VisualElement name="Spacer" class="Spacer"/>
             <AnimatedButton text="Settings" name="SettingsButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" animate-on-focus="true" min-rotation="-4" max-rotation="4" min-scale="0.95" max-scale="1.05" scale-mode="Oscillate" scale-duration="0.9" rotation-activation="OnFocusIn" scale-activation="OnFocusIn" class="StartScreenButton" style="border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; width: 39%;"/>
@@ -18,7 +18,7 @@
             <ui:ScrollView name="CreditsView" style="width: 100%; height: 100%; visibility: visible; display: flex; margin-bottom: 80px; background-color: rgba(255, 255, 255, 0.1); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;"/>
             <AnimatedButton text="Back" name="CreditsBackButton" class="StartScreenButton"/>
         </ui:VisualElement>
-        <ui:Instance template="SettingsPanel" name="SettingsPanel" style="align-content: auto; align-items: stretch; display: none; width: 90%; align-self: center;"/>
-        <ui:Instance template="GameModeSelection" name="GameModePanel" style="width: 90%; align-self: center; display: none;"/>
+        <ui:Instance template="SettingsMenu" name="SettingsMenu" style="align-content: auto; align-items: stretch; display: none; width: 90%; align-self: center;"/>
+        <ui:Instance template="GameModeSelection" name="GameModePanel" style="width: 90%; align-self: center; display: none; height: 80%;"/>
     </ui:VisualElement>
 </ui:UXML>

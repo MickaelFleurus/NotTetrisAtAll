@@ -42,5 +42,5 @@
             <AnimatedButton text="20" name="5" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="GameModeLevelButton"/>
         </ui:VisualElement>
     </ui:Label>
-    <AnimatedButton text="Start!" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="StartButton" class="StartScreenButton" style="margin-top: 26px; bottom: 0; position: absolute;"/>
+    <AnimatedButton text="Start!" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="StartButton" class="StartScreenButton" style="margin-top: 0; bottom: 0; position: absolute; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
 </ui:UXML>

@@ -130,7 +130,17 @@ public class GridHandler : MonoBehaviour
                 if (!currentPiece.IsInGrid())
                 {
                     this.enabled = false;
-                    inGameUI.ShowGameOver(InGameUI.EGameOverReason.Lost);
+                    GameData.GameOverData gameOverData = new GameData.GameOverData
+                    {
+                        finalLevel = level,
+                        finalScore = score,
+                        finalTimer = timer,
+                        lineCompleted = lineCompleted,
+                        gameOverReason = GameData.GameOverData.EGameOverReason.Lost
+                    };
+
+                    GameData.Instance.gameOverData = gameOverData;
+                    inGameUI.ShowGameOver();
                     pauseGameLoop = true;
                     return;
                 }
@@ -148,11 +158,17 @@ public class GridHandler : MonoBehaviour
         // Unsubscribe from static PauseMenu event to prevent memory leaks
         PauseMenu.unpauseGame -= OnUnpause;
 
+
+        PlayerInputs.Instance.inGameActions.Drop -= OnDrop;
+        PlayerInputs.Instance.inGameActions.RotateClockwise -= OnRotateClockwise;
+        PlayerInputs.Instance.inGameActions.RotateCounterClockwise -= OnRotateCounterClockwise;
+        PlayerInputs.Instance.inGameActions.Hold -= OnHold;
+        PlayerInputs.Instance.inGameActions.Move -= OnMove;
+        PlayerInputs.Instance.inGameActions.Pause -= OnPause;
+
         // Unsubscribe from timer event
         if (timer != null)
             timer.isDone -= OnTimeOver;
-
-        NavigationGrid.ResetInputAction();
     }
 
 
@@ -397,7 +413,16 @@ public class GridHandler : MonoBehaviour
     {
         pauseGameLoop = true;
         this.enabled = false;
-        inGameUI.ShowGameOver(InGameUI.EGameOverReason.TimeUp);
+        GameData.Instance.gameOverData = new GameData.GameOverData
+        {
+            finalLevel = level,
+            finalScore = score,
+            finalTimer = timer,
+            lineCompleted = lineCompleted,
+            gameOverReason = GameData.GameOverData.EGameOverReason.TimeUp
+        };
+
+        inGameUI.ShowGameOver();
     }
 
     private void OnHold()
@@ -437,8 +462,8 @@ public class GridHandler : MonoBehaviour
 
     private void OnUnpause()
     {
-        inGameUI.HidePauseMenu();
         PlayerInputs.Instance.inGameActions.Enable();
+        inGameUI.HidePauseMenu();
         if (!introFinishedPlaying)
         {
             playableDirector.Resume();
