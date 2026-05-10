@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 public class ScreenHandler
 {
-    public enum EScreens { None, StartMenu, GameModeMenu, PauseMenu, CreditsMenu, SettingsMenu, ConfirmationMenu, GameOverMenu };
+    public enum EScreens { None, StartMenu, GameModeMenu, PauseMenu, CreditsMenu, SettingsMenu, ConfirmationMenu, GameOverMenu, HelpMenu };
     private Stack<IScreen> openedScreens = new Stack<IScreen>();
 
     UIDocument uiDocument;
@@ -16,6 +16,7 @@ public class ScreenHandler
     private GameModePanel gameModeMenu = null;
     private StartScreen startMenu = null;
     private CreditsScreen creditsMenu = null;
+    private HelpScreen helpScreen = null;
     private GameOverScreen gameOverMenu = null;
 
     private IModal topModal = null;
@@ -24,10 +25,10 @@ public class ScreenHandler
     {
         this.uiDocument = uiDocument;
         uiDocument.rootVisualElement.RegisterCallback<NavigationMoveEvent>(evt =>
-               {
-                   uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
-                   evt.StopPropagation();
-               }, TrickleDown.TrickleDown);
+        {
+            uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+            evt.StopPropagation();
+        }, TrickleDown.TrickleDown);
 
         uiDocument.rootVisualElement.RegisterCallback<NavigationSubmitEvent>(evt =>
         {
@@ -37,10 +38,10 @@ public class ScreenHandler
 
 
         uiDocument.rootVisualElement.RegisterCallback<NavigationCancelEvent>(evt =>
-       {
-           uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
-           evt.StopPropagation();
-       }, TrickleDown.TrickleDown);
+        {
+            uiDocument.rootVisualElement.focusController.IgnoreEvent(evt);
+            evt.StopPropagation();
+        }, TrickleDown.TrickleDown);
 
         PlayerInputs.Instance.uiActions.Approve += OnApprove;
         PlayerInputs.Instance.uiActions.Cancel += OnCancel;
@@ -66,6 +67,10 @@ public class ScreenHandler
         var creditsRoot = uiDocument.rootVisualElement.Q<VisualElement>("Credits");
         if (creditsRoot != null)
             creditsMenu = new CreditsScreen(creditsRoot, this);
+
+        var helpRoot = uiDocument.rootVisualElement.Q<VisualElement>("HelpPage");
+        if (helpRoot != null)
+            helpScreen = new HelpScreen(helpRoot, this);
 
         var gameOverRoot = uiDocument.rootVisualElement.Q<VisualElement>("GameOverScreen");
         if (gameOverRoot != null)
@@ -106,6 +111,7 @@ public class ScreenHandler
             EScreens.CreditsMenu => creditsMenu,
             EScreens.SettingsMenu => settingsMenu,
             EScreens.GameOverMenu => gameOverMenu,
+            EScreens.HelpMenu => helpScreen,
             _ => null
         };
     }
@@ -190,7 +196,7 @@ public class ScreenHandler
         {
             topModal.GetNavigationGrid().OnApprove();
         }
-        else
+        else if (openedScreens.Count > 0)
         {
             openedScreens.Peek().GetNavigationGrid().OnApprove();
         }
@@ -202,8 +208,9 @@ public class ScreenHandler
         {
             topModal.GetNavigationGrid().OnNavigate(move);
         }
-        else
+        else if (openedScreens.Count > 0)
         {
+            Debug.LogWarning("Moving and there is a screen.");
             openedScreens.Peek().GetNavigationGrid().OnNavigate(move);
         }
     }
@@ -214,7 +221,7 @@ public class ScreenHandler
         {
             topModal.GetNavigationGrid().OnPressed(elem);
         }
-        else
+        else if (openedScreens.Count > 0)
         {
             openedScreens.Peek().GetNavigationGrid().OnPressed(elem);
         }

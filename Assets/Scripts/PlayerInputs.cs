@@ -131,6 +131,7 @@ class PlayerInputs : MonoBehaviour
     private bool isRotateClockwiseActive = false;
     private bool isRotateCounterClockwiseActive = false;
     private bool isHoldActive = false;
+    private bool enableUiInputNextFrame = false;
 
     void Awake()
     {
@@ -210,31 +211,37 @@ class PlayerInputs : MonoBehaviour
 
     private void HandleMoveValueChanged()
     {
+        Debug.LogWarning("HandleMoveValueChanged");
         if (isUpdatingMove) return;
 
         isUpdatingMove = true;
-        try
-        {
-            float moveValue = customControls.Player.Move.IsPressed()
-                ? customControls.Player.Move.ReadValue<float>()
-                : defaultInputs.Player.Move.ReadValue<float>();
+        float moveValue = customControls.Player.Move.IsPressed()
+            ? customControls.Player.Move.ReadValue<float>()
+            : defaultInputs.Player.Move.ReadValue<float>();
 
-            if (Math.Abs(moveValue) >= 0.5f)
+        if (Math.Abs(moveValue) >= 0.5f)
+        {
+            if (!inGameMoveRepeat.IsRunning())
             {
-                if (!inGameMoveRepeat.IsRunning())
-                {
-                    inGameMoveRepeat.Start();
-                }
+                inGameMoveRepeat.Start();
             }
-            else if (inGameMoveRepeat.IsRunning())
+            if (!uiNavigateRepeat.IsRunning())
+            {
+                uiNavigateRepeat.Start();
+            }
+        }
+        else
+        {
+            if (inGameMoveRepeat.IsRunning())
             {
                 inGameMoveRepeat.Stop();
             }
+            if (uiNavigateRepeat.IsRunning())
+            {
+                uiNavigateRepeat.Stop();
+            }
         }
-        finally
-        {
-            isUpdatingMove = false;
-        }
+        isUpdatingMove = false;
     }
 
     private void TriggerMoveAction()
@@ -273,19 +280,24 @@ class PlayerInputs : MonoBehaviour
         // Get the element that was clicked
         VisualElement clickedElement = evt.target as VisualElement;
         if (clickedElement == null) return;
-
+        Debug.LogWarning($"[{System.DateTime.Now:HH:mm:ss.fff}] On Pointer Click: {clickedElement.name}");
         uiActions.OnPressed(clickedElement);
+    }
+
+    void Update()
+    {
+        if (enableUiInputNextFrame)
+        {
+            Debug.LogWarning($"[{System.DateTime.Now:HH:mm:ss.fff}] Enabling UI Input from flag");
+            enableUiInputNextFrame = false;
+            uiActions.Enable();
+        }
     }
 
     public void EnableUiInputNextFrame()
     {
-        StartCoroutine(DelayUiInputEnabling());
-    }
-
-    private IEnumerator DelayUiInputEnabling()
-    {
-        yield return null;
-        uiActions.Enable();
+        Debug.LogWarning($"[{System.DateTime.Now:HH:mm:ss.fff}] EnableUiInputNextFrame called");
+        enableUiInputNextFrame = true;
     }
 
 }

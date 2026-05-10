@@ -5,7 +5,7 @@
         <AnimatedButton name="Marathon" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" text="Marathon" class="GameModeButton GameModeButtonSelected"/>
         <AnimatedButton name="TimeLimit" enable-rich-text="false" emoji-fallback-support="false" triple-click-selects-line="false" display-tooltip-when-elided="false" double-click-selects-word="false" text="Time Attack" class="GameModeButton" style="margin-top: 10px;"/>
     </ui:Label>
-    <ui:Label text="Settings" name="Settings" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="GameModeLabel">
+    <ui:Label text="Settings" name="Settings" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="GameModeLabel" style="margin-bottom: 50px;">
         <ui:Label text="Level Start" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="LevelStartLabel" style="align-self: center; margin-top: 94px; margin-left: 47px; flex-direction: row; flex-wrap: wrap; width: 90%; justify-content: space-around;"/>
         <ui:VisualElement name="LevelStartParent" style="flex-grow: 1; flex-direction: row; width: 500px; flex-wrap: wrap; align-self: center; justify-content: center;">
             <AnimatedButton text="1" name="1" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="GameModeLevelButton GameModeLevelButtonSelected"/>
@@ -42,5 +42,5 @@
             <AnimatedButton text="20" name="5" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" display-tooltip-when-elided="false" triple-click-selects-line="false" class="GameModeLevelButton"/>
         </ui:VisualElement>
     </ui:Label>
-    <AnimatedButton text="Start!" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="StartButton" class="StartScreenButton" style="margin-top: 0; bottom: 0; position: absolute; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
+    <AnimatedButton text="Start!" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" name="StartButton" class="StartScreenButton" style="margin-top: 0; bottom: auto; position: relative; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
 </ui:UXML>

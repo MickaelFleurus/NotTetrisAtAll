@@ -1,4 +1,7 @@
 Made with <b>Unity</b> by <b>Mickaël Fleurus</b>.
+
+All graphic assets in the game are under licence 
+and were not made for this game specifically.
 Music by <b>chajamakesmusic</b> and <b>JDSherbert</b> 
 Sound Effects by <b>JDSherbert</b>
 Blocks design created by <b>pixelharbor</b>

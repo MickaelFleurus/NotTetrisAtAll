@@ -1,17 +1,13 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Style.uss?fileID=7433441132597879392&amp;guid=27d4f12ebfe52461d95c1bcc01f10aac&amp;type=3#Style"/>
-    <ui:VisualElement name="Settings" style="flex-grow: 0; align-self: center; width: 100%; height: auto; display: flex; justify-content: center; align-content: auto; align-items: flex-end; flex-shrink: 1;">
-        <ui:ScrollView name="ScrollView" horizontal-scroller-visibility="Hidden" style="width: 100%;">
-            <ui:Label text="Audio" name="AudioCategoryLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel">
-                <ui:VisualElement name="AudioCategory" class="SettingsCategoryParent">
-                    <AnimatedSlider label="Master Volume" value="100" high-value="100" name="MasterAudio" class="settingsSliders" style="margin-top: 0; margin-left: 0; width: 100%;"/>
-                    <AnimatedSlider label="Music Volume" value="100" high-value="100" name="MusicVolume" class="settingsSliders" style="height: 56px;"/>
-                    <AnimatedSlider label="SFX Volume" value="100" high-value="100" name="SFXVolume" class="settingsSliders"/>
-                </ui:VisualElement>
-            </ui:Label>
-            <ui:Label text="Controls" name="ControlLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel" style="height: auto; display: none;"/>
-        </ui:ScrollView>
-    </ui:VisualElement>
+    <ui:VisualElement name="Settings" style="flex-grow: 0; align-self: center; width: 100%; height: auto; display: flex; justify-content: center; align-content: auto; align-items: flex-end; flex-shrink: 1;"/>
+    <ui:Label text="Audio" name="AudioCategoryLabel" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" class="SettingsLabel">
+        <ui:VisualElement name="AudioCategory" class="SettingsCategoryParent">
+            <AnimatedSlider label="Master Volume" value="100" high-value="100" name="MasterAudio" class="settingsSliders" style="margin-top: 0; margin-left: 0; width: 100%;"/>
+            <AnimatedSlider label="Music Volume" value="100" high-value="100" name="MusicVolume" class="settingsSliders" style="height: 56px;"/>
+            <AnimatedSlider label="SFX Volume" value="100" high-value="100" name="SFXVolume" class="settingsSliders"/>
+        </ui:VisualElement>
+    </ui:Label>
     <ui:VisualElement name="ValidationButtons" style="flex-grow: 1; width: 100%; align-items: center; align-self: center; flex-direction: row; align-content: center; justify-content: space-around;">
         <AnimatedButton text="Back&#10;" name="BackButton" enable-rich-text="false" emoji-fallback-support="false" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="false" icon-image="" class="StartScreenButton" style="align-self: flex-start; font-size: 60px; width: auto;"/>
     </ui:VisualElement>

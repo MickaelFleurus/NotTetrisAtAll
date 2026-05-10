@@ -55,14 +55,12 @@ public class PieceObject : MonoBehaviour
         return pieceLook;
     }
 
-    void Awake()
-    {
-    }
 
     void Start()
     {
         transform.localPosition = new Vector2(positionIndex.x, positionIndex.y);
     }
+
     public void ResetPosition()
     {
         positionIndex = new Vector2Int(InGameController.Width / 2, InGameController.Height + 1);

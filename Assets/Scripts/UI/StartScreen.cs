@@ -10,6 +10,7 @@ public class StartScreen : IScreen
 
     private Button startButton;
     private Button settingsButton;
+    private Button helpButton;
     private Button creditButton;
     private Button quitButton;
     NavigationGrid nav;
@@ -23,6 +24,7 @@ public class StartScreen : IScreen
         startButton = root.Q<Button>("StartButton");
         quitButton = root.Q<Button>("ExitButton");
         settingsButton = root.Q<Button>("SettingsButton");
+        helpButton = root.Q<Button>("HelpButton");
         creditButton = root.Q<Button>("CreditsButton");
 
 
@@ -31,6 +33,7 @@ public class StartScreen : IScreen
             { startButton, () => screenHandler.RequestShow(ScreenHandler.EScreens.GameModeMenu) },
             { quitButton, GameEvents.CloseGame },
             { settingsButton, () => screenHandler.RequestShow(ScreenHandler.EScreens.SettingsMenu) },
+            { helpButton, () => screenHandler.RequestShow(ScreenHandler.EScreens.HelpMenu) },
             { creditButton, () => screenHandler.RequestShow(ScreenHandler.EScreens.CreditsMenu) },
         };
         SetupNavigation(submitActions);
@@ -41,6 +44,7 @@ public class StartScreen : IScreen
         List<NavigationRow> rows = new List<NavigationRow>() {
             new NavigationRow(new NavigationCell(startButton)),
             new NavigationRow(new NavigationCell(settingsButton)),
+            new NavigationRow(new NavigationCell(helpButton)),
             new NavigationRow(new NavigationCell(creditButton)),
             new NavigationRow(new NavigationCell(quitButton)),
         };

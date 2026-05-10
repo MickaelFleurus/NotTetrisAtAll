@@ -36,7 +36,7 @@
 
 .UIText {
     color: rgb(255, 255, 255);
-    font-size: 247%;
+    font-size: 77px;
     -unity-text-align: middle-center;
     -unity-font-definition: url("project://database/Assets/Fonts/Super%20Starfish.ttf?fileID=12800000&guid=64b567f78eb144a20b4d5b5a10fc7395&type=3#Super Starfish");
 }
@@ -94,7 +94,7 @@
 }
 
 .unity-slider__label {
-    width: 40%;
+    width: 50%;
 }
 
 .credit_text {
@@ -330,4 +330,17 @@
     position: relative;
     width: 100%;
     height: 100%;
+}
+
+.HelpT {
+    width: 150px;
+}
+
+.HowToRow {
+    flex-grow: 0;
+    flex-direction: row;
+    width: 95%;
+    height: 144px;
+    left: 2.5%;
+    justify-content: space-around;
 }

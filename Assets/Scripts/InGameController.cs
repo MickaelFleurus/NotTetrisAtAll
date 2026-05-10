@@ -45,8 +45,7 @@ public class InGameController : MonoBehaviour
 
     private AudioClip currentMusic = null;
 
-
-    void Awake()
+    private void InitControlStuff()
     {
         var originalPosition = new Vector3(0.0f, 0.0f);
         for (int j = 0; j < Height; j++)
@@ -82,6 +81,8 @@ public class InGameController : MonoBehaviour
 
     void Start()
     {
+        Debug.LogWarning("Starting the game");
+        InitControlStuff();
         var gameData = GameData.Instance;
         inGameUI.UpdateLevel(gameData.levelStart);
         level = gameData.levelStart;

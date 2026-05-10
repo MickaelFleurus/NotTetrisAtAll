@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using System;
 
 public class StartScreenUI : MonoBehaviour
 {
