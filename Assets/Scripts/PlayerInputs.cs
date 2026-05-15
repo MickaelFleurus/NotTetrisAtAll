@@ -187,10 +187,8 @@ class PlayerInputs : MonoBehaviour
         defaultInputs.UI.Navigate.canceled += ctx => uiNavigateRepeat.Stop();
         uiNavigateRepeat.Repeat += TriggerNav;
 
-
         RegisterMouseClickHandler();
     }
-
 
     public CustomControls GetCustomControls()
     {
@@ -211,7 +209,6 @@ class PlayerInputs : MonoBehaviour
 
     private void HandleMoveValueChanged()
     {
-        Debug.LogWarning("HandleMoveValueChanged");
         if (isUpdatingMove) return;
 
         isUpdatingMove = true;
@@ -271,16 +268,13 @@ class PlayerInputs : MonoBehaviour
 
         var root = uiDoc.rootVisualElement;
 
-        // Listen for pointer clicks
         root.RegisterCallback<PointerDownEvent>(OnPointerClick, TrickleDown.TrickleDown);
     }
 
     private void OnPointerClick(PointerDownEvent evt)
     {
-        // Get the element that was clicked
         VisualElement clickedElement = evt.target as VisualElement;
         if (clickedElement == null) return;
-        Debug.LogWarning($"[{System.DateTime.Now:HH:mm:ss.fff}] On Pointer Click: {clickedElement.name}");
         uiActions.OnPressed(clickedElement);
     }
 
@@ -288,7 +282,6 @@ class PlayerInputs : MonoBehaviour
     {
         if (enableUiInputNextFrame)
         {
-            Debug.LogWarning($"[{System.DateTime.Now:HH:mm:ss.fff}] Enabling UI Input from flag");
             enableUiInputNextFrame = false;
             uiActions.Enable();
         }
@@ -296,7 +289,6 @@ class PlayerInputs : MonoBehaviour
 
     public void EnableUiInputNextFrame()
     {
-        Debug.LogWarning($"[{System.DateTime.Now:HH:mm:ss.fff}] EnableUiInputNextFrame called");
         enableUiInputNextFrame = true;
     }
 

@@ -92,8 +92,6 @@ public class ScreenHandler
 
     public void OnDestroy()
     {
-
-        PlayerInputs.Instance.uiActions.Disable();
         PlayerInputs.Instance.uiActions.Approve -= OnApprove;
         PlayerInputs.Instance.uiActions.Cancel -= OnCancel;
         PlayerInputs.Instance.uiActions.Navigate -= OnNavigate;
@@ -210,7 +208,6 @@ public class ScreenHandler
         }
         else if (openedScreens.Count > 0)
         {
-            Debug.LogWarning("Moving and there is a screen.");
             openedScreens.Peek().GetNavigationGrid().OnNavigate(move);
         }
     }
@@ -225,5 +222,10 @@ public class ScreenHandler
         {
             openedScreens.Peek().GetNavigationGrid().OnPressed(elem);
         }
+    }
+
+    public void DisableInputs()
+    {
+        PlayerInputs.Instance.uiActions.Disable();
     }
 }

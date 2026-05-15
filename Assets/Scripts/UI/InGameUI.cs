@@ -39,6 +39,7 @@ public class InGameUI : MonoBehaviour
         nextPieces.Add(uiDocument.rootVisualElement.Q<Image>("NextPiece3Image"));
 
         heldPiece = uiDocument.rootVisualElement.Q<Image>("HeldPieceImage");
+        this.inGameScreenHandler.DisableInputs();
     }
 
     public void UpdateScore(int score)
