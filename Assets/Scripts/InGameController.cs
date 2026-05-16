@@ -25,6 +25,7 @@ public class InGameController : MonoBehaviour
     private int lineCompleted = 0;
     [SerializeField] float DropInitialDelayMs;
     private float currentDropDelayMs;
+    private float speedUpDelayMs = 0.10f;
     private readonly float MinimumDelayMs = 0.02f;
     private float delayNextDropMs;
     static int pieceCounter = 0;
@@ -71,7 +72,10 @@ public class InGameController : MonoBehaviour
         PlayerInputs.Instance.inGameActions.RotateCounterClockwise += OnRotateCounterClockwise;
         PlayerInputs.Instance.inGameActions.Hold += OnHold;
         PlayerInputs.Instance.inGameActions.Move += OnMove;
+        PlayerInputs.Instance.inGameActions.SpeedUp += OnSpeedUp;
+        PlayerInputs.Instance.inGameActions.StopSpeedUp += OnStopSpeedUp;
         PlayerInputs.Instance.inGameActions.Pause += OnPause;
+
         PlayerInputs.Instance.inGameActions.Enable();
 
         PauseMenu.unpauseGame += OnUnpause;
@@ -81,7 +85,6 @@ public class InGameController : MonoBehaviour
 
     void Start()
     {
-        Debug.LogWarning("Starting the game");
         InitControlStuff();
         var gameData = GameData.Instance;
         inGameUI.UpdateLevel(gameData.levelStart);
@@ -487,6 +490,16 @@ public class InGameController : MonoBehaviour
         {
             pauseGameLoop = false;
         }
+    }
+
+    private void OnSpeedUp()
+    {
+        this.currentDropDelayMs = this.speedUpDelayMs;
+    }
+
+    private void OnStopSpeedUp()
+    {
+        UpdateCurrentDropDelay();
     }
 
     private void UpdateCurrentDropDelay()

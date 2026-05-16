@@ -15,6 +15,8 @@ class InGameActions
     public Action RotateCounterClockwise;
     public Action Hold;
     public Action Pause;
+    public Action SpeedUp;
+    public Action StopSpeedUp;
 
     public void Enable()
     {
@@ -64,6 +66,18 @@ class InGameActions
     {
         if (!enabled) return;
         Pause?.Invoke();
+    }
+
+    public void OnSpeedUp()
+    {
+        if (!enabled) return;
+        SpeedUp?.Invoke();
+    }
+
+    public void OnStopSpeedUp()
+    {
+        if (!enabled) return;
+        StopSpeedUp?.Invoke();
     }
 }
 
@@ -175,6 +189,8 @@ class PlayerInputs : MonoBehaviour
         defaultInputs.Player.RotateCounterClockwise.canceled += ctx => isRotateCounterClockwiseActive = false;
         defaultInputs.Player.Hold.started += ctx => TriggerIfNotActive(ref isHoldActive, inGameActions.OnHold);
         defaultInputs.Player.Hold.canceled += ctx => isHoldActive = false;
+        defaultInputs.Player.SpeedUp.started += ctx => inGameActions.OnSpeedUp();
+        defaultInputs.Player.SpeedUp.canceled += ctx => inGameActions.OnStopSpeedUp();
         defaultInputs.Player.Pause.started += ctx => inGameActions.OnPause();
         defaultInputs.Player.Move.performed += ctx => HandleMoveValueChanged();
         defaultInputs.Player.Move.canceled += ctx => inGameMoveRepeat.Stop();
@@ -261,7 +277,7 @@ class PlayerInputs : MonoBehaviour
         uiActions.OnNavigate(moveValue);
     }
 
-    private void RegisterMouseClickHandler()
+    public void RegisterMouseClickHandler()
     {
         UIDocument uiDoc = FindFirstObjectByType<UIDocument>();
         if (uiDoc == null) return;

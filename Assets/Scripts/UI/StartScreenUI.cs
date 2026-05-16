@@ -51,6 +51,7 @@ public class StartScreenUI : MonoBehaviour
     void Start()
     {
         AudioMixer.Instance.PlayMusic(AudioData.Instance.MainMenuMusic);
+        PlayerInputs.Instance.RegisterMouseClickHandler();
     }
 
     void Update()
