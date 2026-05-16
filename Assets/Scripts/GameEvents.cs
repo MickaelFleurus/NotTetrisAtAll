@@ -10,13 +10,9 @@ class GameEvents
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBGL
-        // In WebGL, just exit fullscreen
-        if (Screen.fullScreen)
-        {
-            Screen.fullScreen = false;
-        }
+    // Do Nothing
 #else
-        Application.Quit();
+    Application.Quit();
 #endif
     }
 
@@ -28,8 +24,12 @@ class GameEvents
     public static async void StartGame(EGameMode gameMode, int levelStart, int blockSize, EGameTimeLimit timeLimit)
     {
         GameData.Instance.OnGameStarted(gameMode, levelStart, blockSize, timeLimit);
+#if UNITY_WEBGL
+        await SceneManager.LoadSceneAsync("GameScene");
+#else
         await Task.Delay(500);
         SceneManager.LoadScene("GameScene");
+#endif
     }
 
     public static void BackToMainMenu()
